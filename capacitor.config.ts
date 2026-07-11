@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'tempfront',
+  appId: 'br.com.livecodesystem.bravoinstalacoes',
+  appName: 'Bravo Instalações',
   webDir: 'www'
 };
 

@@ -1,0 +1,82 @@
+<ion-content [fullscreen]="true">
+  <!-- Cabeçalho Principal (Conforme Imagem) -->
+  <div class="login-header">
+    <div class="brand-container">
+      <div class="brand-logo">
+        <ion-icon name="construct" class="brand-icon"></ion-icon>
+      </div>
+      <span class="brand-text">BRAVO<br><span class="brand-subtext">INSTALAÇÕES</span></span>
+    </div>
+
+    <h1 class="header-title">
+      Serviços técnicos para sua casa, <br>
+      <span class="highlight-text">com agilidade e garantia.</span>
+    </h1>
+
+    <p class="header-desc">
+      Hidráulica, elétrica, serralheria e mais — solicite pelo aplicativo de forma simples.
+    </p>
+  </div>
+
+  <!-- Formulário de Cadastro -->
+  <div class="form-container">
+    <h3 class="form-title">Crie sua conta</h3>
+
+    <!-- Nome Completo -->
+    <div class="input-wrapper">
+      <ion-icon name="person-outline" class="input-icon"></ion-icon>
+      <input 
+        type="text" 
+        placeholder="Nome completo" 
+        [ngModel]="nameInput()" 
+        (ngModelChange)="nameInput.set($event)"
+        class="custom-input"
+      />
+    </div>
+
+    <!-- Celular -->
+    <div class="input-wrapper">
+      <ion-icon name="phone-portrait-outline" class="input-icon"></ion-icon>
+      <input 
+        type="text" 
+        placeholder="(00) 00000-0000" 
+        [ngModel]="phoneInput()" 
+        (ngModelChange)="phoneInput.set($event)"
+        class="custom-input"
+      />
+    </div>
+
+    <!-- Endereço -->
+    <div class="input-wrapper">
+      <ion-icon name="location-outline" class="input-icon"></ion-icon>
+      <input 
+        type="text" 
+        placeholder="Endereço (rua, número, bairro)" 
+        [ngModel]="addressInput()" 
+        (ngModelChange)="addressInput.set($event)"
+        class="custom-input"
+      />
+    </div>
+
+    <!-- Botão Cadastrar -->
+    <button 
+      (click)="submitRegister()" 
+      [disabled]="!isFormValid()" 
+      [class.active-btn]="isFormValid()"
+      class="submit-btn"
+    >
+      Cadastrar e começar
+    </button>
+
+    <p class="footer-note">
+      Seus dados ficam salvos apenas neste dispositivo.
+    </p>
+
+    <!-- Link Opcional para Lojista/Admin -->
+    <div style="text-align: center; margin-top: 24px;">
+      <a (click)="goToAdmin()" style="font-size: 13px; color: #94a3b8; text-decoration: underline; cursor: pointer;">
+        Entrar como Lojista
+      </a>
+    </div>
+  </div>
+</ion-content>

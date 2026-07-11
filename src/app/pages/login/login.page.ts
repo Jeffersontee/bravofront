@@ -1,32 +1,59 @@
-import { Component } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
-import { RouterModule } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { 
+  IonContent, IonButton, IonIcon, IonInput 
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { 
+  personOutline, phonePortraitOutline, locationOutline, construct 
+} from 'ionicons/icons';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'app-login',
-  template: `
-    <ion-header [translucent]="true">
-      <ion-toolbar color="primary">
-        <ion-title>Bravo Instalações</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content [fullscreen]="true" class="ion-padding ion-text-center">
-      <ion-card style="max-width: 400px; margin: 80px auto; padding: 20px;">
-        <ion-card-header>
-          <ion-card-title>Login</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <p>Seja bem-vindo ao sistema de gestão Bravo Instalações.</p>
-          <ion-button expand="block" [routerLink]="['/establishment-admin/dashboard']" class="ion-margin-top">
-            Entrar (Painel Admin)
-          </ion-button>
-        </ion-card-content>
-      </ion-card>
-    </ion-content>
-  `,
-  styles: [],
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, RouterModule]
+  imports: [
+    CommonModule, FormsModule, IonContent, IonButton, IonIcon, IonInput
+  ]
 })
-export class LoginPage {}
+export class LoginPage {
+  private router = inject(Router);
+  private orderService = inject(OrderService);
+
+  // Inputs controlados via signals
+  public nameInput = signal<string>('');
+  public phoneInput = signal<string>('');
+  public addressInput = signal<string>('');
+
+  constructor() {
+    addIcons({ personOutline, phonePortraitOutline, locationOutline, construct });
+  }
+
+  public isFormValid(): boolean {
+    return (
+      this.nameInput().trim().length > 2 &&
+      this.phoneInput().trim().length >= 8 &&
+      this.addressInput().trim().length > 5
+    );
+  }
+
+  public submitRegister() {
+    if (!this.isFormValid()) return;
+
+    // Atualiza os dados no serviço reativo
+    this.orderService.customerName.set(this.nameInput().trim());
+    this.orderService.customerPhone.set(this.phoneInput().trim());
+    this.orderService.customerAddress.set(this.addressInput().trim());
+
+    // Redireciona para a Home do cliente
+    this.router.navigate(['/customer/home']);
+  }
+
+  public goToAdmin() {
+    this.router.navigate(['/establishment-admin/dashboard']);
+  }
+}

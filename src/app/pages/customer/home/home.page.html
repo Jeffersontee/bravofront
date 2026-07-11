@@ -1,0 +1,117 @@
+<ion-content [fullscreen]="true" class="ion-padding-bottom">
+  
+  <!-- Modo de visualização normal: Grade de Serviços -->
+  <div *ngIf="!selectedCategory(); else requestFormTemplate">
+    
+    <!-- Header Azul Navy customizado (Conforme Claude/Imagem) -->
+    <div class="app-header">
+      <div class="header-top">
+        <div>
+          <span class="welcome-sub">Olá, bem-vindo</span>
+          <h2 class="welcome-title">{{ customerName() }}</h2>
+        </div>
+        <div class="brand-wrapper">
+          <div class="logo-box">
+            <ion-icon name="construct"></ion-icon>
+          </div>
+          <span class="brand-name">BRAVO<br><span>INSTALAÇÕES</span></span>
+        </div>
+      </div>
+      
+      <!-- Caixa de endereço fictícia -->
+      <div class="address-bar">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ customerAddress() }}</span>
+      </div>
+    </div>
+
+    <!-- Seção 'Em andamento' conforme a Imagem -->
+    <div *ngIf="activeOrders().length > 0" class="section-container">
+      <h3 class="section-title">Em andamento</h3>
+      
+      <div *ngFor="let order of activeOrders()" (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
+        <div class="order-info-container">
+          <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" class="order-icon-wrapper">
+            <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
+          </div>
+          <div>
+            <h4 class="order-title">{{ order.category }}</h4>
+            <div class="order-status-row">
+              <span class="status-tag-active">
+                {{ order.status }}
+              </span>
+              <span class="order-est-price">
+                R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span> est.</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Título de Seleção -->
+    <div class="section-container with-bottom">
+      <h3 class="section-title">Selecione o serviço desejado</h3>
+    </div>
+
+    <!-- Grade de Serviços (Semelhante ao print do Claude) -->
+    <ion-grid class="services-grid">
+      <ion-row>
+        <ion-col size="12" size-sm="6" *ngFor="let cat of categories">
+          <div class="bravo-card service-card-item" (click)="selectCategory(cat)">
+            <div [style.background-color]="cat.bgColor" [style.color]="cat.iconColor" class="service-icon-wrapper">
+              <ion-icon [name]="cat.iconName"></ion-icon>
+            </div>
+            <div class="service-text-content">
+              <h4>{{ cat.name }}</h4>
+              <p>{{ cat.description }}</p>
+              <span>{{ cat.priceText }}</span>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </div>
+
+  <!-- Template do formulário de solicitação -->
+  <ng-template #requestFormTemplate>
+    <div class="app-header">
+      <div class="form-back-header">
+        <button (click)="cancelSelection()" class="back-btn">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </button>
+        <h2 class="form-header-title">Solicitar {{ selectedCategory()?.name }}</h2>
+      </div>
+    </div>
+
+    <div class="form-body-wrapper">
+      <div class="bravo-card form-card">
+        <div class="form-service-badge">
+          <div [style.background-color]="selectedCategory()?.bgColor" [style.color]="selectedCategory()?.iconColor" class="form-service-icon">
+            <ion-icon [name]="selectedCategory()?.iconName || 'flash-outline'"></ion-icon>
+          </div>
+          <div class="form-service-info">
+            <h4>{{ selectedCategory()?.name }}</h4>
+            <span>{{ selectedCategory()?.priceText }}</span>
+          </div>
+        </div>
+
+        <label class="form-label">Descrição do Problema / Serviço</label>
+        <textarea 
+          placeholder="Descreva detalhadamente o que você precisa (ex: Troca de disjuntor geral que está desarmando)..." 
+          [ngModel]="serviceDescription()" 
+          (ngModelChange)="serviceDescription.set($event)"
+          rows="5"
+          class="form-textarea"
+        ></textarea>
+
+        <ion-button expand="block" (click)="submitRequest()" [disabled]="!serviceDescription().trim()" class="form-submit-btn">
+          Solicitar Serviço
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+
+</ion-content>

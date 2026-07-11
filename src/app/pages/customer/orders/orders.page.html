@@ -1,0 +1,182 @@
+<ion-content [fullscreen]="true" class="ion-padding-bottom">
+
+  <!-- Caso 1: Visualização da Lista de Pedidos -->
+  <div *ngIf="!selectedOrder(); else orderDetailsTemplate">
+    <div class="app-header">
+      <h2 style="margin: 0; font-size: 24px; font-weight: 700; color: white; letter-spacing: -0.5px;">Meus pedidos</h2>
+      <span style="font-size: 14px; opacity: 0.8; font-weight: 300;">
+        {{ orders().length }} {{ orders().length === 1 ? 'solicitação' : 'solicitações' }}
+      </span>
+    </div>
+
+    <!-- Lista de Pedidos (Estilo do Claude) -->
+    <div style="padding: 16px 0;">
+      <div *ngIf="orders().length === 0" style="text-align: center; padding: 40px 20px; color: #64748b;">
+        <ion-icon name="document-text-outline" style="font-size: 48px; opacity: 0.5; margin-bottom: 8px;"></ion-icon>
+        <p style="margin: 0; font-size: 16px; font-weight: 600;">Nenhum pedido encontrado</p>
+      </div>
+
+      <div class="bravo-card" *ngFor="let order of orders()" (click)="openOrderDetails(order.id)" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        <div style="display: flex; align-items: center; gap: 14px; flex-grow: 1;">
+          <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" style="border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <ion-icon [name]="getCategoryIcon(order.category)" style="font-size: 22px;"></ion-icon>
+          </div>
+          <div>
+            <h4 style="margin: 0 0 2px 0; font-size: 15px; font-weight: 700; color: #1e293b;">{{ order.category }}</h4>
+            <p style="margin: 0 0 4px 0; font-size: 13px; color: #64748b; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 180px;">{{ order.description }}</p>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span [style.background-color]="order.status === 'Orçamento enviado' ? '#f5f3ff' : '#f1f5f9'" [style.color]="order.status === 'Orçamento enviado' ? '#6b21a8' : '#475569'" style="padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                {{ order.status === 'Orçamento enviado' ? 'Aguardando você' : order.status }}
+              </span>
+              <span *ngIf="order.finalValue" style="font-size: 12px; font-weight: 700; color: #16a34a;">
+                R$ {{ order.finalValue | number:'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <ion-icon name="chevron-forward-outline" style="color: #94a3b8; font-size: 20px;"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Caso 2: Visualização dos Detalhes do Pedido Selecionado -->
+  <ng-template #orderDetailsTemplate>
+    <div class="app-header" style="padding-bottom: 20px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <button (click)="goBackToList()" style="background: rgba(255, 255, 255, 0.15); border: none; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: white;">
+          <ion-icon name="chevron-back-outline" style="font-size: 22px;"></ion-icon>
+        </button>
+        <div>
+          <span style="font-size: 12px; opacity: 0.8; font-weight: 300;">Pedido {{ selectedOrder()?.id }}</span>
+          <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: white;">{{ selectedOrder()?.category }}</h2>
+        </div>
+      </div>
+      
+      <!-- Badge de Status -->
+      <span [style.background-color]="selectedOrder()?.status === 'Orçamento enviado' ? '#7c3aed' : 'var(--ion-color-secondary)'" style="color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block;">
+        {{ selectedOrder()?.status === 'Orçamento enviado' ? 'Aguardando você' : selectedOrder()?.status }}
+      </span>
+    </div>
+
+    <div style="padding: 16px 20px;" *ngIf="selectedOrder() as order">
+      
+      <!-- Orçamento da Bravo (Exibido apenas quando status é "Orçamento enviado") -->
+      <div *ngIf="order.status === 'Orçamento enviado'" class="budget-card">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+          <ion-icon name="cash-outline" style="color: var(--ion-color-secondary); font-size: 22px;"></ion-icon>
+          <span class="budget-title">A Bravo enviou seu orçamento</span>
+        </div>
+        <p style="margin: 0 0 16px 0; font-size: 13px; color: #6b21a8; line-height: 1.4;">
+          Confira o valor final do serviço. Ele só avança após a sua confirmação.
+        </p>
+
+        <div style="background: white; border-radius: 12px; padding: 16px; border: 1px solid rgba(0,0,0,0.02); margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 13px; color: #64748b;">Estimativa inicial</span>
+            <span style="font-size: 13px; font-weight: 600; color: #475569;">R$ {{ order.initialEstimate | number:'1.2-2' }}</span>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 14px; font-weight: 700; color: var(--ion-color-primary);">Valor final</span>
+            <span style="font-size: 20px; font-weight: 800; color: var(--ion-color-secondary);">R$ {{ order.finalValue | number:'1.2-2' }}</span>
+          </div>
+
+          <div style="text-align: right; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 600; color: #ea580c;">
+              +R$ {{ (order.finalValue || 0) - order.initialEstimate | number:'1.2-2' }} acima da estimativa
+            </span>
+          </div>
+
+          <div style="border-top: 1px dashed #e2e8f0; padding-top: 10px; font-size: 13px; color: #475569;">
+            Técnico responsável: <strong>{{ order.technician }}</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button (click)="rejectBudget(order.id)" style="flex: 1; background: transparent; border: 1px solid var(--ion-color-danger); color: var(--ion-color-danger); border-radius: 12px; font-weight: 600; font-size: 14px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <ion-icon name="close-circle-outline" style="font-size: 18px;"></ion-icon>
+            Recusar
+          </button>
+          
+          <button (click)="confirmBudget(order.id)" style="flex: 1.5; background: var(--ion-color-secondary); border: none; color: white; border-radius: 12px; font-weight: 600; font-size: 14px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 10px rgba(107, 33, 168, 0.2);">
+            <ion-icon name="thumbs-up-outline" style="font-size: 18px;"></ion-icon>
+            Confirmar valor
+          </button>
+        </div>
+      </div>
+
+      <!-- Outras informações se o orçamento já foi aceito -->
+      <div *ngIf="order.status !== 'Solicitado' && order.status !== 'Orçamento enviado'" class="bravo-card" style="margin: 0 0 20px 0; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 16px;">
+        <h4 style="margin: 0 0 4px 0; font-size: 15px; font-weight: 700; color: #065f46;">Orçamento Aprovado</h4>
+        <p style="margin: 0; font-size: 13px; color: #047857; line-height: 1.4;">
+          Valor de <strong>R$ {{ order.finalValue | number:'1.2-2' }}</strong> confirmado. O técnico <strong>{{ order.technician }}</strong> está cuidando do seu atendimento.
+        </p>
+      </div>
+
+      <!-- Título de Status -->
+      <div style="padding: 10px 0;">
+        <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--ion-color-primary);">Status do pedido</h3>
+      </div>
+
+      <!-- Linha do tempo de Progresso -->
+      <div class="progress-timeline">
+        <!-- Etapa 1: Solicitado -->
+        <div class="timeline-step" [class.active]="isStepActive(order, 'Solicitado')" [class.completed]="isStepCompleted(order, 'Orçamento enviado')">
+          <div class="timeline-icon">
+            <ion-icon name="document-text-outline" style="font-size: 12px;"></ion-icon>
+          </div>
+          <div class="timeline-content">
+            <h4>Solicitado</h4>
+            <p>O seu pedido de serviço foi enviado</p>
+          </div>
+        </div>
+
+        <!-- Etapa 2: Orçamento Enviado -->
+        <div class="timeline-step" [class.active]="isStepActive(order, 'Orçamento enviado')" [class.completed]="isStepCompleted(order, 'Confirmado pelo cliente')">
+          <div class="timeline-icon">
+            <ion-icon name="cash-outline" style="font-size: 12px;"></ion-icon>
+          </div>
+          <div class="timeline-content">
+            <h4>Orçamento enviado</h4>
+            <p *ngIf="order.status === 'Solicitado'">Aguardando análise da Bravo</p>
+            <p *ngIf="order.status !== 'Solicitado'">Orçamento no valor de R$ {{ order.finalValue | number:'1.2-2' }} recebido</p>
+          </div>
+        </div>
+
+        <!-- Etapa 3: Confirmado pelo cliente -->
+        <div class="timeline-step" [class.active]="isStepActive(order, 'Confirmado pelo cliente')" [class.completed]="isStepCompleted(order, 'Técnico a caminho')">
+          <div class="timeline-icon">
+            <ion-icon name="checkmark-circle-outline" style="font-size: 12px;"></ion-icon>
+          </div>
+          <div class="timeline-content">
+            <h4>Confirmado pelo cliente</h4>
+            <p>Você aceitou o orçamento e agendou a execução</p>
+          </div>
+        </div>
+
+        <!-- Etapa 4: Técnico a caminho -->
+        <div class="timeline-step" [class.active]="isStepActive(order, 'Técnico a caminho')" [class.completed]="isStepCompleted(order, 'Concluído')">
+          <div class="timeline-icon">
+            <ion-icon name="car-outline" style="font-size: 12px;"></ion-icon>
+          </div>
+          <div class="timeline-content">
+            <h4>Técnico a caminho</h4>
+            <p>O profissional está se deslocando até o endereço</p>
+          </div>
+        </div>
+
+        <!-- Etapa 5: Concluído -->
+        <div class="timeline-step" [class.active]="isStepActive(order, 'Concluído')" [class.completed]="order.status === 'Concluído'">
+          <div class="timeline-icon">
+            <ion-icon name="checkbox-outline" style="font-size: 12px;"></ion-icon>
+          </div>
+          <div class="timeline-content">
+            <h4>Concluído</h4>
+            <p>Serviço executado e finalizado com sucesso</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+</ion-content>

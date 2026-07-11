@@ -1,0 +1,77 @@
+<ion-content [fullscreen]="true" class="ion-padding-bottom">
+  
+  <div class="app-header">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="background: white; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--ion-color-primary);">
+        {{ customerName() ? customerName()[0] : 'J' }}
+      </div>
+      <div>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: white;">{{ customerName() }}</h2>
+        <span style="font-size: 13px; opacity: 0.8; font-weight: 300;">Cliente Prime</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 16px 0;">
+    
+    <!-- Informações Pessoais -->
+    <div style="padding: 10px 20px 0 20px;">
+      <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--ion-color-primary);">Minhas Informações</h3>
+    </div>
+
+    <div class="bravo-card" style="margin-top: 8px; padding: 6px 14px;">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+        <ion-icon name="person-outline" style="color: #64748b; font-size: 20px;"></ion-icon>
+        <div>
+          <span style="font-size: 11px; color: #94a3b8; display: block;">Nome Completo</span>
+          <span style="font-size: 14px; font-weight: 600; color: #334155;">{{ customerName() }}</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+        <ion-icon name="mail-outline" style="color: #64748b; font-size: 20px;"></ion-icon>
+        <div>
+          <span style="font-size: 11px; color: #94a3b8; display: block;">E-mail</span>
+          <span style="font-size: 14px; font-weight: 600; color: #334155;">{{ user.email }}</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9;">
+        <ion-icon name="phone-portrait-outline" style="color: #64748b; font-size: 20px;"></ion-icon>
+        <div>
+          <span style="font-size: 11px; color: #94a3b8; display: block;">Telefone celular</span>
+          <span style="font-size: 14px; font-weight: 600; color: #334155;">{{ customerPhone() }}</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+        <ion-icon name="location-outline" style="color: #64748b; font-size: 20px;"></ion-icon>
+        <div>
+          <span style="font-size: 11px; color: #94a3b8; display: block;">Endereço Principal</span>
+          <span style="font-size: 13px; font-weight: 600; color: #334155;">{{ customerAddress() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Links de Configurações adicionais -->
+    <div class="bravo-card" style="padding: 6px 14px; margin-top: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <ion-icon name="wallet-outline" style="color: #64748b; font-size: 20px;"></ion-icon>
+          <span style="font-size: 14px; font-weight: 600; color: #334155;">Formas de Pagamento</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" style="color: #94a3b8; font-size: 18px;"></ion-icon>
+      </div>
+
+      <div (click)="logout()" style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0; cursor: pointer;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <ion-icon name="log-out-outline" style="color: var(--ion-color-danger); font-size: 20px;"></ion-icon>
+          <span style="font-size: 14px; font-weight: 600; color: var(--ion-color-danger);">Sair da Conta</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" style="color: #94a3b8; font-size: 18px;"></ion-icon>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>
