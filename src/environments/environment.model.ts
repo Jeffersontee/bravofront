@@ -11,7 +11,6 @@ export interface Environment {
   };
   stripe: {
     publishableKey: string;
-    secretKey: string;
   };
   mercadoPago: {
     public_key: string;
