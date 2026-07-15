@@ -1,0 +1,41 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/customer/home" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Solicitar {{ service()?.name || 'Serviço' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  
+  @if (service()) {
+    <div class="service-header">
+      <div class="icon-container">
+        <ion-icon [name]="service()!.icon"></ion-icon>
+      </div>
+      <h2>{{ service()!.name }}</h2>
+      <p class="price-badge">a partir de R$ {{ service()!.price | number:'1.2-2' }}</p>
+    </div>
+
+    <div class="request-form">
+      <label class="section-label">Descrição do Problema / Serviço</label>
+      <textarea 
+        class="custom-textarea" 
+        rows="6" 
+        [(ngModel)]="requestDescription"
+        placeholder="Detalhe ao máximo o que precisa ser feito..."></textarea>
+    </div>
+  } @else {
+    <div class="loading-state">
+      <p>Carregando dados do serviço...</p>
+    </div>
+  }
+
+</ion-content>
+
+<div class="bottom-action" *ngIf="service()">
+  <button class="btn-primary" (click)="submitRequest()" [disabled]="isLoading()">
+    {{ isLoading() ? 'SOLICITANDO...' : 'SOLICITAR SERVIÇO' }}
+  </button>
+</div>

@@ -1,0 +1,81 @@
+<div class="modal-wrapper">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <div class="header-info">
+      <h2 class="unit-name">VILA RÉ</h2>
+      <p class="unit-date">Quinta, 01/01/2026</p>
+    </div>
+    <button class="close-btn" (click)="dismiss()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Toggle -->
+    <div class="toggle-container">
+      <label>Visita concluída</label>
+      <ion-toggle color="success"></ion-toggle>
+    </div>
+
+    <!-- Category Buttons -->
+    <div class="form-group">
+      <label class="section-label">CATEGORIA DE MANUTENÇÃO</label>
+      <div class="category-buttons">
+        <button class="cat-btn active">ELÉTRICA</button>
+        <button class="cat-btn">HIDRÁULICA/CIVIL</button>
+        <button class="cat-btn">SERRALHERIA</button>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="form-group">
+      <label class="section-label">SERVIÇOS REALIZADOS</label>
+      <p class="help-text">Selecione uma categoria acima para ver os serviços.</p>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      <label class="section-label">DESCRIÇÃO / RELATÓRIO</label>
+      <textarea rows="4" placeholder="Detalhe o que foi feito na visita..."></textarea>
+    </div>
+
+    <!-- Inputs Row -->
+    <div class="inputs-row">
+      <div class="form-group">
+        <label class="section-label">TEMPO (H)</label>
+        <input type="text" placeholder="ex: 2,5" />
+      </div>
+      <div class="form-group">
+        <label class="section-label">KM RODADO</label>
+        <input type="text" placeholder="ex: 38" />
+      </div>
+      <div class="form-group">
+        <label class="section-label">COMBUSTIVEL (R$)</label>
+        <input type="text" placeholder="ex: 45" />
+      </div>
+    </div>
+
+    <div class="inputs-row">
+      <div class="form-group">
+        <label class="section-label">ZONA</label>
+        <input type="text" placeholder="ex: ABC, Campinas, Santos..." />
+      </div>
+      <div class="form-group flex-2">
+        <label class="section-label">ENDEREÇO</label>
+        <input type="text" placeholder="opcional" />
+      </div>
+    </div>
+
+    <!-- Observations -->
+    <div class="form-group">
+      <label class="section-label">OBSERVAÇÕES</label>
+      <textarea rows="3" placeholder="Pendências, materiais a comprar, retorno necessário..."></textarea>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <button class="btn-cancel" (click)="dismiss()">FECHAR</button>
+    <button class="btn-save">SALVAR VISITA</button>
+  </div>
+</div>

@@ -27,6 +27,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/customer/profile/profile.page').then(m => m.ProfilePage)
       },
       {
+        path: 'service-request/:id',
+        loadComponent: () => import('./pages/customer/service-request/service-request.page').then( m => m.ServiceRequestPage)
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
@@ -40,7 +44,21 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./pages/admin/dashboard/dashboard.page').then(m => m.DashboardPage)
+      },
+      {
+        path: 'kpis',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'services',
+        loadComponent: () => import('./pages/admin/services/services.page').then(m => m.ServicesPage)
+      },
+      {
+        path: 'companies/:id/dashboard',
+        loadComponent: () => import('./pages/admin/company-dashboard/company-dashboard.page').then( m => m.CompanyDashboardPage)
       }
     ]
   }
 ];
+

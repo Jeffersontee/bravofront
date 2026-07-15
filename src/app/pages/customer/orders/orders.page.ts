@@ -11,7 +11,7 @@ import {
   carOutline, checkboxOutline, flashOutline, hammerOutline, waterOutline, 
   constructOutline, wifiOutline, shieldCheckmarkOutline 
 } from 'ionicons/icons';
-import { OrderService, Order } from '../../../services/order.service';
+import { OrderService, Order } from '../../../services/order/order.service';
 
 @Component({
   selector: 'app-orders',

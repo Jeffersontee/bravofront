@@ -1,7 +1,468 @@
-/* Estilos do Dashboard do Administrador */
-ion-card {
-  margin: 20px auto;
-  max-width: 600px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+@use "sass:color";
+
+// Variáveis e cores Zé Delivery
+$ze-dark: #121212;
+$ze-yellow: #f4c20d;
+$ze-bg: #f5f5f1;
+$ze-text: #333333;
+$ze-red: #c0392b;
+$ze-green: #27ae60;
+$ze-blue: #2980b9;
+$ze-gray: #7f8c8d;
+$ze-light-gray: #e0e0e0;
+
+ion-content {
+  --background: #{$ze-bg};
+  font-family: 'Inter', sans-serif;
+}
+
+// Header
+.ze-header {
+  background-color: $ze-dark;
+  color: white;
+  padding: 30px;
+  position: relative;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #999;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .title {
+    font-size: 32px;
+    font-weight: 800;
+    color: $ze-yellow;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+  }
+
+  .description {
+    font-size: 12px;
+    color: #bbb;
+    max-width: 500px;
+    line-height: 1.4;
+  }
+
+  .stats-right {
+    text-align: right;
+    font-size: 11px;
+    color: #999;
+    
+    div {
+      margin-bottom: 4px;
+    }
+    
+    strong {
+      color: $ze-yellow;
+    }
+  }
+
+  // Faixa zebrada
+  .stripe-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: repeating-linear-gradient(
+      45deg,
+      $ze-yellow,
+      $ze-yellow 10px,
+      $ze-dark 10px,
+      $ze-dark 20px
+    );
+  }
+}
+
+// KPIs
+.kpi-container {
+  display: flex;
+  gap: 15px;
+  padding: 20px 30px;
+  background-color: transparent;
+  flex-wrap: wrap;
+
+  .kpi-card {
+    background: white;
+    border: 1px solid $ze-light-gray;
+    padding: 15px;
+    flex: 1;
+    min-width: 150px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: -1px;
+      bottom: -1px;
+      width: 4px;
+    }
+
+    &.kpi-total::before { background-color: $ze-dark; }
+    &.kpi-active::before { background-color: $ze-green; }
+    &.kpi-inactive::before { background-color: $ze-red; }
+
+    .kpi-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: $ze-dark;
+      
+      small {
+        font-size: 14px;
+        color: #999;
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+// Filtros
+.filters-container {
+  background: white;
+  margin: 0 30px 20px 30px;
+  padding: 15px;
+  border: 1px solid $ze-light-gray;
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  
+  .filter-group {
+    flex: 1;
+    min-width: 120px;
+    
+    label {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    select, input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      background: white;
+      outline: none;
+      
+      &:focus {
+        border-color: $ze-yellow;
+      }
+    }
+  }
+  
+  .btn-clear {
+    background: transparent;
+    border: 1px solid #ccc;
+    color: #666;
+    padding: 9px 15px;
+    font-size: 11px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s;
+    
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+  
+  .btn-new {
+    background: $ze-dark;
+    border: 1px solid $ze-dark;
+    color: white;
+    padding: 9px 15px;
+    font-size: 11px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: bold;
+    
+    &:hover {
+      background: $ze-yellow;
+      border-color: $ze-yellow;
+      color: $ze-dark;
+    }
+  }
+}
+
+// Lista Acordeon
+.accordion-container {
+  margin: 0 30px 30px 30px;
+  border: 1px solid $ze-light-gray;
+  background: white;
+}
+
+.accordion-item {
+  border-bottom: 1px solid $ze-light-gray;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  .accordion-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background: #f9f9f9;
+    transition: 0.2s;
+    
+    &:hover {
+      background: #f0f0f0;
+    }
+    
+    .title {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: $ze-dark;
+    }
+    
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      
+      .count {
+        font-size: 11px;
+        color: #999;
+      }
+      
+      .progress-bar {
+        width: 100px;
+        height: 6px;
+        background: #e0e0e0;
+        border-radius: 3px;
+        overflow: hidden;
+        
+        .progress-fill {
+          height: 100%;
+          background: $ze-dark;
+        }
+      }
+      
+      ion-icon {
+        color: #999;
+      }
+    }
+  }
+  
+  .accordion-content {
+    background: white;
+    
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-top: 1px dashed #eee;
+      transition: 0.2s;
+      
+      &:hover {
+        background: #fcfcfc;
+      }
+      
+      .info-group {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        
+        .date {
+          font-size: 11px;
+          color: $ze-blue;
+          width: 40px;
+        }
+        
+        .cnpj {
+          font-size: 10px;
+          color: #999;
+          text-transform: uppercase;
+          width: 80px;
+        }
+        
+        .name {
+          font-size: 13px;
+          font-weight: 600;
+          color: $ze-dark;
+        }
+        
+        .badge {
+          font-size: 9px;
+          padding: 2px 6px;
+          background: #c0392b;
+          color: white;
+          border-radius: 2px;
+          text-transform: uppercase;
+        }
+      }
+      
+      .status-btn {
+        font-size: 10px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 2px;
+        font-weight: 600;
+        cursor: pointer;
+        
+        &.active {
+          background: color.adjust($ze-green, $lightness: 40%);
+          color: $ze-green;
+        }
+        
+        &.inactive {
+          background: color.adjust($ze-red, $lightness: 40%);
+          color: $ze-red;
+        }
+      }
+    }
+  }
+}
+
+// Modal Customizado
+ion-modal {
+  --background: #f5f5f1;
+  --border-radius: 0;
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #f5f5f1;
+    border-bottom: 1px solid #ddd;
+    
+    .title-group {
+      .modal-title {
+        font-size: 20px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin: 0 0 5px 0;
+      }
+      .modal-subtitle {
+        font-size: 11px;
+        color: #777;
+        margin: 0;
+      }
+    }
+    
+    ion-icon {
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+  }
+  
+  .modal-content {
+    padding: 20px;
+    
+    .status-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 20px;
+      
+      span {
+        font-weight: 600;
+        font-size: 14px;
+      }
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+      
+      label {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #666;
+        margin-bottom: 5px;
+      }
+      
+      input, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        font-size: 13px;
+        background: white;
+        outline: none;
+        
+        &:focus {
+          border-color: $ze-yellow;
+        }
+      }
+      
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 15px;
+      
+      .form-group {
+        flex: 1;
+      }
+    }
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    
+    button {
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid;
+      
+      &.btn-close {
+        background: white;
+        border-color: #ccc;
+        color: #333;
+      }
+      
+      &.btn-save {
+        background: $ze-dark;
+        border-color: $ze-dark;
+        color: white;
+        
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
 }

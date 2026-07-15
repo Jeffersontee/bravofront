@@ -1,0 +1,59 @@
+/* Card de Serviço - Estilo Local Encapsulado */
+.bravo-card {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+}
+
+.service-card-item {
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.service-icon-wrapper {
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.service-icon-wrapper ion-icon {
+  font-size: 24px;
+}
+
+.service-text-content {
+  flex-grow: 1;
+}
+
+.service-text-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.service-text-content p {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.service-text-content span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+}

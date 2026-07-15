@@ -1,0 +1,10 @@
+<div class="bravo-card service-card-item" (click)="onCardClick()">
+  <div [style.background-color]="category().bgColor" [style.color]="category().iconColor" class="service-icon-wrapper">
+    <ion-icon [name]="category().iconName"></ion-icon>
+  </div>
+  <div class="service-text-content">
+    <h4>{{ category().name }}</h4>
+    <p>{{ category().description }}</p>
+    <span>{{ category().priceText }}</span>
+  </div>
+</div>

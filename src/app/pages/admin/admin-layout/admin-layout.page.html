@@ -33,7 +33,7 @@
               @if (item.open && !isCollapsed) {
                 @for (child of item.children; track child.title) {
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item routerDirection="root" [routerLink]="child.url ? [child.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-2">
+                    <ion-item (click)="onMenuClick(child)" lines="none" detail="false" class="menu-item level-2" button>
                       <ion-icon slot="start" [name]="child.icon"></ion-icon>
                       <ion-label>{{ child.title }}</ion-label>
                     </ion-item>

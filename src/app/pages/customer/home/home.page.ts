@@ -8,11 +8,13 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
-  flashOutline, hammerOutline, waterOutline, constructOutline, 
+  flashOutline, hammerOutline, waterOutline, constructOutline, chevronForwardCircleOutline,
   wifiOutline, shieldCheckmarkOutline, locationOutline, chevronBackOutline, 
-  construct 
+  construct, 
+  chevronForwardOutline
 } from 'ionicons/icons';
-import { OrderService } from '../../../services/order.service';
+import { OrderService } from '../../../services/order/order.service';
+import { CardServicesComponent } from '../../../components/card-services/card-services.component';
 
 interface ServiceCategory {
   id: string;
@@ -33,7 +35,7 @@ interface ServiceCategory {
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, 
     IonTitle, IonButton, IonIcon, IonLabel, IonGrid, IonRow, IonCol, 
-    IonInput, IonTextarea
+    IonInput, IonTextarea, CardServicesComponent
   ]
 })
 export class HomePage {
@@ -157,7 +159,7 @@ export class HomePage {
 
   constructor() {
     addIcons({ 
-      flashOutline, hammerOutline, waterOutline, constructOutline, 
+      flashOutline, hammerOutline, waterOutline, constructOutline, chevronForwardOutline,
       wifiOutline, shieldCheckmarkOutline, locationOutline, chevronBackOutline, 
       construct 
     });

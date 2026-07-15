@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { OrderService } from '../../../services/order.service';
+import { OrderService } from '../../../services/order/order.service';
 import { 
   IonContent, IonHeader, IonToolbar, IonTitle, IonButton, 
   IonIcon, IonLabel, IonNote, IonList, IonItem 

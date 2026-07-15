@@ -22,6 +22,8 @@ import {
   documentsOutline, pieChartOutline, serverOutline, keyOutline
 } from 'ionicons/icons';
 import { Strings } from 'src/app/enum/strings';
+import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 interface MenuItem {
   title: string;
@@ -58,23 +60,44 @@ export class AdminLayoutPage implements OnInit {
       title: 'Dashboard',
       icon: 'speedometer-outline',
       children: [
-        { title: 'Visão Geral', stringKey: 'ADMIN_DASHBOARD', icon: 'grid-outline' },
-        { title: 'Vendas', stringKey: 'ADMIN_SALES', icon: 'bar-chart-outline' },
-        { title: 'Clientes', stringKey: 'ADMIN_CUSTOMERS', icon: 'people-outline' },
-        { title: 'Produtos', stringKey: 'ADMIN_REPORT_PRODUCT', icon: 'gift-outline' },
-        { title: 'Insumos', stringKey: 'ADMIN_REPORT_INGREDIENT', icon: 'layers-outline' },
         { title: 'KPIs Estratégicos', stringKey: 'ADMIN_KPI', icon: 'trending-up-outline' },
+        { title: 'Empresas (Painel)', stringKey: 'ADMIN_COMPANIES', icon: 'business-outline' },
+        { title: 'Serviços', stringKey: 'ADMIN_SERVICES', icon: 'construct-outline' },
+        { title: 'Atendimentos', stringKey: 'ADMIN_SALES', icon: 'bar-chart-outline' },
+        { title: 'Clientes', stringKey: 'ADMIN_CUSTOMERS', icon: 'people-outline' },
       ]
     },
     {
-      title: 'Estabelecimento',
+      title: 'Empresas',
       icon: 'storefront-outline',
       children: [
-        { title: 'Pedidos', stringKey: 'ADMIN_ORDER', icon: 'receipt-outline' },
-        { title: 'Cardápio/Menu', stringKey: 'ADMIN_MENU', icon: 'restaurant-outline' },
-        { title: 'Banners', stringKey: 'ADMIN_BANNERS', icon: 'images-outline' },
-        { title: 'Estoque de Itens', stringKey: 'ADMIN_STOCK', icon: 'cube-outline' },
-        { title: 'Dados da Loja', stringKey: 'ADMIN_ESTABLISHMENTS', icon: 'business-outline' },
+        { title: 'Empresa', stringKey: 'ADMIN_LIST_COMPANY', icon: 'receipt-outline' },
+        { title: 'Cadastrar Empresa', stringKey: 'ADMIN_CREATE_COMPANY', icon: 'receipt-outline' },
+        { title: 'Dados da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'business-outline' },
+      ]
+    },
+    {
+      title: 'Serviços',
+      icon: 'settings-outline',
+      children: [
+        { title: 'Serviços', stringKey: 'ADMIN_LIST_SERVICES', icon: 'cube-outline' },
+        { title: 'Cadastrar Serviços', stringKey: 'ADMIN_CREATE_SERVICES', icon: 'add-circle-outline' },
+      ]
+    },
+    {
+      title: 'Colaboradores',
+      icon: 'settings-outline',
+      children: [
+        { title: 'Colaboradores', stringKey: 'ADMIN_LIST_COLLABORATOR', icon: 'cube-outline' },
+        { title: 'Cadastrar Colaboradores', stringKey: 'ADMIN_CREATE_COLLABORATOR', icon: 'add-circle-outline' },
+      ]
+    },
+    {
+      title: 'Usuarios',
+      icon: 'settings-outline',
+      children: [
+        { title: 'Usuarios', stringKey: 'ADMIN_LIST_STAFF', icon: 'cube-outline' },
+        { title: 'Cadastrar Usuários', stringKey: 'ADMIN_CREATE_STAFF', icon: 'add-circle-outline' },
       ]
     },
     {
@@ -88,7 +111,10 @@ export class AdminLayoutPage implements OnInit {
     }
   ];
 
-  constructor() {
+  constructor(
+    private router: Router,
+    private alertCtrl: AlertController
+  ) {
     // Registrar todos os ícones necessários no construtor
     addIcons({
       gridOutline, restaurantOutline, receiptOutline, barChartOutline,
@@ -115,7 +141,7 @@ export class AdminLayoutPage implements OnInit {
       const item: MenuItem = {
         title: config.title,
         icon: config.icon,
-        url: config.stringKey ? Strings[config.stringKey] : null,
+        url: config.stringKey && Strings[config.stringKey] ? `/${Strings[config.stringKey]}` : null,
         open: false
       };
 
@@ -129,6 +155,49 @@ export class AdminLayoutPage implements OnInit {
 
   public toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+  }
+
+  public async onMenuClick(item: MenuItem) {
+    if (item.url === `/${Strings.ADMIN_ORDER}`) {
+      // Abre o seletor de empresa e direciona para o painel
+      await this.openCompanySelector();
+    } else if (item.url) {
+      this.router.navigateByUrl(item.url);
+    } else {
+      item.open = !item.open;
+    }
+  }
+
+  public async openCompanySelector() {
+    // Simula a escolha de uma empresa (Zé Delivery)
+    const alert = await this.alertCtrl.create({
+      header: 'Selecione a Empresa',
+      inputs: [
+        {
+          name: 'company',
+          type: 'radio',
+          label: 'Zé Delivery',
+          value: '1',
+          checked: true
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirmar',
+          handler: (data) => {
+            if (data) {
+              this.router.navigate([`/establishment-admin/companies/${data}/dashboard`]);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   public onLogout() {

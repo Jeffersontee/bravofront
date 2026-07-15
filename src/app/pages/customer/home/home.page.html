@@ -59,16 +59,7 @@
     <ion-grid class="services-grid">
       <ion-row>
         <ion-col size="12" size-sm="6" *ngFor="let cat of categories">
-          <div class="bravo-card service-card-item" (click)="selectCategory(cat)">
-            <div [style.background-color]="cat.bgColor" [style.color]="cat.iconColor" class="service-icon-wrapper">
-              <ion-icon [name]="cat.iconName"></ion-icon>
-            </div>
-            <div class="service-text-content">
-              <h4>{{ cat.name }}</h4>
-              <p>{{ cat.description }}</p>
-              <span>{{ cat.priceText }}</span>
-            </div>
-          </div>
+          <app-card-services [category]="cat" (select)="selectCategory(cat)"></app-card-services>
         </ion-col>
       </ion-row>
     </ion-grid>

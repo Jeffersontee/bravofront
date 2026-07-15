@@ -6,13 +6,12 @@ export enum Strings {
   SUPER_TYPE = 'super_admin',
   ADMIN_TYPE = 'admin',
   USER_TYPE = 'user',
+  COLLABORATOR_TYPE = 'collaborator',
 
   // Rotas Frontend
   ADMIN_DASHBOARD = 'establishment-admin/dashboard',
   ADMIN_SALES = 'establishment-admin/sales',
   ADMIN_CUSTOMERS = 'establishment-admin/customers',
-  ADMIN_REPORT_PRODUCT = 'establishment-admin/reports/products',
-  ADMIN_REPORT_INGREDIENT = 'establishment-admin/reports/ingredients',
   ADMIN_KPI = 'establishment-admin/kpis',
   ADMIN_ORDER = 'establishment-admin/orders',
   ADMIN_MENU = 'establishment-admin/menu',
@@ -22,8 +21,25 @@ export enum Strings {
   ADMIN_PRODUCTS = 'establishment-admin/products',
   ADMIN_PRODUCTS_CREATE = 'establishment-admin/products/create',
   ADMIN_CATEGORIES = 'establishment-admin/categories',
+  ADMIN_COMPANIES = 'establishment-admin/dashboard',
+  ADMIN_SERVICES = 'establishment-admin/services',
 
-  // Strings de Conexão Backend APIs (Exemplo inicial)
+  ADMIN_LIST_COLLABORATOR = '',
+  ADMIN_CREATE_COLLABORATOR = '',
+
+  ADMIN_LIST_SERVICES = '',
+  ADMIN_CREATE_SERVICES = '',
+
+  ADMIN_LIST_COMPANY = '', 
+  ADMIN_CREATE_COMPANY = '',
+  ADMIN_DETAILS_COMPANY = '',
+
+  ADMIN_CREATE_STAFF = '',
+  ADMIN_LIST_STAFF = '',
+
+  // Strings de Conexão Backend APIs
+  API_COMPANIES = 'api/companies',
+  API_SERVICES = 'api/services',
   API_HEALTH = '/health'
 }
 export default Strings;

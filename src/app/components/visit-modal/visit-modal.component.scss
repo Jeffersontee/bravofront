@@ -1,0 +1,151 @@
+.modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fcf9f2; /* Light beige matching screenshot */
+  color: #333;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 15px 20px;
+  border-bottom: 1px solid #e5dfcc;
+
+  .header-info {
+    .unit-name {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 5px 0;
+      text-transform: uppercase;
+      color: #000;
+    }
+    .unit-date {
+      font-size: 12px;
+      color: #777;
+      margin: 0;
+    }
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #666;
+    cursor: pointer;
+  }
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+
+  .toggle-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f2ebd7;
+    padding: 10px 15px;
+    border: 1px solid #e5dfcc;
+    border-radius: 4px;
+    margin-bottom: 20px;
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+
+    .section-label {
+      display: block;
+      font-size: 10px;
+      font-weight: bold;
+      color: #888;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #666;
+      margin: 0;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      background-color: #fff;
+    }
+
+    .category-buttons {
+      display: flex;
+      gap: 10px;
+
+      .cat-btn {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 8px 15px;
+        font-size: 11px;
+        font-weight: bold;
+        color: #000;
+        cursor: pointer;
+        border-radius: 2px;
+
+        &.active {
+          border-color: #f39c12; /* Adjust according to actual active state color */
+        }
+      }
+    }
+  }
+
+  .inputs-row {
+    display: flex;
+    gap: 15px;
+    
+    .form-group {
+      flex: 1;
+      
+      &.flex-2 {
+        flex: 2;
+      }
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #e5dfcc;
+  background-color: #fcf9f2;
+
+  button {
+    padding: 12px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 2px;
+    
+    &.btn-cancel {
+      background-color: #fff;
+      border: 1px solid #333;
+      color: #333;
+    }
+    
+    &.btn-save {
+      background-color: #1a1a1a;
+      border: 1px solid #1a1a1a;
+      color: #fff;
+    }
+  }
+}

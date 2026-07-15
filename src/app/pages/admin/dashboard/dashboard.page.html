@@ -1,16 +1,152 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Dashboard Geral</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="ze-header">
+    <div class="header-content">
+      <div>
+        <div class="subtitle">Bravo Instalações · Gestão de Estabelecimentos</div>
+        <h1 class="title">Painel de Empresas</h1>
+        <div class="description">
+          Controle de clientes e empresas parceiras. Acompanhamento de status e dados cadastrais em tempo real.
+        </div>
+      </div>
+      <div class="stats-right">
+        <div>ANO OPERACIONAL <strong>2026</strong></div>
+        <div><strong>{{ filteredCompanies().length }}</strong> EMPRESAS LISTADAS</div>
+        <div>DADOS SALVOS <strong>NESTE NAVEGADOR</strong></div>
+      </div>
+    </div>
+    <div class="stripe-border"></div>
+  </div>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Seja bem-vindo, Administrador!</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Este é o painel de controle inicial da Bravo Instalações. A estrutura do menu lateral já está totalmente operacional.
-    </ion-card-content>
-  </ion-card>
+  <div class="kpi-container">
+    <div class="kpi-card kpi-total">
+      <div class="kpi-label">TOTAL EMPRESAS</div>
+      <div class="kpi-value">{{ companies().length }}</div>
+    </div>
+    <div class="kpi-card kpi-active">
+      <div class="kpi-label">ATIVAS</div>
+      <div class="kpi-value">{{ activeCompaniesCount() }} <small>/ {{ companies().length }}</small></div>
+    </div>
+    <div class="kpi-card kpi-inactive">
+      <div class="kpi-label">INATIVAS</div>
+      <div class="kpi-value">{{ inactiveCompaniesCount() }}</div>
+    </div>
+  </div>
+
+  <div class="filters-container">
+    <div class="filter-group">
+      <label>STATUS</label>
+      <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+        <option value="ALL">Todos</option>
+        <option value="ACTIVE">Ativas</option>
+        <option value="INACTIVE">Inativas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>BUSCAR EMPRESA</label>
+      <input type="text" placeholder="ex: Jabaquara" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)">
+    </div>
+    <button class="btn-clear" (click)="clearFilters()">LIMPAR FILTROS</button>
+    <button class="btn-new" (click)="openModal()">+ NOVA EMPRESA</button>
+  </div>
+
+  <div class="accordion-container">
+    <div class="accordion-item" [class.open]="listOpen()">
+      <div class="accordion-header" (click)="listOpen.set(!listOpen())">
+        <div class="title">EMPRESAS CADASTRADAS</div>
+        <div class="right">
+          <span class="count">{{ filteredCompanies().length }}/{{ companies().length }}</span>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width]="(filteredCompanies().length / (companies().length || 1)) * 100 + '%'"></div>
+          </div>
+          <ion-icon [name]="listOpen() ? 'caret-up-sharp' : 'caret-down-sharp'"></ion-icon>
+        </div>
+      </div>
+      
+      @if (listOpen()) {
+        <div class="accordion-content">
+          @for (company of filteredCompanies(); track company._id) {
+            <div class="list-item">
+              <div class="info-group">
+                <span class="date">{{ company.short_name || 'N/A' }}</span>
+                <span class="cnpj">{{ company.cnpj }}</span>
+                <span class="name">{{ company.name }}</span>
+                @if (company.owner_name) {
+                  <span class="badge">{{ company.owner_name }}</span>
+                }
+              </div>
+              <button class="status-btn" [ngClass]="company.active ? 'active' : 'inactive'" (click)="openModal(company)">
+                {{ company.active ? 'ATIVA' : 'INATIVA' }}
+              </button>
+            </div>
+          } @empty {
+            <div class="list-item" style="justify-content: center; color: #999; font-size: 12px; padding: 20px;">
+              Nenhuma empresa encontrada com os filtros atuais.
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="isModalOpen.set(false)">
+    <ng-template>
+      <div class="modal-header">
+        <div class="title-group">
+          <h2 class="modal-title">{{ editingCompany()?.name || 'NOVA EMPRESA' }}</h2>
+          <p class="modal-subtitle">{{ editingCompany()?.cnpj ? 'CNPJ: ' + editingCompany()?.cnpj : 'Cadastro de nova empresa' }}</p>
+        </div>
+        <ion-icon name="close-outline" (click)="isModalOpen.set(false)"></ion-icon>
+      </div>
+      
+      <div class="modal-content">
+        <form [formGroup]="form">
+          <div class="status-toggle">
+            <span>Empresa Ativa</span>
+            <ion-toggle formControlName="active" color="success"></ion-toggle>
+          </div>
+
+          <div class="form-group">
+            <label>NOME DA EMPRESA (RAZÃO SOCIAL) *</label>
+            <input type="text" formControlName="name" placeholder="Ex: Supermercados Jabaquara LTDA">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>NOME FANTASIA (SHORT NAME)</label>
+              <input type="text" formControlName="short_name" placeholder="Ex: Jabaquara">
+            </div>
+            <div class="form-group">
+              <label>CNPJ *</label>
+              <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>NOME DO RESPONSÁVEL</label>
+              <input type="text" formControlName="owner_name" placeholder="Ex: João da Silva">
+            </div>
+            <div class="form-group">
+              <label>E-MAIL</label>
+              <input type="email" formControlName="email" placeholder="contato@empresa.com">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>DESCRIÇÃO / OBSERVAÇÕES</label>
+            <textarea formControlName="description" placeholder="Detalhes adicionais sobre a empresa..."></textarea>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-close" (click)="isModalOpen.set(false)">FECHAR</button>
+        <button class="btn-save" [disabled]="form.invalid || isLoading()" (click)="saveCompany()">
+          {{ isLoading() ? 'SALVANDO...' : (editingCompany() ? 'SALVAR ALTERAÇÕES' : 'CRIAR EMPRESA') }}
+        </button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

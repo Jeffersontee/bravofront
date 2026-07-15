@@ -1,0 +1,229 @@
+.custom-dark-content {
+  --background: #1e1e1e;
+  --color: #ffffff;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #1e1e1e;
+  color: #fff;
+
+  .header-titles {
+    .subtitle {
+      color: #999;
+      font-size: 12px;
+      margin: 0 0 5px 0;
+      text-transform: uppercase;
+    }
+    .title {
+      color: #f39c12;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0 0 10px 0;
+      text-transform: uppercase;
+    }
+    .description {
+      color: #ccc;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+
+  .header-stats {
+    text-align: right;
+    font-size: 12px;
+    color: #999;
+    
+    .stat-line {
+      margin-bottom: 5px;
+    }
+    .highlight {
+      color: #f39c12;
+      font-weight: bold;
+    }
+  }
+}
+
+.striped-divider {
+  height: 10px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f39c12,
+    #f39c12 10px,
+    #333 10px,
+    #333 20px
+  );
+}
+
+.kpi-row {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  background-color: #f9f9f9;
+
+  .kpi-card {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: 4px solid #333;
+    padding: 15px;
+    text-align: left;
+    
+    &.border-green { border-top-color: #27ae60; }
+    &.border-red { border-top-color: #c0392b; }
+    &.border-yellow { border-top-color: #f39c12; }
+    &.border-blue { border-top-color: #2980b9; }
+    &.border-dark { border-top-color: #2c3e50; }
+
+    .kpi-label {
+      font-size: 11px;
+      color: #666;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #000;
+      
+      .kpi-sub {
+        font-size: 14px;
+        color: #999;
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+.legend-row {
+  padding: 0 20px 10px 20px;
+  background-color: #f9f9f9;
+  display: flex;
+  gap: 10px;
+
+  .legend-item {
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 3px;
+    
+    &.bg-yellow { background-color: #f39c12; }
+    &.bg-blue { background-color: #2980b9; }
+    &.bg-grey { background-color: #7f8c8d; }
+    &.bg-red { background-color: #c0392b; }
+  }
+}
+
+.filters-row {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  background-color: #f1ebd9; /* Beige background from image */
+  border-top: 1px solid #e0d8c3;
+  border-bottom: 1px solid #e0d8c3;
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    
+    &.flex-grow { flex: 1; }
+
+    label {
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    select, input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    .search-wrap {
+      display: flex;
+      gap: 10px;
+      
+      input { flex: 1; }
+      
+      .clear-btn {
+        padding: 8px 15px;
+        background: transparent;
+        border: 1px solid #ccc;
+        font-size: 12px;
+        cursor: pointer;
+        color: #666;
+      }
+    }
+  }
+}
+
+.table-container {
+  background-color: #f1ebd9;
+  padding: 20px;
+  min-height: 100%;
+
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    
+    .month-title {
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .pagination {
+      font-size: 12px;
+      color: #666;
+    }
+  }
+
+  .table-body {
+    .table-row {
+      display: flex;
+      padding: 12px 10px;
+      border-bottom: 1px solid #e0d8c3;
+      align-items: center;
+      cursor: pointer;
+      
+      &:hover { background-color: rgba(255,255,255,0.5); }
+      
+      .col-date { width: 60px; font-weight: bold; color: #666; font-size: 13px; }
+      .col-day { width: 80px; font-size: 11px; color: #999; }
+      .col-unit { flex: 1; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+      
+      .col-status {
+        width: 100px;
+        text-align: right;
+        
+        .badge {
+          padding: 5px 10px;
+          border-radius: 3px;
+          font-size: 11px;
+          font-weight: bold;
+          
+          &.badge-pending {
+            background-color: #fde8e8;
+            color: #c0392b;
+            border: 1px solid #fad2d2;
+          }
+        }
+      }
+      
+      .badge-small {
+        padding: 2px 5px;
+        font-size: 9px;
+        color: #fff;
+        border-radius: 3px;
+        &.bg-red { background-color: #c0392b; }
+      }
+    }
+  }
+}

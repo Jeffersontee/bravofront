@@ -1,0 +1,113 @@
+<ion-content class="ion-padding custom-dark-content">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-titles">
+      <h6 class="subtitle">BRAVO INSTALAÇÕES - MANUTENÇÃO PREDIAL E INDUSTRIAL</h6>
+      <h1 class="title">PAINEL ZÉ DELIVERY</h1>
+      <p class="description">Controle de visitas técnicas nas unidades — 365 dias, categorias padronizadas de serviço e status de campo em tempo real.</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-line">ANO OPERACIONAL <span class="highlight">2026</span></div>
+      <div class="stat-line">18 UNIDADES NA ROTA</div>
+      <div class="stat-line">DADOS SALVOS NESTE NAVEGADOR</div>
+    </div>
+  </div>
+
+  <div class="striped-divider"></div>
+
+  <!-- KPI Cards Row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">VISITAS NO ANO</div>
+      <div class="kpi-value">313</div>
+    </div>
+    <div class="kpi-card border-green">
+      <div class="kpi-label">CONCLUIDAS</div>
+      <div class="kpi-value">0 <span class="kpi-sub">/ 313</span></div>
+    </div>
+    <div class="kpi-card border-red">
+      <div class="kpi-label">PENDENTES</div>
+      <div class="kpi-value">313</div>
+    </div>
+    <div class="kpi-card border-yellow">
+      <div class="kpi-label">% CONCLUSÃO</div>
+      <div class="kpi-value">0%</div>
+    </div>
+    <div class="kpi-card border-blue">
+      <div class="kpi-label">COMBUSTÍVEL (R$)</div>
+      <div class="kpi-value">0</div>
+    </div>
+    <div class="kpi-card border-dark">
+      <div class="kpi-label">KM RODADO</div>
+      <div class="kpi-value">0</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend-row">
+    <span class="legend-item bg-yellow">ELÉTRICA</span>
+    <span class="legend-item bg-blue">HIDRÁULICA/CIVIL</span>
+    <span class="legend-item bg-grey">SERRALHERIA</span>
+    <span class="legend-item bg-red">MANUTENÇÃO DO CARRO</span>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-row">
+    <div class="filter-group">
+      <label>MÊS</label>
+      <select><option>Todos</option></select>
+    </div>
+    <div class="filter-group">
+      <label>UNIDADE</label>
+      <select><option>Todas</option></select>
+    </div>
+    <div class="filter-group">
+      <label>CATEGORIA</label>
+      <select><option>Todas</option></select>
+    </div>
+    <div class="filter-group">
+      <label>STATUS</label>
+      <select><option>Todos</option></select>
+    </div>
+    <div class="filter-group flex-grow">
+      <label>BUSCAR UNIDADE</label>
+      <div class="search-wrap">
+        <input type="text" placeholder="ex: Jabaquara" />
+        <button class="clear-btn">LIMPAR FILTROS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <div class="table-header">
+      <div class="month-title">JANEIRO</div>
+      <div class="pagination">0/27 ▼</div>
+    </div>
+    
+    <div class="table-body">
+      <!-- Row 1 -->
+      <div class="table-row" (click)="openVisitModal()">
+        <div class="col-date">01/01</div>
+        <div class="col-day">QUINTA</div>
+        <div class="col-unit">Vila Ré</div>
+        <div class="col-status"><span class="badge badge-pending">PENDENTE</span></div>
+      </div>
+      <!-- Row 2 -->
+      <div class="table-row" (click)="openVisitModal()">
+        <div class="col-date">02/01</div>
+        <div class="col-day">SEXTA</div>
+        <div class="col-unit">Itaquera</div>
+        <div class="col-status"><span class="badge badge-pending">PENDENTE</span></div>
+      </div>
+      <!-- Row 3 -->
+      <div class="table-row" (click)="openVisitModal()">
+        <div class="col-date">03/01</div>
+        <div class="col-day">SABADO</div>
+        <div class="col-unit">Manutenção do carro <span class="badge-small bg-red">CARRO</span></div>
+        <div class="col-status"><span class="badge badge-pending">PENDENTE</span></div>
+      </div>
+    </div>
+  </div>
+
+</ion-content>

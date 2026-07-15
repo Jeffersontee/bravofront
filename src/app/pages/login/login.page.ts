@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
-  IonContent, IonButton, IonIcon, IonInput 
+  IonContent, IonIcon 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   personOutline, phonePortraitOutline, locationOutline, construct 
 } from 'ionicons/icons';
-import { OrderService } from '../../services/order.service';
+import { OrderService } from '../../services/order/order.service';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +17,7 @@ import { OrderService } from '../../services/order.service';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonButton, IonIcon, IonInput
+    CommonModule, FormsModule, IonContent, IonIcon
   ]
 })
 export class LoginPage {
