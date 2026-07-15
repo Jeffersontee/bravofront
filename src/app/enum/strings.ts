@@ -1,12 +1,30 @@
 export enum Strings {
   // Configs Globais
   APP_NAME = 'Bravo Instalações',
+  TABS = '/tabs',
+  HOME = '/home',
+  LOGIN = '/login',
+  PROFILE = '/profile',
+  ADMIN = '/establishment-admin', // Base para o admin lojista
+
+  // Super_admin
+  SUPER_ADMIN = '/super-admin',
+    SUPER_DASHBOARD = '/super-admin/super-dashboard', // Dashboard específico do Super Admin
+
+    SUPER_STAFF = '/super-admin/staff',
+    SUPER_STAFF_CREATE = '/super-admin/staff/create',
+    SUPER_STAFF_EDIT = '/super-admin/staff/edit',
+    STAFF_TYPE = 'staff',
+    SUPER_STAFF_TYPE = 'super_staff',
+
 
   // Tipos de Usuário / Roles
   SUPER_TYPE = 'super_admin',
   ADMIN_TYPE = 'admin',
   USER_TYPE = 'user',
   COLLABORATOR_TYPE = 'collaborator',
+
+
 
   // Rotas Frontend
   ADMIN_DASHBOARD = 'establishment-admin/dashboard',
@@ -33,6 +51,7 @@ export enum Strings {
   ADMIN_LIST_COMPANY = 'establishment-admin/companies', 
   ADMIN_CREATE_COMPANY = 'establishment-admin/companies/create',
   ADMIN_DETAILS_COMPANY = 'establishment-admin/companies/details',
+  ADMIN_LIST_UNITS = 'establishment-admin/companies/units',
 
   ADMIN_CREATE_STAFF = 'establishment-admin/staff/create',
   ADMIN_LIST_STAFF = 'establishment-admin/staff',
@@ -40,6 +59,19 @@ export enum Strings {
   // Strings de Conexão Backend APIs
   API_COMPANIES = 'companies',
   API_SERVICES = 'services',
-  API_HEALTH = 'health'
+  API_UNITS = 'units',
+  API_SERVICE_ORDERS = 'service-orders',
+  API_HEALTH = 'health',
+
+  // TOKENS
+  TOKEN = 'hub_token',
+  REFRESH_TOKEN = 'hub_refresh_token',
+
+  // SESSION USER 
+  USER_PROFILE = '/users/profile',
+  USER_LOCATION = 'user_location',
+  USER_DATA = 'user_data',
+  USER_SOUND = 'isSoundEnabled',
+
 }
 export default Strings;

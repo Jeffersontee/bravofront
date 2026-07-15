@@ -1,0 +1,70 @@
+@if (isLoading()) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+
+<form [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
+  <ion-list lines="none">
+    
+    <ion-item-divider class="section-divider">
+      <ion-label>Dados Principais</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="person" slot="start"></ion-icon>
+      <ion-input label="Nome Completo" labelPlacement="floating" formControlName="name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="mail" slot="start"></ion-icon>
+      <ion-input label="E-mail" labelPlacement="floating" type="email" formControlName="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="call" slot="start"></ion-icon>
+      <ion-input 
+        label="Telefone" 
+        labelPlacement="floating" 
+        type="tel" 
+        formControlName="phone"
+        (ionInput)="onPhoneInput($event)">
+      </ion-input>
+    </ion-item>
+
+    @if (!isEditMode()) {
+      <ion-item>
+        <ion-icon name="key" slot="start"></ion-icon>
+        <ion-input label="Senha" labelPlacement="floating" type="password" formControlName="password"></ion-input>
+      </ion-item>
+    }
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Permissões</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="briefcase-outline" slot="start"></ion-icon>
+      <ion-select label="Nível de Acesso / Cargo" labelPlacement="floating" formControlName="role">
+        @for (role of roles; track role.value) {
+          <ion-select-option [value]="role.value">{{ role.label }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item lines="none" class="toggle-item">
+      <ion-label>
+        <h3>Colaborador Ativo</h3>
+        <p>Definir se este colaborador pode acessar o sistema</p>
+      </ion-label>
+      <ion-toggle slot="end" formControlName="active"></ion-toggle>
+    </ion-item>
+
+    <div class="ion-padding">
+      <ion-button type="submit" expand="block" [disabled]="!collaboratorForm.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ isLoading() ? 'Processando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Colaborador') }}
+      </ion-button>
+    </div>
+  </ion-list>
+</form>

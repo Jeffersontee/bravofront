@@ -12,6 +12,7 @@ export interface ServiceItem {
   category: string;
   price: number;
   status: 'ACTIVE' | 'INACTIVE';
+  company_id?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -30,8 +31,12 @@ export class ServiceService {
     });
   }
 
-  getServices(): Observable<{ success: boolean; data: ServiceItem[] }> {
-    return this.http.get<{ success: boolean; data: ServiceItem[] }>(this.url, { headers: this.getHeaders() });
+  getServices(companyId?: string): Observable<{ success: boolean; data: ServiceItem[] }> {
+    let requestUrl = this.url;
+    if (companyId) {
+      requestUrl = `${this.url}?company_id=${companyId}`;
+    }
+    return this.http.get<{ success: boolean; data: ServiceItem[] }>(requestUrl, { headers: this.getHeaders() });
   }
 
   createService(data: Partial<ServiceItem>): Observable<{ success: boolean; data: ServiceItem }> {

@@ -2,8 +2,8 @@
   <!-- Modal Header -->
   <div class="modal-header">
     <div class="header-info">
-      <h2 class="unit-name">VILA RÉ</h2>
-      <p class="unit-date">Quinta, 01/01/2026</p>
+      <h2 class="unit-name">{{ company.name | uppercase }}</h2>
+      <p class="unit-date">{{ serviceOrder ? 'Editar Solicitação' : 'Nova Solicitação' }}</p>
     </div>
     <button class="close-btn" (click)="dismiss()">
       <ion-icon name="close-outline"></ion-icon>
@@ -11,71 +11,112 @@
   </div>
 
   <div class="modal-body">
-    <!-- Toggle -->
-    <div class="toggle-container">
-      <label>Visita concluída</label>
-      <ion-toggle color="success"></ion-toggle>
-    </div>
-
-    <!-- Category Buttons -->
-    <div class="form-group">
-      <label class="section-label">CATEGORIA DE MANUTENÇÃO</label>
-      <div class="category-buttons">
-        <button class="cat-btn active">ELÉTRICA</button>
-        <button class="cat-btn">HIDRÁULICA/CIVIL</button>
-        <button class="cat-btn">SERRALHERIA</button>
+    <form [formGroup]="visitForm" (ngSubmit)="save()">
+      
+      <!-- Date and Unit Row -->
+      <div class="inputs-row">
+        <div class="form-group flex-1">
+          <label class="section-label">DATA</label>
+          <input type="date" formControlName="scheduled_date" />
+        </div>
+        <div class="form-group flex-2">
+          <label class="section-label">UNIDADE</label>
+          <select formControlName="unit_id" (change)="onUnitChange($event)" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <option value="">Selecione uma unidade...</option>
+            @for (u of units; track u._id) {
+              <option [value]="u._id">{{ u.name }}</option>
+            }
+          </select>
+        </div>
       </div>
-    </div>
 
-    <!-- Services -->
-    <div class="form-group">
-      <label class="section-label">SERVIÇOS REALIZADOS</label>
-      <p class="help-text">Selecione uma categoria acima para ver os serviços.</p>
-    </div>
+      <!-- Toggle -->
+      <div class="toggle-container" style="margin-top: 15px;">
+        <label>Visita concluída</label>
+        <ion-toggle color="success" [checked]="isCompleted" (ionChange)="toggleCompleted($event)"></ion-toggle>
+      </div>
 
-    <!-- Description -->
-    <div class="form-group">
-      <label class="section-label">DESCRIÇÃO / RELATÓRIO</label>
-      <textarea rows="4" placeholder="Detalhe o que foi feito na visita..."></textarea>
-    </div>
-
-    <!-- Inputs Row -->
-    <div class="inputs-row">
+      <!-- Category Buttons -->
       <div class="form-group">
-        <label class="section-label">TEMPO (H)</label>
-        <input type="text" placeholder="ex: 2,5" />
+        <label class="section-label">CATEGORIA DE MANUTENÇÃO</label>
+        <div class="category-buttons">
+          @for (cat of categories; track cat) {
+            <button type="button" class="cat-btn" [class.active]="selectedCategory === cat" (click)="setCategory(cat)">
+              {{ cat }}
+            </button>
+          }
+        </div>
       </div>
-      <div class="form-group">
-        <label class="section-label">KM RODADO</label>
-        <input type="text" placeholder="ex: 38" />
-      </div>
-      <div class="form-group">
-        <label class="section-label">COMBUSTIVEL (R$)</label>
-        <input type="text" placeholder="ex: 45" />
-      </div>
-    </div>
 
-    <div class="inputs-row">
+      <!-- Services -->
       <div class="form-group">
-        <label class="section-label">ZONA</label>
-        <input type="text" placeholder="ex: ABC, Campinas, Santos..." />
+        <label class="section-label">SERVIÇOS REALIZADOS</label>
+        @if (!selectedCategory) {
+          <p class="help-text">Selecione uma categoria acima para ver os serviços.</p>
+        } @else {
+          <select formControlName="service_id" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <option value="">Selecione o serviço...</option>
+            @for (s of filteredServices; track s._id) {
+              <option [value]="s._id">{{ s.name }}</option>
+            }
+          </select>
+          @if (filteredServices.length === 0) {
+            <p class="help-text" style="color: red;">Nenhum serviço cadastrado nesta categoria.</p>
+          }
+        }
       </div>
-      <div class="form-group flex-2">
-        <label class="section-label">ENDEREÇO</label>
-        <input type="text" placeholder="opcional" />
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="section-label">DESCRIÇÃO / RELATÓRIO</label>
+        <textarea formControlName="notes" rows="4" placeholder="Detalhe o que foi feito na visita..."></textarea>
       </div>
-    </div>
 
-    <!-- Observations -->
-    <div class="form-group">
-      <label class="section-label">OBSERVAÇÕES</label>
-      <textarea rows="3" placeholder="Pendências, materiais a comprar, retorno necessário..."></textarea>
-    </div>
-  </div>
+      <!-- Inputs Row -->
+      <div class="inputs-row">
+        <div class="form-group">
+          <label class="section-label">TEMPO (H)</label>
+          <input type="text" formControlName="time_spent" placeholder="ex: 2,5" />
+        </div>
+        <div class="form-group">
+          <label class="section-label">KM RODADO</label>
+          <input type="text" formControlName="km_driven" placeholder="ex: 38" />
+        </div>
+        <div class="form-group">
+          <label class="section-label">COMBUSTIVEL (R$)</label>
+          <input type="text" formControlName="fuel_cost" placeholder="ex: 45" />
+        </div>
+      </div>
 
-  <!-- Footer -->
-  <div class="modal-footer">
-    <button class="btn-cancel" (click)="dismiss()">FECHAR</button>
-    <button class="btn-save">SALVAR VISITA</button>
+      <div class="inputs-row">
+        <div class="form-group">
+          <label class="section-label">ZONA</label>
+          <input type="text" formControlName="zone" placeholder="ex: ABC, Campinas, Santos..." />
+        </div>
+        <div class="form-group flex-2">
+          <label class="section-label">ENDEREÇO</label>
+          <input type="text" formControlName="address_override" placeholder="opcional" />
+        </div>
+      </div>
+
+      <!-- Observations -->
+      <div class="form-group">
+        <label class="section-label">OBSERVAÇÕES</label>
+        <textarea formControlName="observations" rows="3" placeholder="Pendências, materiais a comprar, retorno necessário..."></textarea>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer" style="margin-top: 20px;">
+        <button type="button" class="btn-cancel" (click)="dismiss()">FECHAR</button>
+        <button type="submit" class="btn-save" [disabled]="visitForm.invalid || isLoading">
+          @if (isLoading) {
+            <ion-spinner name="crescent" color="light" style="width: 20px; height: 20px; vertical-align: middle;"></ion-spinner>
+          } @else {
+            SALVAR VISITA
+          }
+        </button>
+      </div>
+
+    </form>
   </div>
 </div>

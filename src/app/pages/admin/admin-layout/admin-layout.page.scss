@@ -2,9 +2,49 @@ ion-split-pane {
   --border: none;
 }
 
+$ze-dark: #121212;
+$ze-yellow: #f4c20d;
+
+.ze-menu-header {
+  --background: #{$ze-dark};
+  --color: #{$ze-yellow};
+  position: relative;
+  
+  .ze-menu-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .toggle-btn {
+    --color: #{$ze-yellow};
+  }
+
+  .stripe-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: repeating-linear-gradient(
+      45deg,
+      $ze-yellow,
+      $ze-yellow 10px,
+      $ze-dark 10px,
+      $ze-dark 20px
+    );
+  }
+}
+
 ion-menu {
   --background: #f8f9fa;
   --width: 260px;
+  transition: width 0.3s ease;
+}
+
+ion-split-pane.collapsed ion-menu {
+  --width: 70px;
 }
 
 .menu-item {

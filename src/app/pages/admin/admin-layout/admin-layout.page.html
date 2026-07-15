@@ -3,13 +3,14 @@
     
     <ion-menu contentId="main-content">
       <ion-header class="ion-no-border">
-        <ion-toolbar color="primary">
-          <ion-buttons slot="start" class="ion-hide-lg-down">
-            <ion-button (click)="toggleSidebar()">
+        <ion-toolbar class="ze-menu-header">
+          <ion-buttons slot="start">
+            <ion-button class="toggle-btn" (click)="toggleSidebar()">
               <ion-icon slot="icon-only" [name]="isCollapsed ? 'chevron-forward' : 'menu-outline'"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <ion-title *ngIf="!isCollapsed">Bravo Instalações</ion-title>
+          <ion-title class="ze-menu-title" *ngIf="!isCollapsed">Bravo Instalações</ion-title>
+          <div class="stripe-border"></div>
         </ion-toolbar>
       </ion-header>
 

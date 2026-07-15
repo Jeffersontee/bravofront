@@ -1,5 +1,8 @@
 <ion-content>
   <div class="ze-header">
+    <div class="mobile-menu-btn ion-hide-lg-up">
+      <ion-menu-button color="tertiary"></ion-menu-button>
+    </div>
     <div class="header-content">
       <div>
         <div class="subtitle">Bravo Instalações · Gestão de Estabelecimentos</div>
@@ -21,6 +24,10 @@
     <div class="kpi-card kpi-total">
       <div class="kpi-label">TOTAL EMPRESAS</div>
       <div class="kpi-value">{{ companies().length }}</div>
+    </div>
+    <div class="kpi-card" style="border-left: 4px solid var(--ion-color-tertiary);">
+      <div class="kpi-label">TOTAL UNIDADES</div>
+      <div class="kpi-value">{{ unitsCount() }}</div>
     </div>
     <div class="kpi-card kpi-active">
       <div class="kpi-label">ATIVAS</div>

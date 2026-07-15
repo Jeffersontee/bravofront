@@ -74,6 +74,30 @@ export const routes: Routes = [
       {
         path: 'companies/:id/dashboard',
         loadComponent: () => import('./pages/admin/company-dashboard/company-dashboard.page').then( m => m.CompanyDashboardPage)
+      },
+      {
+        path: 'collaborators/create',
+        loadComponent: () => import('./pages/collaborator/collaborator.page').then(m => m.CollaboratorPage)
+      },
+      {
+        path: 'collaborators/details/:id',
+        loadComponent: () => import('./pages/collaborator/collaborator.page').then(m => m.CollaboratorPage)
+      },
+      {
+        path: 'collaborators/edit/:id',
+        loadComponent: () => import('./pages/collaborator/collaborator.page').then(m => m.CollaboratorPage)
+      },
+      {
+        path: 'companies/:id/units',
+        loadComponent: () => import('./pages/admin/units/unit/unit.page').then( m => m.UnitPage)
+      },
+      {
+        path: 'companies/:id/units/create',
+        loadComponent: () => import('./pages/admin/units/unit/unit.page').then( m => m.UnitPage)
+      },
+      {
+        path: 'companies/:id/units/edit/:unitId',
+        loadComponent: () => import('./pages/admin/units/unit/unit.page').then( m => m.UnitPage)
       }
     ]
   }

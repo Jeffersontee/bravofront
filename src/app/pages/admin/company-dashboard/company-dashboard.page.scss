@@ -11,6 +11,10 @@
   color: #fff;
 
   .header-titles {
+    @media (max-width: 991px) {
+      padding-left: 40px;
+    }
+    
     .subtitle {
       color: #999;
       font-size: 12px;
@@ -121,9 +125,9 @@
   display: flex;
   gap: 15px;
   padding: 20px;
-  background-color: #f1ebd9; /* Beige background from image */
-  border-top: 1px solid #e0d8c3;
-  border-bottom: 1px solid #e0d8c3;
+  background-color: var(--ion-background-color);
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 
   .filter-group {
     display: flex;
@@ -164,7 +168,7 @@
 }
 
 .table-container {
-  background-color: #f1ebd9;
+  background-color: var(--ion-background-color);
   padding: 20px;
   min-height: 100%;
 
@@ -189,7 +193,7 @@
     .table-row {
       display: flex;
       padding: 12px 10px;
-      border-bottom: 1px solid #e0d8c3;
+      border-bottom: 1px solid #e2e8f0;
       align-items: center;
       cursor: pointer;
       

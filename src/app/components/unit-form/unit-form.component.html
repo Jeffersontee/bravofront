@@ -1,0 +1,90 @@
+@if (isLoading()) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+
+<form [formGroup]="unitForm" (ngSubmit)="onSubmit()">
+  <ion-list lines="none">
+    
+    <ion-item-divider class="section-divider">
+      <ion-label>Dados Principais</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="business-outline" slot="start"></ion-icon>
+      <ion-input label="Nome da Unidade" labelPlacement="floating" formControlName="name" placeholder="Ex: Loja Centro"></ion-input>
+    </ion-item>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Endereço</ion-label>
+    </ion-item-divider>
+
+    <div formGroupName="address">
+      <ion-item>
+        <ion-icon name="location-outline" slot="start"></ion-icon>
+        <ion-input label="CEP" labelPlacement="floating" formControlName="zipcode" type="tel"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Rua / Logradouro" labelPlacement="floating" formControlName="street"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Número" labelPlacement="floating" formControlName="number"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Complemento" labelPlacement="floating" formControlName="complement"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Bairro" labelPlacement="floating" formControlName="neighborhood"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Cidade" labelPlacement="floating" formControlName="city"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input label="Estado (UF)" labelPlacement="floating" formControlName="state"></ion-input>
+      </ion-item>
+    </div>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Equipe / Acessos</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="person" slot="start"></ion-icon>
+      <ion-select label="Gerente da Unidade" labelPlacement="floating" formControlName="manager_id" interface="action-sheet" placeholder="Selecione um gerente">
+        @for (collab of collaborators; track collab._id) {
+          <ion-select-option [value]="collab._id">{{ collab.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="person" slot="start"></ion-icon>
+      <ion-select label="Acompanhantes" labelPlacement="floating" formControlName="follower_ids" multiple="true" placeholder="Selecione acompanhantes">
+        @for (collab of collaborators; track collab._id) {
+          <ion-select-option [value]="collab._id">{{ collab.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    
+    <div class="ion-padding-start ion-padding-bottom">
+      <p style="font-size: 0.85rem; color: var(--ion-color-medium); margin-top: 5px;">
+        Nota: Se a pessoa não estiver na lista, você precisa cadastrá-la no menu "Colaboradores" primeiro.
+      </p>
+    </div>
+
+    <ion-item lines="none" class="toggle-item">
+      <ion-label>
+        <h3>Unidade Ativa</h3>
+      </ion-label>
+      <ion-toggle slot="end" formControlName="status" value="ACTIVE" [checked]="unitForm.get('status')?.value === 'ACTIVE'" (ionChange)="unitForm.get('status')?.setValue($event.detail.checked ? 'ACTIVE' : 'INACTIVE')"></ion-toggle>
+    </ion-item>
+
+    <div class="ion-padding">
+      <ion-button type="submit" expand="block" [disabled]="!unitForm.valid || isLoading()">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ isLoading() ? 'Processando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Unidade') }}
+      </ion-button>
+    </div>
+  </ion-list>
+</form>

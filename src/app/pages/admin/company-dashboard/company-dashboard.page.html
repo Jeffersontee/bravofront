@@ -1,14 +1,17 @@
 <ion-content class="ion-padding custom-dark-content">
   <!-- Header -->
-  <div class="dashboard-header">
+  <div class="dashboard-header" style="position: relative;">
+    <div class="mobile-menu-btn ion-hide-lg-up" style="position: absolute; top: 10px; left: 20px; z-index: 10;">
+      <ion-menu-button color="tertiary"></ion-menu-button>
+    </div>
     <div class="header-titles">
       <h6 class="subtitle">BRAVO INSTALAÇÕES - MANUTENÇÃO PREDIAL E INDUSTRIAL</h6>
-      <h1 class="title">PAINEL ZÉ DELIVERY</h1>
+      <h1 class="title">PAINEL {{ (company()?.name | uppercase) || 'CARREGANDO...' }}</h1>
       <p class="description">Controle de visitas técnicas nas unidades — 365 dias, categorias padronizadas de serviço e status de campo em tempo real.</p>
     </div>
     <div class="header-stats">
       <div class="stat-line">ANO OPERACIONAL <span class="highlight">2026</span></div>
-      <div class="stat-line">18 UNIDADES NA ROTA</div>
+      <div class="stat-line">{{ units().length }} UNIDADES NA ROTA</div>
       <div class="stat-line">DADOS SALVOS NESTE NAVEGADOR</div>
     </div>
   </div>
@@ -19,61 +22,86 @@
   <div class="kpi-row">
     <div class="kpi-card">
       <div class="kpi-label">VISITAS NO ANO</div>
-      <div class="kpi-value">313</div>
+      <div class="kpi-value">{{ stats().total }}</div>
     </div>
     <div class="kpi-card border-green">
       <div class="kpi-label">CONCLUIDAS</div>
-      <div class="kpi-value">0 <span class="kpi-sub">/ 313</span></div>
+      <div class="kpi-value">{{ stats().concluidas }} <span class="kpi-sub">/ {{ stats().total }}</span></div>
     </div>
     <div class="kpi-card border-red">
       <div class="kpi-label">PENDENTES</div>
-      <div class="kpi-value">313</div>
+      <div class="kpi-value">{{ stats().pendentes }}</div>
     </div>
     <div class="kpi-card border-yellow">
       <div class="kpi-label">% CONCLUSÃO</div>
-      <div class="kpi-value">0%</div>
+      <div class="kpi-value">{{ stats().percent }}%</div>
     </div>
     <div class="kpi-card border-blue">
       <div class="kpi-label">COMBUSTÍVEL (R$)</div>
-      <div class="kpi-value">0</div>
+      <div class="kpi-value">{{ stats().fuel | number:'1.2-2' }}</div>
     </div>
     <div class="kpi-card border-dark">
       <div class="kpi-label">KM RODADO</div>
-      <div class="kpi-value">0</div>
+      <div class="kpi-value">{{ stats().km | number:'1.1-1' }}</div>
     </div>
   </div>
 
   <!-- Legend -->
-  <div class="legend-row">
-    <span class="legend-item bg-yellow">ELÉTRICA</span>
-    <span class="legend-item bg-blue">HIDRÁULICA/CIVIL</span>
-    <span class="legend-item bg-grey">SERRALHERIA</span>
-    <span class="legend-item bg-red">MANUTENÇÃO DO CARRO</span>
+  <div class="legend-row" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      @for (service of services(); track service._id; let idx = $index) {
+        <span class="legend-item" [ngClass]="legendColors[idx % legendColors.length]">{{ service.name | uppercase }}</span>
+      } @empty {
+        <span class="legend-item bg-grey">NENHUM SERVIÇO CADASTRADO</span>
+      }
+    </div>
+    <button class="btn-new-visit" (click)="openCreateVisitModal()" style="padding: 8px 16px; background-color: var(--ion-color-primary); color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">
+      NOVA SOLICITAÇÃO
+    </button>
   </div>
 
   <!-- Filters -->
   <div class="filters-row">
     <div class="filter-group">
       <label>MÊS</label>
-      <select><option>Todos</option></select>
+      <select disabled><option>Todos (Em breve)</option></select>
     </div>
     <div class="filter-group">
       <label>UNIDADE</label>
-      <select><option>Todas</option></select>
+      <select [ngModel]="filterUnit()" (ngModelChange)="filterUnit.set($event)">
+        <option value="Todas">Todas</option>
+        @for (unit of units(); track unit._id) {
+          <option [value]="unit._id">{{ unit.name }}</option>
+        }
+      </select>
     </div>
     <div class="filter-group">
       <label>CATEGORIA</label>
-      <select><option>Todas</option></select>
+      <select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event)">
+        <option value="Todas">Todas</option>
+        <option value="ELÉTRICA">ELÉTRICA</option>
+        <option value="HIDRÁULICA/CIVIL">HIDRÁULICA/CIVIL</option>
+        <option value="SERRALHERIA">SERRALHERIA</option>
+      </select>
     </div>
     <div class="filter-group">
       <label>STATUS</label>
-      <select><option>Todos</option></select>
+      <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+        <option value="Todos">Todos</option>
+        <option value="AGENDADO">AGENDADO</option>
+        <option value="PENDENTE">PENDENTE</option>
+        <option value="EM_DESLOCAMENTO">EM DESLOCAMENTO</option>
+        <option value="CHECK_IN">CHECK IN</option>
+        <option value="EM_EXECUCAO">EM EXECUÇÃO</option>
+        <option value="CONCLUIDO">CONCLUÍDO</option>
+        <option value="CANCELADO">CANCELADO</option>
+      </select>
     </div>
     <div class="filter-group flex-grow">
       <label>BUSCAR UNIDADE</label>
       <div class="search-wrap">
-        <input type="text" placeholder="ex: Jabaquara" />
-        <button class="clear-btn">LIMPAR FILTROS</button>
+        <input type="text" placeholder="ex: Jabaquara" [ngModel]="filterSearch()" (ngModelChange)="filterSearch.set($event)" />
+        <button class="clear-btn" (click)="clearFilters()">LIMPAR FILTROS</button>
       </div>
     </div>
   </div>
@@ -81,32 +109,31 @@
   <!-- Table -->
   <div class="table-container">
     <div class="table-header">
-      <div class="month-title">JANEIRO</div>
-      <div class="pagination">0/27 ▼</div>
+      <div class="month-title">GERAL</div>
+      <div class="pagination">{{ filteredOrders().length }} / {{ serviceOrders().length }} ▼</div>
     </div>
     
     <div class="table-body">
-      <!-- Row 1 -->
-      <div class="table-row" (click)="openVisitModal()">
-        <div class="col-date">01/01</div>
-        <div class="col-day">QUINTA</div>
-        <div class="col-unit">Vila Ré</div>
-        <div class="col-status"><span class="badge badge-pending">PENDENTE</span></div>
-      </div>
-      <!-- Row 2 -->
-      <div class="table-row" (click)="openVisitModal()">
-        <div class="col-date">02/01</div>
-        <div class="col-day">SEXTA</div>
-        <div class="col-unit">Itaquera</div>
-        <div class="col-status"><span class="badge badge-pending">PENDENTE</span></div>
-      </div>
-      <!-- Row 3 -->
-      <div class="table-row" (click)="openVisitModal()">
-        <div class="col-date">03/01</div>
-        <div class="col-day">SABADO</div>
-        <div class="col-unit">Manutenção do carro <span class="badge-small bg-red">CARRO</span></div>
-        <div class="col-status"><span class="badge badge-pending">PENDENTE</span></div>
-      </div>
+      @for (order of filteredOrders(); track order._id) {
+        <div class="table-row" (click)="openEditVisitModal(order)">
+          <div class="col-date">{{ order.scheduled_date ? (order.scheduled_date | date:'dd/MM') : '--/--' }}</div>
+          <div class="col-day">{{ order.scheduled_date ? (order.scheduled_date | date:'EEEE') : 'N/A' }}</div>
+          <div class="col-unit">
+            {{ getUnitName(order.unit_id) }} 
+            <span [innerHTML]="getServiceBadge(order.service_id)"></span>
+          </div>
+          <div class="col-status">
+            <span class="badge" [ngClass]="{
+              'badge-pending': order.current_status !== 'CONCLUIDO',
+              'bg-green': order.current_status === 'CONCLUIDO'
+            }">{{ order.current_status }}</span>
+          </div>
+        </div>
+      } @empty {
+        <div class="ion-text-center ion-padding" style="color: #666; font-size: 14px;">
+          Nenhuma solicitação encontrada com os filtros atuais.
+        </div>
+      }
     </div>
   </div>
 

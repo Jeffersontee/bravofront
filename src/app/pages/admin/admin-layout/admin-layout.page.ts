@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CompanyService } from 'src/app/services/company/company.service';
 import { RouterModule } from '@angular/router';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
@@ -74,7 +75,8 @@ export class AdminLayoutPage implements OnInit {
       children: [
         { title: 'Empresa', stringKey: 'ADMIN_LIST_COMPANY', icon: 'list-outline' },
         { title: 'Cadastrar Empresa', stringKey: 'ADMIN_CREATE_COMPANY', icon: 'add-circle-outline' },
-        { title: 'Dados da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'document-text-outline' },
+        { title: 'Painel da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'document-text-outline' },
+        { title: 'Unidades da Empresa', stringKey: 'ADMIN_LIST_UNITS', icon: 'business-outline' },
       ]
     },
     {
@@ -160,9 +162,10 @@ export class AdminLayoutPage implements OnInit {
   }
 
   public async onMenuClick(item: MenuItem) {
-    if (item.url === `/${Strings.ADMIN_ORDER}`) {
-      // Abre o seletor de empresa e direciona para o painel
-      await this.openCompanySelector();
+    if (item.url === `/${Strings.ADMIN_DETAILS_COMPANY}` || item.url === `/${Strings.ADMIN_LIST_UNITS}`) {
+      // Abre o seletor de empresa e direciona para o painel ou unidades
+      const routeSuffix = item.url === `/${Strings.ADMIN_LIST_UNITS}` ? 'units' : 'dashboard';
+      await this.openCompanySelector(routeSuffix);
     } else if (item.url) {
       try {
         const success = await this.router.navigateByUrl(item.url);
@@ -186,36 +189,78 @@ export class AdminLayoutPage implements OnInit {
     await alert.present();
   }
 
-  public async openCompanySelector() {
-    // Simula a escolha de uma empresa (Zé Delivery)
-    const alert = await this.alertCtrl.create({
-      header: 'Selecione a Empresa',
-      inputs: [
-        {
-          name: 'company',
-          type: 'radio',
-          label: 'Zé Delivery',
-          value: '1',
-          checked: true
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Confirmar',
-          handler: (data) => {
-            if (data) {
-              this.router.navigate([`/establishment-admin/companies/${data}/dashboard`]);
-            }
-          }
-        }
-      ]
-    });
+  private companyService = inject(CompanyService);
 
-    await alert.present();
+  public async openCompanySelector(routeSuffix: string = 'dashboard') {
+    const loading = await this.alertCtrl.create({
+      header: 'Carregando...',
+      message: 'Buscando empresas cadastradas...',
+      backdropDismiss: false
+    });
+    await loading.present();
+
+    try {
+      this.companyService.getCompanies().subscribe(async (res) => {
+        await loading.dismiss();
+        if (res.success && res.data.length > 0) {
+          const companies = res.data;
+          
+          // Mapeia as empresas para o formato de inputs do AlertController
+          const inputs = companies.map(c => {
+            // Define o "Zé Delivery" como default se existir, caso contrário o primeiro item.
+            const isDefault = c.name.toLowerCase().includes('zé delivery') || c.name.toLowerCase().includes('ze delivery');
+            return {
+              name: 'company',
+              type: 'radio' as any,
+              label: c.name,
+              value: c._id,
+              checked: isDefault
+            };
+          });
+
+          // Se nenhum foi marcado como Zé Delivery, marca o primeiro como padrão
+          if (!inputs.find(i => i.checked)) {
+            inputs[0].checked = true;
+          }
+
+          const alert = await this.alertCtrl.create({
+            header: 'Selecione a Empresa',
+            inputs: inputs,
+            buttons: [
+              {
+                text: 'Cancelar',
+                role: 'cancel'
+              },
+              {
+                text: 'Confirmar',
+                handler: (data) => {
+                  if (data) {
+                    this.router.navigate([`/establishment-admin/companies/${data}/${routeSuffix}`]);
+                  }
+                }
+              }
+            ]
+          });
+
+          await alert.present();
+        } else {
+          const alert = await this.alertCtrl.create({
+            header: 'Aviso',
+            message: 'Nenhuma empresa cadastrada no momento.',
+            buttons: ['OK']
+          });
+          await alert.present();
+        }
+      });
+    } catch (error) {
+      await loading.dismiss();
+      const alert = await this.alertCtrl.create({
+        header: 'Erro',
+        message: 'Não foi possível carregar as empresas.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
   }
 
   public onLogout() {

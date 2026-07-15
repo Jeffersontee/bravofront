@@ -1,8 +1,9 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal, IonMenuButton } from '@ionic/angular/standalone';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
+import { UnitService } from 'src/app/services/unit/unit.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
 import { caretDownSharp, caretUpSharp, closeOutline } from 'ionicons/icons';
@@ -12,15 +13,17 @@ import { caretDownSharp, caretUpSharp, closeOutline } from 'ionicons/icons';
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal, CommonModule, FormsModule, ReactiveFormsModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal, IonMenuButton, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class DashboardPage implements OnInit {
   private companyService = inject(CompanyService);
+  private unitService = inject(UnitService);
   private globalService = inject(GlobalService);
   private fb = inject(FormBuilder);
 
   // State
   companies = signal<Company[]>([]);
+  unitsCount = signal<number>(0);
   statusFilter = signal<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   searchQuery = signal<string>('');
   listOpen = signal<boolean>(true);
@@ -72,6 +75,17 @@ export class DashboardPage implements OnInit {
 
   ngOnInit() {
     this.loadCompanies();
+    this.loadUnitsCount();
+  }
+
+  loadUnitsCount() {
+    this.unitService.getUnits().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.unitsCount.set(res.data.length);
+        }
+      }
+    });
   }
 
   loadCompanies() {

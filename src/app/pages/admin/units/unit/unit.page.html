@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/establishment-admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      {{ isLoading() ? 'Carregando...' : (isEditMode() ? 'Editar Unidade' : (isDetailsMode() ? 'Detalhes da Unidade' : (isListMode() ? 'Unidades' : 'Nova Unidade'))) }}
+    </ion-title>
+    @if (isListMode()) {
+      <ion-buttons slot="end">
+        <ion-button (click)="goToCreate()">
+          <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (isLoading()) {
+    <div class="ion-text-center ion-padding">
+      <ion-spinner></ion-spinner>
+      <p>Carregando dados...</p>
+    </div>
+  } @else {
+    @if (isListMode()) {
+      <ion-list>
+        @for (unit of units(); track unit._id) {
+          <ion-item (click)="goToEdit(unit._id!)" button>
+            <ion-icon name="business" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>{{ unit.name }}</h2>
+              <p>{{ unit.address.city }} - {{ unit.address.state }}</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="unit.status === 'ACTIVE' ? 'success' : 'medium'">
+              {{ unit.status === 'ACTIVE' ? 'Ativo' : 'Inativo' }}
+            </ion-badge>
+          </ion-item>
+        } @empty {
+          <div class="ion-text-center ion-padding empty-state">
+            <ion-icon name="business-outline" size="large" color="medium"></ion-icon>
+            <p>Nenhuma unidade cadastrada para esta empresa.</p>
+            <ion-button fill="outline" (click)="goToCreate()">Cadastrar Primeira Unidade</ion-button>
+          </div>
+        }
+      </ion-list>
+    } @else {
+      <app-unit-form
+        [unitData]="unitData()"
+        [isLoading]="isLoading()"
+        [isEditMode]="isEditMode()"
+        (save)="onSave($event)">
+      </app-unit-form>
+    }
+  }
+</ion-content>
