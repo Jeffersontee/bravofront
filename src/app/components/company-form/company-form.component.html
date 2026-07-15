@@ -1,0 +1,77 @@
+@if (isLoading()) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+
+<form [formGroup]="companyForm" (ngSubmit)="onSubmit()">
+  <ion-list lines="none">
+    
+    <ion-item-divider class="section-divider">
+      <ion-label>Dados Principais</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="business-outline" slot="start"></ion-icon>
+      <ion-input label="Razão Social" labelPlacement="floating" formControlName="name"></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-icon name="business-outline" slot="start"></ion-icon>
+      <ion-input label="Nome Fantasia / Apelido" labelPlacement="floating" formControlName="short_name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="document-text-outline" slot="start"></ion-icon>
+      <ion-input 
+        label="CNPJ" 
+        labelPlacement="floating" 
+        type="tel" 
+        formControlName="cnpj"
+        (ionInput)="onCnpjInput($event)">
+      </ion-input>
+    </ion-item>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Contato e Responsável</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="person" slot="start"></ion-icon>
+      <ion-input label="Nome do Responsável" labelPlacement="floating" formControlName="owner_name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="mail" slot="start"></ion-icon>
+      <ion-input label="E-mail" labelPlacement="floating" type="email" formControlName="email"></ion-input>
+    </ion-item>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Detalhes Adicionais</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label position="stacked">Descrição da Empresa</ion-label>
+      <ion-textarea 
+        formControlName="description" 
+        placeholder="Informações adicionais, observações..."
+        rows="4">
+      </ion-textarea>
+    </ion-item>
+
+    <ion-item lines="none" class="toggle-item">
+      <ion-label>
+        <h3>Empresa Ativa</h3>
+        <p>Definir se esta empresa pode acessar e operar no sistema</p>
+      </ion-label>
+      <ion-toggle slot="end" formControlName="active"></ion-toggle>
+    </ion-item>
+
+    <div class="ion-padding">
+      <ion-button type="submit" expand="block" [disabled]="!companyForm.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ isLoading() ? 'Processando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Empresa') }}
+      </ion-button>
+    </div>
+  </ion-list>
+</form>

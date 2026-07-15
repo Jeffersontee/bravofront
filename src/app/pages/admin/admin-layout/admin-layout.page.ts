@@ -19,7 +19,8 @@ import {
   starOutline, cashOutline, constructOutline, giftOutline,
   addCircleOutline, layersOutline, chatbubbleOutline,
   megaphoneOutline, helpCircleOutline, shieldCheckmarkOutline,
-  documentsOutline, pieChartOutline, serverOutline, keyOutline
+  documentsOutline, pieChartOutline, serverOutline, keyOutline,
+  listOutline, personOutline, personAddOutline, briefcaseOutline
 } from 'ionicons/icons';
 import { Strings } from 'src/app/enum/strings';
 import { Router } from '@angular/router';
@@ -71,33 +72,33 @@ export class AdminLayoutPage implements OnInit {
       title: 'Empresas',
       icon: 'storefront-outline',
       children: [
-        { title: 'Empresa', stringKey: 'ADMIN_LIST_COMPANY', icon: 'receipt-outline' },
-        { title: 'Cadastrar Empresa', stringKey: 'ADMIN_CREATE_COMPANY', icon: 'receipt-outline' },
-        { title: 'Dados da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'business-outline' },
+        { title: 'Empresa', stringKey: 'ADMIN_LIST_COMPANY', icon: 'list-outline' },
+        { title: 'Cadastrar Empresa', stringKey: 'ADMIN_CREATE_COMPANY', icon: 'add-circle-outline' },
+        { title: 'Dados da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'document-text-outline' },
       ]
     },
     {
       title: 'Serviços',
-      icon: 'settings-outline',
+      icon: 'construct-outline',
       children: [
-        { title: 'Serviços', stringKey: 'ADMIN_LIST_SERVICES', icon: 'cube-outline' },
+        { title: 'Serviços', stringKey: 'ADMIN_LIST_SERVICES', icon: 'list-outline' },
         { title: 'Cadastrar Serviços', stringKey: 'ADMIN_CREATE_SERVICES', icon: 'add-circle-outline' },
       ]
     },
     {
       title: 'Colaboradores',
-      icon: 'settings-outline',
+      icon: 'briefcase-outline',
       children: [
-        { title: 'Colaboradores', stringKey: 'ADMIN_LIST_COLLABORATOR', icon: 'cube-outline' },
-        { title: 'Cadastrar Colaboradores', stringKey: 'ADMIN_CREATE_COLLABORATOR', icon: 'add-circle-outline' },
+        { title: 'Colaboradores', stringKey: 'ADMIN_LIST_COLLABORATOR', icon: 'list-outline' },
+        { title: 'Cadastrar Colaboradores', stringKey: 'ADMIN_CREATE_COLLABORATOR', icon: 'person-add-outline' },
       ]
     },
     {
-      title: 'Usuarios',
-      icon: 'settings-outline',
+      title: 'Usuários',
+      icon: 'person-outline',
       children: [
-        { title: 'Usuarios', stringKey: 'ADMIN_LIST_STAFF', icon: 'cube-outline' },
-        { title: 'Cadastrar Usuários', stringKey: 'ADMIN_CREATE_STAFF', icon: 'add-circle-outline' },
+        { title: 'Usuários', stringKey: 'ADMIN_LIST_STAFF', icon: 'list-outline' },
+        { title: 'Cadastrar Usuários', stringKey: 'ADMIN_CREATE_STAFF', icon: 'person-add-outline' },
       ]
     },
     {
@@ -106,7 +107,7 @@ export class AdminLayoutPage implements OnInit {
       children: [
         { title: 'Produtos', stringKey: 'ADMIN_PRODUCTS', icon: 'cube-outline' },
         { title: 'Cadastrar Produto', stringKey: 'ADMIN_PRODUCTS_CREATE', icon: 'add-circle-outline' },
-        { title: 'Categorias', stringKey: 'ADMIN_CATEGORIES', icon: 'cube-outline' },
+        { title: 'Categorias', stringKey: 'ADMIN_CATEGORIES', icon: 'layers-outline' },
       ]
     }
   ];
@@ -128,7 +129,8 @@ export class AdminLayoutPage implements OnInit {
       starOutline, cashOutline, constructOutline, giftOutline,
       addCircleOutline, layersOutline, chatbubbleOutline,
       megaphoneOutline, helpCircleOutline, shieldCheckmarkOutline,
-      documentsOutline, pieChartOutline, serverOutline, keyOutline
+      documentsOutline, pieChartOutline, serverOutline, keyOutline,
+      listOutline, personOutline, personAddOutline, briefcaseOutline
     });
   }
 
@@ -162,10 +164,26 @@ export class AdminLayoutPage implements OnInit {
       // Abre o seletor de empresa e direciona para o painel
       await this.openCompanySelector();
     } else if (item.url) {
-      this.router.navigateByUrl(item.url);
+      try {
+        const success = await this.router.navigateByUrl(item.url);
+        if (!success) {
+          this.showNotImplementedAlert();
+        }
+      } catch (err) {
+        this.showNotImplementedAlert();
+      }
     } else {
       item.open = !item.open;
     }
+  }
+
+  private async showNotImplementedAlert() {
+    const alert = await this.alertCtrl.create({
+      header: 'Em Breve',
+      message: 'Esta página/funcionalidade ainda está em desenvolvimento e será disponibilizada em breve.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   public async openCompanySelector() {

@@ -24,22 +24,22 @@ export enum Strings {
   ADMIN_COMPANIES = 'establishment-admin/dashboard',
   ADMIN_SERVICES = 'establishment-admin/services',
 
-  ADMIN_LIST_COLLABORATOR = '',
-  ADMIN_CREATE_COLLABORATOR = '',
+  ADMIN_LIST_COLLABORATOR = 'establishment-admin/collaborators',
+  ADMIN_CREATE_COLLABORATOR = 'establishment-admin/collaborators/create',
 
-  ADMIN_LIST_SERVICES = '',
-  ADMIN_CREATE_SERVICES = '',
+  ADMIN_LIST_SERVICES = 'establishment-admin/services',
+  ADMIN_CREATE_SERVICES = 'establishment-admin/services/create',
 
-  ADMIN_LIST_COMPANY = '', 
-  ADMIN_CREATE_COMPANY = '',
-  ADMIN_DETAILS_COMPANY = '',
+  ADMIN_LIST_COMPANY = 'establishment-admin/companies', 
+  ADMIN_CREATE_COMPANY = 'establishment-admin/companies/create',
+  ADMIN_DETAILS_COMPANY = 'establishment-admin/companies/details',
 
-  ADMIN_CREATE_STAFF = '',
-  ADMIN_LIST_STAFF = '',
+  ADMIN_CREATE_STAFF = 'establishment-admin/staff/create',
+  ADMIN_LIST_STAFF = 'establishment-admin/staff',
 
   // Strings de Conexão Backend APIs
-  API_COMPANIES = 'api/companies',
-  API_SERVICES = 'api/services',
-  API_HEALTH = '/health'
+  API_COMPANIES = 'companies',
+  API_SERVICES = 'services',
+  API_HEALTH = 'health'
 }
 export default Strings;

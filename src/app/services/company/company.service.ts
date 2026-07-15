@@ -35,6 +35,10 @@ export class CompanyService {
     return this.http.get<{ success: boolean; data: Company[] }>(this.url, { headers: this.getHeaders() });
   }
 
+  getCompanyById(id: string): Observable<{ success: boolean; data: Company }> {
+    return this.http.get<{ success: boolean; data: Company }>(`${this.url}/${id}`, { headers: this.getHeaders() });
+  }
+
   createCompany(data: Partial<Company>): Observable<{ success: boolean; data: Company }> {
     return this.http.post<{ success: boolean; data: Company }>(this.url, data, { headers: this.getHeaders() });
   }

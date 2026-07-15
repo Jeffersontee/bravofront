@@ -51,6 +51,23 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'companies',
+        redirectTo: 'dashboard', // O Dashboard é a lista de empresas
+        pathMatch: 'full'
+      },
+      {
+        path: 'companies/create',
+        loadComponent: () => import('./pages/company/company.page').then(m => m.CompanyPage)
+      },
+      {
+        path: 'companies/details/:id',
+        loadComponent: () => import('./pages/company/company.page').then(m => m.CompanyPage)
+      },
+      {
+        path: 'companies/edit/:id',
+        loadComponent: () => import('./pages/company/company.page').then(m => m.CompanyPage)
+      },
+      {
         path: 'services',
         loadComponent: () => import('./pages/admin/services/services.page').then(m => m.ServicesPage)
       },
