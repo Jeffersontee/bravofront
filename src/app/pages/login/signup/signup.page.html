@@ -1,0 +1,143 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Criar uma conta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form #f1="ngForm" (ngSubmit)="onSubmit(f1)">
+    <ion-list lines="none">
+      <ion-item-group class="ion-margin-bottom">
+        <ion-item color="light">
+          <ion-icon name="person" slot="start" color="medium"></ion-icon> 
+          <ion-input
+            label=""
+            errorText="* Por favor, digite seu nome."
+            type="text"
+            name="name"
+            ngModel
+            #name="ngModel"
+            placeholder="Nome"
+            required>
+          </ion-input>
+        </ion-item>
+        <!-- <ion-text color="danger" *ngIf="!name.valid && name.touched">
+          <p class="errorMsg">* Please enter your name</p>
+        </ion-text> -->
+      </ion-item-group>
+
+      <ion-item-group class="ion-margin-bottom">
+        <ion-item color="light">
+          <ion-icon name="mail" slot="start" color="medium"></ion-icon> 
+          <ion-input
+            label=""
+            errorText="* Por favor, insira um endereço de e-mail válido."
+            type="email"
+            name="email"
+            ngModel
+            email
+            #emailCtrl="ngModel"
+            placeholder="Email"
+            required>
+          </ion-input>
+        </ion-item>
+        <!-- <ion-text color="danger" *ngIf="!emailCtrl.valid && emailCtrl.touched">
+          <p class="errorMsg">* Please enter a valid email address</p>
+        </ion-text> -->
+      </ion-item-group>
+
+      <ion-item-group class="ion-margin-bottom">
+        <ion-item color="light">
+          <ion-icon name="call" slot="start" color="medium"></ion-icon> 
+          <ion-input
+            label=""
+            errorText="* Por favor, insira um número de telefone válido."
+            type="tel"
+            name="phone"
+            ngModel
+            #phone="ngModel"
+            placeholder="Telefone"
+            required
+            minlength="11"
+            maxlength="11">
+          </ion-input>
+        </ion-item>
+        <!-- <ion-text color="danger" *ngIf="!phone.valid && phone.touched">
+          <p class="errorMsg">* Please enter a valid phone number</p>
+        </ion-text> -->
+      </ion-item-group>
+
+      <ion-item-group class="ion-margin-bottom">
+        <ion-item color="light">
+          <ion-icon name="key" slot="start" color="medium"></ion-icon> 
+          <ion-icon color="primary" slot="end" (click)="passwordHidden = !passwordHidden" [name]="passwordHidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+          <ion-input
+            [type]="passwordHidden ? 'password' : 'text'"
+            name="password"
+            label=""
+            errorText="* A senha deve ter no mínimo 8 caracteres, incluindo letras e números."
+            ngModel
+            #passwordCtrl="ngModel"
+            placeholder="Senha"
+            required
+            pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$"
+            minlength="8">
+          </ion-input>
+        </ion-item>
+        <!-- <ion-text color="danger" *ngIf="!passwordCtrl.valid && passwordCtrl.touched">
+          <p class="errorMsg">* Password must be of minimum 8 characters long.</p>
+        </ion-text> -->
+      </ion-item-group>
+
+      <ion-item color="light">
+        <ion-icon name="key" slot="start" color="medium"></ion-icon> 
+        <ion-icon color="primary" slot="end" (click)="confirmPasswordHidden = !confirmPasswordHidden" [name]="confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+        <ion-input
+          [type]="confirmPasswordHidden ? 'password' : 'text'"
+          name="c_password"
+          label=""
+          errorText="* A senha de confirmação deve conter letras e números."
+          ngModel
+          #c_passwordCtrl="ngModel"
+          placeholder="Confirmar Senha"
+          required
+          pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$"
+          minlength="8">
+        </ion-input>
+      </ion-item>
+      <!-- <ion-text color="danger" *ngIf="!c_passwordCtrl.valid && c_passwordCtrl.touched">
+        <p class="errorMsg">* Confirm Password must be of minimum 8 characters long.</p>
+      </ion-text> -->
+      <ion-text color="danger" *ngIf="c_passwordCtrl.valid && c_passwordCtrl.value != passwordCtrl.value">
+        <p class="errorMsg">* Senha incorreta! Você digitou uma senha diferente.</p>
+      </ion-text>
+    </ion-list>
+
+    <ion-button 
+      *ngIf="!isLoading" 
+      [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value)"
+      expand="block" 
+      shape="round" 
+      type="submit" 
+      size="large"
+      color="primary">
+      <ion-text>INSCREVER-SE</ion-text>
+    </ion-button>
+
+    <div class="ion-text-center" *ngIf="isLoading">
+      <ion-button 
+        shape="round" 
+        color="primary" 
+        size="large"
+        [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value)">
+        <ion-spinner name="circles"></ion-spinner>
+      </ion-button>
+    </div>
+    
+  </form>
+
+</ion-content>

@@ -41,6 +41,15 @@ export const routes: Routes = [
     path: 'establishment-admin',
     loadComponent: () => import('./pages/admin/admin-layout/admin-layout.page').then(m => m.AdminLayoutPage),
     loadChildren: () => import('./pages/admin/admin.routes').then(m => m.adminRoutes)
+  },
+  {
+    path: 'super-admin',
+    loadComponent: () => import('./pages/super/super-layout/super-layout.page').then(m => m.SuperLayoutPage),
+    loadChildren: () => import('./pages/super/super-admin.routes').then(m => m.superAdminRoutes)
+  },
+  {
+    path: 'signup',
+    loadComponent: () => import('./pages/login/signup/signup.page').then( m => m.SignupPage)
   }
 ];
 

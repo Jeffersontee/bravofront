@@ -74,7 +74,7 @@ export class AdminLayoutPage implements OnInit {
       icon: 'storefront-outline',
       children: [
         { title: 'Empresa', stringKey: 'ADMIN_LIST_COMPANY', icon: 'list-outline' },
-        // { title: 'Empresas (Painel)', stringKey: 'ADMIN_COMPANIES', icon: 'business-outline' },
+        { title: 'Empresas (Painel)', stringKey: 'ADMIN_COMPANIES', icon: 'business-outline' },
         { title: 'Cadastrar Empresa', stringKey: 'ADMIN_CREATE_COMPANY', icon: 'add-circle-outline' },
         { title: 'Painel da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'document-text-outline' },
         { title: 'Unidades da Empresa', stringKey: 'ADMIN_LIST_UNITS', icon: 'business-outline' },
@@ -168,9 +168,16 @@ export class AdminLayoutPage implements OnInit {
       const routeSuffix = item.url === `/${Strings.ADMIN_LIST_UNITS}` ? 'units' : 'dashboard';
       await this.openCompanySelector(routeSuffix);
     } else if (item.url) {
+      // Se já estiver na rota, o Angular retorna null. 
+      // Se não houver rota configurada, ele lança uma exceção (cai no catch).
+      // Se um guard barrar, ele retorna false.
+      if (this.router.url === item.url || this.router.url.includes(item.url)) {
+        // Já estamos nessa rota, fecha o menu (opcional) ou não faz nada.
+        return;
+      }
       try {
         const success = await this.router.navigateByUrl(item.url);
-        if (!success) {
+        if (success === false) {
           this.showNotImplementedAlert();
         }
       } catch (err) {

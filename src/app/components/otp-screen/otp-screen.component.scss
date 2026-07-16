@@ -1,0 +1,31 @@
+ion-list-header {
+    ion-label {
+        font-size: 1rem;
+    }
+}
+
+ion-row {
+    ion-col {
+        ion-button {
+            ion-text {
+                font-size: 0.85rem !important;
+            }
+            ion-icon {
+                font-size: 1rem;
+            }
+        }
+    }
+}
+
+/* Ajuste para diminuir os números dentro do input de OTP */
+::ng-deep {
+    .otp-input {
+        font-size: 1.4rem !important; /* Reduz o tamanho do número */
+        width: 40px !important;       /* Ajusta a largura da caixa */
+        height: 45px !important;      /* Ajusta a altura da caixa */
+        margin: 0 4px;                /* Espaçamento entre as caixas */
+        border: 1px solid var(--ion-color-light-shade) !important;
+        background-color: var(--ion-color-light) !important;
+        border-radius: 8px;
+    }
+}

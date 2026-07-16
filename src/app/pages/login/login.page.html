@@ -18,65 +18,75 @@
     </p>
   </div>
 
-  <!-- Formulário de Cadastro -->
+  <!-- Formulário de Autenticação -->
   <div class="form-container">
-    <h3 class="form-title">Crie sua conta</h3>
+    <h3 class="form-title">Acesse sua conta</h3>
 
-    <!-- Nome Completo -->
+    <!-- E-mail -->
     <div class="input-wrapper">
-      <ion-icon name="person-outline" class="input-icon"></ion-icon>
+      <ion-icon name="mail-outline" class="input-icon"></ion-icon>
       <input 
-        type="text" 
-        placeholder="Nome completo" 
-        [ngModel]="nameInput()" 
-        (ngModelChange)="nameInput.set($event)"
+        type="email" 
+        placeholder="E-mail" 
+        [ngModel]="emailInput()" 
+        (ngModelChange)="emailInput.set($event)"
         class="custom-input"
       />
     </div>
 
-    <!-- Celular -->
+    <!-- Senha -->
     <div class="input-wrapper">
-      <ion-icon name="phone-portrait-outline" class="input-icon"></ion-icon>
+        <ion-icon name="lock-closed-outline" slot="start"  class="input-icon"></ion-icon>
+        <!-- <ion-icon name="key" slot="start" color="primary"></ion-icon>  -->
+        <ion-icon color="primary" slot="end" (click)="changeType()" [name]="type ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
       <input 
-        type="text" 
-        placeholder="(00) 00000-0000" 
-        [ngModel]="phoneInput()" 
-        (ngModelChange)="phoneInput.set($event)"
+        [type]="type ? 'password' : 'text'"
+        placeholder="Senha" 
+        [ngModel]="passwordInput()" 
+        (ngModelChange)="passwordInput.set($event)"
         class="custom-input"
+        (keyup.enter)="login()"
       />
     </div>
 
-    <!-- Endereço -->
-    <div class="input-wrapper">
-      <ion-icon name="location-outline" class="input-icon"></ion-icon>
-      <input 
-        type="text" 
-        placeholder="Endereço (rua, número, bairro)" 
-        [ngModel]="addressInput()" 
-        (ngModelChange)="addressInput.set($event)"
-        class="custom-input"
-      />
-    </div>
-
-    <!-- Botão Cadastrar -->
-    <button 
-      (click)="submitRegister()" 
-      [disabled]="!isFormValid()" 
-      [class.active-btn]="isFormValid()"
-      class="submit-btn"
-    >
-      Cadastrar e começar
-    </button>
-
-    <p class="footer-note">
-      Seus dados ficam salvos apenas neste dispositivo.
+    <p class="ion-text-right" style="margin-top: -10px; margin-bottom: 20px;">
+      <ion-text id="forgot-password" style="font-size: 14px; color: var(--ion-color-medium); cursor: pointer; text-decoration: underline;">
+        Esqueceu sua senha?
+      </ion-text>
     </p>
 
-    <!-- Link Opcional para Lojista/Admin -->
-    <div style="text-align: center; margin-top: 24px;">
-      <a (click)="goToAdmin()" style="font-size: 13px; color: #94a3b8; text-decoration: underline; cursor: pointer;">
-        Entrar como Lojista
-      </a>
-    </div>
+    <!-- Botão Entrar -->
+    <button 
+      (click)="login()" 
+      [disabled]="!isFormValid() || isLogin()" 
+      [class.active-btn]="isFormValid() && !isLogin()"
+      class="submit-btn"
+    >
+      {{ isLogin() ? 'Aguarde...' : 'Entrar' }}
+    </button>
   </div>
+  
+  <div style="text-align: center; margin-top: 24px;">
+    <a routerLink="/login/signup" style="font-size: 14px; color: #94a3b8; text-decoration: underline; cursor: pointer;">
+      Não tem uma conta? <b>Inscrever-se</b>
+    </a>
+  </div>
+
+  <ion-modal
+    #forgot_pwd_modal
+    trigger="forgot-password"
+    cssClass="inline_modal"
+    (ionModalDidDismiss)="reset($event)"
+    [breakpoints]="[0.1, 0.5, 0.9]"
+    [initialBreakpoint]="0.5">
+    <ng-template>
+      <app-reset-password
+        [model]="reset_pwd_model"
+        (check_email)="sendResetPasswordEmailOtp($event)"
+        (verify_otp)="verifyResetPasswordOtp($event)"
+        (set_password)="resetPassword($event)">
+      </app-reset-password>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>
