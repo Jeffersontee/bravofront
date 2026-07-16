@@ -47,15 +47,15 @@
   </div>
 
   <!-- Legend -->
-  <div class="legend-row" style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
+  <div class="legend-row">
+    <div class="tags-container">
       @for (service of services(); track service._id; let idx = $index) {
         <span class="legend-item" [ngClass]="legendColors[idx % legendColors.length]">{{ service.name | uppercase }}</span>
       } @empty {
         <span class="legend-item bg-grey">NENHUM SERVIÇO CADASTRADO</span>
       }
     </div>
-    <button class="btn-new-visit" (click)="openCreateVisitModal()" style="padding: 8px 16px; background-color: var(--ion-color-primary); color: white; border: none; font-weight: bold; border-radius: 4px; cursor: pointer;">
+    <button class="btn-new-visit" (click)="openCreateVisitModal()">
       NOVA SOLICITAÇÃO
     </button>
   </div>

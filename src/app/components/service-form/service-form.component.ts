@@ -1,30 +1,33 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, input, output, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal } from '@ionic/angular/standalone';
+import { IonHeader, IonTitle, IonToolbar, IonIcon, IonContent, IonToggle, IonModal, IonButton, IonButtons } from '@ionic/angular/standalone';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
-import { flashOutline, waterOutline, constructOutline, hardwareChipOutline, shieldCheckmarkOutline, closeOutline, addCircleOutline } from 'ionicons/icons';
+import { flashOutline, waterOutline, constructOutline, hardwareChipOutline, shieldCheckmarkOutline, closeOutline } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-services',
-  templateUrl: './services.page.html',
-  styleUrls: ['./services.page.scss'],
+  selector: 'app-service-form',
+  templateUrl: './service-form.component.html',
+  styleUrls: ['./service-form.component.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal, CommonModule, FormsModule, ReactiveFormsModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonHeader, IonTitle, IonToolbar, IonButtons, IonIcon, IonContent, IonToggle, IonModal, IonButton]
 })
-export class ServicesPage implements OnInit {
+export class ServiceFormComponent implements OnInit {
   private serviceService = inject(ServiceService);
   private globalService = inject(GlobalService);
   private fb = inject(FormBuilder);
 
-  services = signal<ServiceItem[]>([]);
-  isModalOpen = signal<boolean>(false);
-  isLoading = signal<boolean>(false);
-  editingService = signal<ServiceItem | null>(null);
+  isOpen = input<boolean>(false);
+  editingService = input<ServiceItem | null>(null);
+  isEditMode = input<boolean>(false);
+
+  closed = output<void>();
+  saved = output<void>();
 
   form: FormGroup;
+  isLoading = false;
 
   availableIcons = [
     { name: 'flash-outline', label: 'Elétrica' },
@@ -35,7 +38,7 @@ export class ServicesPage implements OnInit {
   ];
 
   constructor() {
-    addIcons({ flashOutline, waterOutline, constructOutline, hardwareChipOutline, shieldCheckmarkOutline, closeOutline, addCircleOutline });
+    addIcons({ flashOutline, waterOutline, constructOutline, hardwareChipOutline, shieldCheckmarkOutline, closeOutline });
     this.form = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -44,41 +47,30 @@ export class ServicesPage implements OnInit {
       price: [0, [Validators.required, Validators.min(0)]],
       status: ['ACTIVE']
     });
-  }
 
-  ngOnInit() {
-    this.loadServices();
-  }
-
-  loadServices() {
-    this.serviceService.getServices().subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.services.set(res.data);
+    effect(() => {
+      const open = this.isOpen();
+      const service = this.editingService();
+      
+      if (open) {
+        if (service) {
+          this.form.patchValue(service);
+        } else {
+          this.form.reset({ status: 'ACTIVE', category: 'GERAL', icon: 'flash-outline' });
         }
-      },
-      error: () => this.globalService.errorToast('Erro ao carregar serviços')
+      }
     });
   }
 
-  openModal(service?: ServiceItem) {
-    this.form.reset({ status: 'ACTIVE', category: 'GERAL', icon: 'flash-outline' });
-    if (service) {
-      this.editingService.set(service);
-      this.form.patchValue(service);
-    } else {
-      this.editingService.set(null);
-    }
-    this.isModalOpen.set(true);
-  }
+  ngOnInit() {}
 
   closeModal() {
-    this.isModalOpen.set(false);
+    this.closed.emit();
   }
 
   saveService() {
     if (this.form.invalid) return;
-    this.isLoading.set(true);
+    this.isLoading = true;
     const payload = this.form.getRawValue();
     const current = this.editingService();
 
@@ -87,14 +79,13 @@ export class ServicesPage implements OnInit {
         next: (res) => {
           if (res.success) {
             this.globalService.successToast('Serviço atualizado com sucesso!');
-            this.closeModal();
-            this.loadServices();
+            this.saved.emit();
           }
-          this.isLoading.set(false);
+          this.isLoading = false;
         },
         error: () => {
           this.globalService.errorToast('Erro ao atualizar serviço');
-          this.isLoading.set(false);
+          this.isLoading = false;
         }
       });
     } else {
@@ -102,20 +93,15 @@ export class ServicesPage implements OnInit {
         next: (res) => {
           if (res.success) {
             this.globalService.successToast('Serviço criado com sucesso!');
-            this.closeModal();
-            this.loadServices();
+            this.saved.emit();
           }
-          this.isLoading.set(false);
+          this.isLoading = false;
         },
         error: () => {
           this.globalService.errorToast('Erro ao criar serviço');
-          this.isLoading.set(false);
+          this.isLoading = false;
         }
       });
     }
-  }
-
-  deleteService(id: string) {
-    // Add logic later if needed
   }
 }

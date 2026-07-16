@@ -9,13 +9,13 @@ export enum Strings {
 
   // Super_admin
   SUPER_ADMIN = '/super-admin',
-    SUPER_DASHBOARD = '/super-admin/super-dashboard', // Dashboard específico do Super Admin
+  SUPER_DASHBOARD = '/super-admin/super-dashboard', // Dashboard específico do Super Admin
 
-    SUPER_STAFF = '/super-admin/staff',
-    SUPER_STAFF_CREATE = '/super-admin/staff/create',
-    SUPER_STAFF_EDIT = '/super-admin/staff/edit',
-    STAFF_TYPE = 'staff',
-    SUPER_STAFF_TYPE = 'super_staff',
+  SUPER_STAFF = '/super-admin/staff',
+  SUPER_STAFF_CREATE = '/super-admin/staff/create',
+  SUPER_STAFF_EDIT = '/super-admin/staff/edit',
+  STAFF_TYPE = 'staff',
+  SUPER_STAFF_TYPE = 'super_staff',
 
 
   // Tipos de Usuário / Roles

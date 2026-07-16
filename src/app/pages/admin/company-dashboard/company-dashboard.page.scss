@@ -10,6 +10,15 @@
   background-color: #1e1e1e;
   color: #fff;
 
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+    
+    .header-stats {
+      text-align: left !important;
+    }
+  }
+
   .header-titles {
     @media (max-width: 991px) {
       padding-left: 40px;
@@ -66,9 +75,11 @@
   gap: 15px;
   padding: 20px;
   background-color: #f9f9f9;
+  flex-wrap: wrap;
 
   .kpi-card {
-    flex: 1;
+    flex: 1 1 calc(50% - 15px);
+    min-width: 130px;
     background: #fff;
     border: 1px solid #ddd;
     border-top: 4px solid #333;
@@ -102,10 +113,20 @@
 }
 
 .legend-row {
-  padding: 0 20px 10px 20px;
+  padding: 10px 20px 20px 20px;
   background-color: #f9f9f9;
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  flex-wrap: wrap;
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+  }
 
   .legend-item {
     padding: 5px 10px;
@@ -113,11 +134,32 @@
     font-weight: bold;
     color: #fff;
     border-radius: 3px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.2;
     
     &.bg-yellow { background-color: #f39c12; }
     &.bg-blue { background-color: #2980b9; }
     &.bg-grey { background-color: #7f8c8d; }
     &.bg-red { background-color: #c0392b; }
+  }
+
+  .btn-new-visit {
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s;
+    
+    &:hover {
+      background-color: #f39c12;
+      color: #333;
+    }
   }
 }
 
@@ -125,13 +167,16 @@
   display: flex;
   gap: 15px;
   padding: 20px;
-  background-color: var(--ion-background-color);
+  background-color: #f9f9f9;
+  color: #333;
   border-top: 1px solid #e2e8f0;
   border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
 
   .filter-group {
     display: flex;
     flex-direction: column;
+    min-width: 120px;
     
     &.flex-grow { flex: 1; }
 
@@ -168,7 +213,8 @@
 }
 
 .table-container {
-  background-color: var(--ion-background-color);
+  background-color: #f9f9f9;
+  color: #333;
   padding: 20px;
   min-height: 100%;
 
@@ -182,6 +228,7 @@
     .month-title {
       font-weight: bold;
       font-size: 14px;
+      color: #333;
     }
     .pagination {
       font-size: 12px;
@@ -201,7 +248,7 @@
       
       .col-date { width: 60px; font-weight: bold; color: #666; font-size: 13px; }
       .col-day { width: 80px; font-size: 11px; color: #999; }
-      .col-unit { flex: 1; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+      .col-unit { flex: 1; font-weight: bold; font-size: 14px; color: #333; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
       
       .col-status {
         width: 100px;

@@ -74,6 +74,7 @@ export class AdminLayoutPage implements OnInit {
       icon: 'storefront-outline',
       children: [
         { title: 'Empresa', stringKey: 'ADMIN_LIST_COMPANY', icon: 'list-outline' },
+        // { title: 'Empresas (Painel)', stringKey: 'ADMIN_COMPANIES', icon: 'business-outline' },
         { title: 'Cadastrar Empresa', stringKey: 'ADMIN_CREATE_COMPANY', icon: 'add-circle-outline' },
         { title: 'Painel da Empresa', stringKey: 'ADMIN_DETAILS_COMPANY', icon: 'document-text-outline' },
         { title: 'Unidades da Empresa', stringKey: 'ADMIN_LIST_UNITS', icon: 'business-outline' },

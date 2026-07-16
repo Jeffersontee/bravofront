@@ -1,0 +1,42 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Colaboradores</ion-title>
+  </ion-toolbar>
+</ion-header>
+  
+<ion-content class="ion-padding">
+  <div class="collaborators-grid">
+    @for (collab of collaborators(); track collab._id) {
+      <div class="collab-card" [routerLink]="['/establishment-admin/collaborators/details', collab._id]">
+        <div class="icon-container">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <div class="collab-info">
+          <h3>{{ collab.name }}</h3>
+          <p>{{ collab.role | titlecase }}</p>
+          <span class="status" [class.active]="collab.status === 'active'">
+            {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
+          </span>
+        </div>
+        <ion-button fill="clear" [routerLink]="['/establishment-admin/collaborators/edit', collab._id]" (click)="$event.stopPropagation()">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+      </div>
+    } @empty {
+      @if (!isLoading()) {
+        <div class="empty-state">
+          <p>Nenhum colaborador encontrado.</p>
+        </div>
+      }
+    }
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/establishment-admin/collaborators/create" color="primary">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
