@@ -1,4 +1,4 @@
-import { Injectable, inject, Injector, signal } from '@angular/core';
+﻿import { Injectable, inject, Injector, signal } from '@angular/core';
 import { Strings } from 'src/app/enum/strings';
 import { ApiService } from '../api/api.service';
 import { BehaviorSubject, from, lastValueFrom, Observable, Subject, throwError } from 'rxjs';
@@ -26,7 +26,7 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     private _refreshToken = signal<string | null>(null);
     readonly isRefreshingToken = signal<boolean>(false);
     readonly accessTokenSubject = new Subject<string | null>();
-    public establishment = signal<any>(null);
+    public company = signal<any>(null);
     private lastBackPress = 0;
     private injector = inject(Injector);
 

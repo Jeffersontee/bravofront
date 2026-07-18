@@ -1,4 +1,4 @@
-import { Strings } from 'src/app/enum/strings';
+﻿import { Strings } from 'src/app/enum/strings';
 import { OAuthProvider } from './oauth-token.model';
 
 export interface IUserOAuthProvider {
@@ -19,7 +19,7 @@ export class User {
     public email_verified?: boolean,
     public photo?: string,
     public subscription_status?: string,
-    public establishment_id?: string, // Novo campo sincronizado com o Backend
+    public company_id?: string, // Novo campo sincronizado com o Backend
     public oauth_providers: IUserOAuthProvider[] = [], // Lista de vínculos OAuth
     public cpf?: string,
     public cnpj?: string,
@@ -40,7 +40,7 @@ export class User {
       data.email_verified,
       data.photo,
       data.subscription_status,
-      data.establishment_id, // Mapeamento do novo campo
+      data.company_id, // Mapeamento do novo campo
       data.oauth_providers ? data.oauth_providers.map((p: any) => ({
         ...p,
         linked_at: p.linked_at ? new Date(p.linked_at) : new Date()

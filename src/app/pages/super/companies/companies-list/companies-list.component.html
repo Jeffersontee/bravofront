@@ -1,0 +1,48 @@
+﻿<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Empresas / Clientes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadCompanies()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gerenciamento de Empresas</h2>
+    <ion-button (click)="goToCreate()" color="success">
+      <ion-icon name="add-outline" slot="start"></ion-icon>
+      Nova Empresa
+    </ion-button>
+  </div>
+
+  <ion-card *ngIf="isLoading">
+    <ion-card-content class="text-center">
+      <ion-spinner></ion-spinner>
+      <p>Carregando empresas...</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list *ngIf="!isLoading && companies.length > 0">
+    <ion-item *ngFor="let company of companies" button (click)="goToEdit(company._id!)">
+      <ion-label>
+        <h2>{{ company.name }}</h2>
+        <p>CNPJ: {{ company.cnpj }} | E-mail: {{ company.email }}</p>
+      </ion-label>
+      <ion-badge [color]="company.active ? 'success' : 'medium'" slot="end">
+        {{ company.active ? 'Ativo' : 'Inativo' }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-card *ngIf="!isLoading && companies.length === 0">
+    <ion-card-content class="text-center">
+      <p>Nenhuma empresa cadastrada.</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

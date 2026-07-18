@@ -17,6 +17,8 @@ export enum Strings {
   SUPER_STAFF_EDIT = '/super-admin/staff/edit',
   SUPER_SERVICES = '/super-admin/services',
   SUPER_SERVICES_CREATE = '/super-admin/services/create',
+  SUPER_COMPANIES = '/super-admin/companies',
+  SUPER_COMPANIES_CREATE = '/super-admin/companies/create',
   SUPER_COLLABORATORS = '/super-admin/collaborators',
   SUPER_COLLABORATORS_CREATE = '/super-admin/collaborators/create',
   STAFF_TYPE = 'staff',

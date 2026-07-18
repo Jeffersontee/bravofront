@@ -50,4 +50,17 @@ export class CompanyService {
   deleteCompany(id: string): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(`${this.url}/${id}`, { headers: this.getHeaders() });
   }
+
+  // Usuários vinculados
+  getCompanyUsers(id: string): Observable<{ success: boolean; data: any[] }> {
+    return this.http.get<{ success: boolean; data: any[] }>(`${this.url}/${id}/users`, { headers: this.getHeaders() });
+  }
+
+  assignUser(id: string, data: any): Observable<{ success: boolean; data: any }> {
+    return this.http.post<{ success: boolean; data: any }>(`${this.url}/${id}/users`, data, { headers: this.getHeaders() });
+  }
+
+  removeUser(id: string, userId: string): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(`${this.url}/${id}/users/${userId}`, { headers: this.getHeaders() });
+  }
 }

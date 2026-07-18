@@ -11,7 +11,8 @@ import { addIcons } from 'ionicons';
 import { 
   homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
   peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
-  menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline
+  menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
+  businessOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Strings } from 'src/app/enum/strings';
@@ -63,6 +64,14 @@ export class SuperLayoutPage implements OnInit {
       ]
     },
     {
+      title: 'Empresas / Clientes',
+      icon: 'business-outline',
+      children: [
+        { title: 'Ver Empresas', stringKey: 'SUPER_COMPANIES', icon: 'list-outline' },
+        { title: 'Cadastrar Empresa', stringKey: 'SUPER_COMPANIES_CREATE', icon: 'add-circle-outline' },
+      ]
+    },
+    {
       title: 'Catálogo',
       icon: 'construct-outline',
       children: [
@@ -96,7 +105,8 @@ export class SuperLayoutPage implements OnInit {
     addIcons({ 
       homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
       peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
-      menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline
+      menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
+      businessOutline
     });
   }
 

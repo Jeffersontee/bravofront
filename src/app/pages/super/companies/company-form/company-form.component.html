@@ -1,0 +1,122 @@
+﻿<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/super-admin/companies"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode ? 'Editar Empresa' : 'Nova Empresa' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Nome da Empresa <span class="text-danger">*</span></ion-label>
+        <ion-input formControlName="name" placeholder="Ex: Adega do Zé"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Nome Curto</ion-label>
+        <ion-input formControlName="short_name" placeholder="Ex: adegadoze"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Nome do Dono / Responsável</ion-label>
+        <ion-input formControlName="owner_name" placeholder="Ex: José da Silva"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">CNPJ <span class="text-danger">*</span></ion-label>
+        <ion-input formControlName="cnpj" placeholder="Ex: 00.000.000/0000-00"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">E-mail de Contato <span class="text-danger">*</span></ion-label>
+        <ion-input type="email" formControlName="email" placeholder="contato@adega.com"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Descrição / Notas</ion-label>
+        <ion-textarea formControlName="description" rows="3"></ion-textarea>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>Ativo no sistema</ion-label>
+        <ion-toggle formControlName="active" slot="end"></ion-toggle>
+      </ion-item>
+    </ion-list>
+
+    <div class="ion-padding-top">
+      <ion-button expand="block" type="submit" [disabled]="form.invalid || isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+        {{ isEditMode ? 'Salvar Alterações' : 'Criar Empresa' }}
+      </ion-button>
+    </div>
+  </form>
+
+  <hr class="my-4" *ngIf="isEditMode">
+
+  <!-- GERENCIAMENTO DE USUÁRIOS -->
+  <div *ngIf="isEditMode">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Usuários Vinculados</h2>
+      <ion-button size="small" fill="outline" (click)="toggleUserForm()">
+        {{ showUserForm ? 'Cancelar' : 'Adicionar Usuário' }}
+      </ion-button>
+    </div>
+
+    <!-- FORMULÁRIO DE ADIÇÃO -->
+    <ion-card *ngIf="showUserForm" class="ion-padding mb-3">
+      <form [formGroup]="userForm" (ngSubmit)="assignUser()">
+        <p class="text-muted small mb-2">Digite um E-mail. Se já existir, será vinculado. Se não, um novo usuário será criado.</p>
+        
+        <ion-item>
+          <ion-label position="stacked">E-mail <span class="text-danger">*</span></ion-label>
+          <ion-input type="email" formControlName="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Nome Completo <span class="text-danger">*</span></ion-label>
+          <ion-input formControlName="name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Telefone</ion-label>
+          <ion-input formControlName="phone"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Nível de Acesso <span class="text-danger">*</span></ion-label>
+          <ion-select formControlName="type" interface="popover">
+            <ion-select-option value="company_owner">Dono / Administrador</ion-select-option>
+            <ion-select-option value="admin">Gerente / Operador</ion-select-option>
+            <ion-select-option value="collaborator">Colaborador / Campo</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Senha (Apenas se for novo)</ion-label>
+          <ion-input type="password" formControlName="password"></ion-input>
+        </ion-item>
+        
+        <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="userForm.invalid || isUsersLoading">
+          <ion-spinner *ngIf="isUsersLoading" name="crescent" slot="start"></ion-spinner>
+          Vincular / Criar Usuário
+        </ion-button>
+      </form>
+    </ion-card>
+
+    <!-- LISTA DE USUÁRIOS -->
+    <ion-list *ngIf="!isUsersLoading && companyUsers.length > 0">
+      <ion-item *ngFor="let user of companyUsers">
+        <ion-label>
+          <h3>{{ user.name }}</h3>
+          <p>{{ user.email }} | {{ user.type }}</p>
+        </ion-label>
+        <ion-button fill="clear" color="danger" slot="end" (click)="removeUser(user._id)">
+          Desvincular
+        </ion-button>
+      </ion-item>
+    </ion-list>
+
+    <ion-card *ngIf="!isUsersLoading && companyUsers.length === 0 && !showUserForm">
+      <ion-card-content class="text-center">
+        <p>Nenhum usuário vinculado a esta empresa.</p>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="text-center ion-padding" *ngIf="isUsersLoading && !showUserForm">
+      <ion-spinner></ion-spinner>
+    </div>
+  </div>
+</ion-content>
