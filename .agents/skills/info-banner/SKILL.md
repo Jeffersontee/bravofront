@@ -2,9 +2,8 @@
 name: info-banner
 description: Padrão de componente/bloco visual .info-banner com comportamento expandível/colapsável integrado com o HelpService.
 ---
-# Info Banner Standard Pattern
 
-Este guia cobre o padrão de HTML, TypeScript e CSS para renderizar caixas informativas e interativas (`.info-banner`) que consultam tópicos de ajuda via `HelpService`.
+Esta skill fornece diretrizes sobre **info-banner**.
 
-## Referências
-- [Info Banner Reference Guide](file:///c:/workspace/adegaspinguinsV2/adegapinguinsfront/.agents/skills/info-banner/references/INFO_BANNER.md)
+Por favor, leia a documentação completa no arquivo de referência:
+[INFO_BANNER.md](file:///c:/workspace/adegaspinguinsV2/adegapinguinsfront/.agents/skills/info-banner/references/INFO_BANNER.md)

@@ -1,143 +1,177 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/login"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Criar uma conta</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="bg-neutral">
+  <!-- Cabeçalho Escuro (Hero Header) -->
+  <div class="hero-header">
+    <div class="header-nav">
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/login" color="light" text=""></ion-back-button>
+      </ion-buttons>
+    </div>
+    <h1 class="header-title">Criar uma conta</h1>
+    <p class="header-desc">
+      Preencha seus dados abaixo para solicitar serviços.
+    </p>
+  </div>
 
-<ion-content class="ion-padding">
+  <div class="floating-form-wrapper">
+    <div class="bravo-card form-card">
+      
+      <ion-segment value="user" (ionChange)="segmentChanged($event)" class="bravo-segment">
+        <ion-segment-button value="user">
+          <ion-label>Você (CPF)</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="company">
+          <ion-label>Empresa (CNPJ)</ion-label>
+        </ion-segment-button>
+      </ion-segment>
 
-  <form #f1="ngForm" (ngSubmit)="onSubmit(f1)">
-    <ion-list lines="none">
-      <ion-item-group class="ion-margin-bottom">
-        <ion-item color="light">
-          <ion-icon name="person" slot="start" color="medium"></ion-icon> 
-          <ion-input
-            label=""
-            errorText="* Por favor, digite seu nome."
-            type="text"
-            name="name"
-            ngModel
-            #name="ngModel"
-            placeholder="Nome"
-            required>
-          </ion-input>
-        </ion-item>
-        <!-- <ion-text color="danger" *ngIf="!name.valid && name.touched">
-          <p class="errorMsg">* Please enter your name</p>
-        </ion-text> -->
-      </ion-item-group>
+      <form #f1="ngForm" (ngSubmit)="onSubmit(f1)">
+        
+        <!-- Campos para Lojista (Empresa) -->
+        <ng-container *ngIf="isCompany">
+          <div class="input-wrapper">
+            <ion-icon name="business-outline" class="input-icon"></ion-icon> 
+            <input
+              type="text"
+              name="company_name"
+              ngModel
+              placeholder="Razão Social / Nome da Empresa"
+              class="custom-input"
+              required>
+          </div>
 
-      <ion-item-group class="ion-margin-bottom">
-        <ion-item color="light">
-          <ion-icon name="mail" slot="start" color="medium"></ion-icon> 
-          <ion-input
-            label=""
-            errorText="* Por favor, insira um endereço de e-mail válido."
+          <div class="input-wrapper">
+            <ion-icon name="document-text-outline" class="input-icon"></ion-icon> 
+            <input
+              type="text"
+              name="cnpj"
+              ngModel
+              (input)="onCnpjInput($event)"
+              placeholder="CNPJ"
+              class="custom-input"
+              required>
+          </div>
+
+          <div class="input-wrapper">
+            <ion-icon name="person-outline" class="input-icon"></ion-icon> 
+            <input
+              type="text"
+              name="owner_name"
+              ngModel
+              placeholder="Nome do Dono"
+              class="custom-input"
+              required>
+          </div>
+        </ng-container>
+
+        <!-- Campos para Cliente (Pessoa Física) -->
+        <ng-container *ngIf="!isCompany">
+          <div class="input-wrapper">
+            <ion-icon name="person-outline" class="input-icon"></ion-icon> 
+            <input
+              type="text"
+              name="name"
+              ngModel
+              placeholder="Nome Completo"
+              class="custom-input"
+              required>
+          </div>
+
+          <div class="input-wrapper">
+            <ion-icon name="document-outline" class="input-icon"></ion-icon> 
+            <input
+              type="text"
+              name="cpf"
+              ngModel
+              placeholder="CPF"
+              class="custom-input"
+              required>
+          </div>
+        </ng-container>
+
+        <!-- Campos Comuns -->
+        <div class="input-wrapper">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon> 
+          <input
             type="email"
             name="email"
             ngModel
-            email
             #emailCtrl="ngModel"
             placeholder="Email"
+            class="custom-input"
             required>
-          </ion-input>
-        </ion-item>
-        <!-- <ion-text color="danger" *ngIf="!emailCtrl.valid && emailCtrl.touched">
-          <p class="errorMsg">* Please enter a valid email address</p>
-        </ion-text> -->
-      </ion-item-group>
+        </div>
 
-      <ion-item-group class="ion-margin-bottom">
-        <ion-item color="light">
-          <ion-icon name="call" slot="start" color="medium"></ion-icon> 
-          <ion-input
-            label=""
-            errorText="* Por favor, insira um número de telefone válido."
+        <div class="input-wrapper">
+          <ion-icon name="call-outline" class="input-icon"></ion-icon> 
+          <input
             type="tel"
             name="phone"
             ngModel
             #phone="ngModel"
             placeholder="Telefone"
+            class="custom-input"
             required
             minlength="11"
             maxlength="11">
-          </ion-input>
-        </ion-item>
-        <!-- <ion-text color="danger" *ngIf="!phone.valid && phone.touched">
-          <p class="errorMsg">* Please enter a valid phone number</p>
-        </ion-text> -->
-      </ion-item-group>
+        </div>
 
-      <ion-item-group class="ion-margin-bottom">
-        <ion-item color="light">
-          <ion-icon name="key" slot="start" color="medium"></ion-icon> 
-          <ion-icon color="primary" slot="end" (click)="passwordHidden = !passwordHidden" [name]="passwordHidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
-          <ion-input
+        <!-- Senha -->
+        <div class="input-wrapper password-wrapper">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon> 
+          <input
             [type]="passwordHidden ? 'password' : 'text'"
             name="password"
-            label=""
-            errorText="* A senha deve ter no mínimo 8 caracteres, incluindo letras e números."
             ngModel
             #passwordCtrl="ngModel"
             placeholder="Senha"
+            class="custom-input password-input"
             required
             pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$"
             minlength="8">
-          </ion-input>
-        </ion-item>
-        <!-- <ion-text color="danger" *ngIf="!passwordCtrl.valid && passwordCtrl.touched">
-          <p class="errorMsg">* Password must be of minimum 8 characters long.</p>
-        </ion-text> -->
-      </ion-item-group>
+          <button type="button" class="eye-btn" (click)="passwordHidden = !passwordHidden" aria-label="Alternar visibilidade">
+            <ion-icon [name]="passwordHidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+          </button>
+        </div>
 
-      <ion-item color="light">
-        <ion-icon name="key" slot="start" color="medium"></ion-icon> 
-        <ion-icon color="primary" slot="end" (click)="confirmPasswordHidden = !confirmPasswordHidden" [name]="confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
-        <ion-input
-          [type]="confirmPasswordHidden ? 'password' : 'text'"
-          name="c_password"
-          label=""
-          errorText="* A senha de confirmação deve conter letras e números."
-          ngModel
-          #c_passwordCtrl="ngModel"
-          placeholder="Confirmar Senha"
-          required
-          pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$"
-          minlength="8">
-        </ion-input>
-      </ion-item>
-      <!-- <ion-text color="danger" *ngIf="!c_passwordCtrl.valid && c_passwordCtrl.touched">
-        <p class="errorMsg">* Confirm Password must be of minimum 8 characters long.</p>
-      </ion-text> -->
-      <ion-text color="danger" *ngIf="c_passwordCtrl.valid && c_passwordCtrl.value != passwordCtrl.value">
-        <p class="errorMsg">* Senha incorreta! Você digitou uma senha diferente.</p>
-      </ion-text>
-    </ion-list>
+        <!-- Confirmar Senha -->
+        <div class="input-wrapper password-wrapper">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon> 
+          <input
+            [type]="confirmPasswordHidden ? 'password' : 'text'"
+            name="c_password"
+            ngModel
+            #c_passwordCtrl="ngModel"
+            placeholder="Confirmar Senha"
+            class="custom-input password-input"
+            required
+            pattern="^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$"
+            minlength="8">
+          <button type="button" class="eye-btn" (click)="confirmPasswordHidden = !confirmPasswordHidden" aria-label="Alternar visibilidade">
+            <ion-icon [name]="confirmPasswordHidden ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+          </button>
+        </div>
 
-    <ion-button 
-      *ngIf="!isLoading" 
-      [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value)"
-      expand="block" 
-      shape="round" 
-      type="submit" 
-      size="large"
-      color="primary">
-      <ion-text>INSCREVER-SE</ion-text>
-    </ion-button>
+        <ion-text color="danger" *ngIf="c_passwordCtrl.valid && c_passwordCtrl.value != passwordCtrl.value">
+          <p class="errorMsg" style="font-size: 13px; margin-top: -10px; margin-bottom: 16px;">* As senhas não conferem.</p>
+        </ion-text>
 
-    <div class="ion-text-center" *ngIf="isLoading">
-      <ion-button 
-        shape="round" 
-        color="primary" 
-        size="large"
-        [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value)">
-        <ion-spinner name="circles"></ion-spinner>
-      </ion-button>
+        <button 
+          *ngIf="!isLoading" 
+          [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value)"
+          [class.active-btn]="f1.valid && (c_passwordCtrl.value == passwordCtrl.value)"
+          type="submit" 
+          class="bravo-submit-btn">
+          Inscrever-se
+        </button>
+
+        <button 
+          *ngIf="isLoading" 
+          disabled
+          class="bravo-submit-btn active-btn">
+          <ion-spinner name="crescent" style="width: 20px; height: 20px;"></ion-spinner>
+        </button>
+        
+      </form>
     </div>
-    
-  </form>
-
+  </div>
 </ion-content>

@@ -67,7 +67,7 @@ export const TokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
           // Verifica se a mensagem de erro refere-se a limites ou upgrade
           if (errorMsg.includes('Limite') || errorMsg.includes('upgrade') || err.status === 402) {
             global.showAlert(errorMsg || 'Limite do plano atingido. Faça um upgrade para continuar.');
-            router.navigateByUrl('/establishment-admin/subscriptions');
+            router.navigateByUrl('/company/subscriptions');
             return throwError(() => err);
           }
         }

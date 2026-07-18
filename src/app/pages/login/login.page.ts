@@ -13,6 +13,7 @@ import {
 import { AuthService } from '../../services/auth/auth.service';
 import { GlobalService } from '../../services/global/global.service';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
+import { Strings } from 'src/app/enum/strings';
 
 @Component({
   selector: 'app-login',
@@ -42,6 +43,8 @@ export class LoginPage implements OnDestroy {
     otp: '',
     new_password: ''
   };
+
+  Strings = Strings;
 
   constructor() {
     addIcons({ mailOutline, lockClosedOutline, construct, key, mail, eyeOffOutline, eyeOutline });

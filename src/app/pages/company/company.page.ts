@@ -67,7 +67,7 @@ export class CompanyPage {
       }
     } catch (error: any) {
       this.global.errorToast('Erro ao carregar dados da empresa. A empresa pode ter sido excluída.');
-      this.router.navigate([`/${Strings.ADMIN_COMPANIES}`]);
+      this.router.navigate([`/${Strings.COMPANY_COMPANIES}`]);
     } finally {
       this.isLoading.set(false);
     }
@@ -87,7 +87,7 @@ export class CompanyPage {
         this.global.successToast('Empresa cadastrada com sucesso');
       }
       
-      this.router.navigate([`/${Strings.ADMIN_COMPANIES}`]);
+      this.router.navigate([`/${Strings.COMPANY_COMPANIES}`]);
     } catch (e: any) {
       const message = e.error?.message || 'Erro ao salvar empresa';
       this.global.errorToast(message);

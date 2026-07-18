@@ -1,0 +1,175 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar class="high-contrast-header">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detalhes da OS</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="bg-light">
+  @if(isLoading()) {
+    <div class="ion-padding">
+      <ion-skeleton-text animated style="width: 100%; height: 150px; border-radius: 16px; margin-bottom: 20px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 100%; height: 300px; border-radius: 16px;"></ion-skeleton-text>
+    </div>
+  } @else {
+    @if(order(); as os) {
+      
+      <!-- Main Info Card -->
+      <div class="detail-header-card">
+        <div class="status-container">
+          <ion-badge [color]="getStatusColor(os.current_status)" class="status-badge-lg">
+            {{ getStatusLabel(os.current_status) }}
+          </ion-badge>
+        </div>
+        
+        <h1 class="service-name">{{ $any(os.service_id)?.name || 'Serviço' }}</h1>
+        <p class="service-desc">{{ $any(os.service_id)?.description }}</p>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <ion-icon name="business-outline"></ion-icon>
+            <div>
+              <small>Empresa</small>
+              <span>{{ $any(os.company_id)?.name || 'Não informada' }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="location-outline"></ion-icon>
+            <div>
+              <small>Localização</small>
+              <span>{{ $any(os.unit_id)?.name || 'Unidade Base' }}</span>
+              <span class="sub-text">{{ $any(os.unit_id)?.address }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="person-outline"></ion-icon>
+            <div>
+              <small>Técnico Atribuído</small>
+              <span>{{ $any(os.collaborator_id)?.name || 'A definir' }}</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <ion-icon name="time-outline"></ion-icon>
+            <div>
+              <small>Agendamento</small>
+              <span>{{ (os.scheduled_date | date:'dd/MM/yyyy HH:mm') || 'A definir' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline Vertical -->
+      <div class="timeline-section">
+        <h2>Linha do Tempo</h2>
+        
+        <div class="timeline-container">
+          
+          <!-- Passo 1: Agendado -->
+          <div class="timeline-item" [class.active]="isPastStatus('AGENDADO')">
+            <div class="timeline-icon">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Agendado</h3>
+              <p>Ordem criada e aguardando execução.</p>
+            </div>
+          </div>
+
+          <!-- Passo 2: Deslocamento -->
+          <div class="timeline-item" [class.active]="isPastStatus('EM_DESLOCAMENTO')">
+            <div class="timeline-icon">
+              <ion-icon name="car-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Técnico em Deslocamento</h3>
+              <p>O técnico iniciou a rota para o local.</p>
+            </div>
+          </div>
+
+          <!-- Passo 3: Check-in -->
+          <div class="timeline-item" [class.active]="isPastStatus('CHECK_IN')">
+            <div class="timeline-icon">
+              <ion-icon name="map-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Check-in Realizado</h3>
+              <p>O técnico chegou na unidade.</p>
+            </div>
+          </div>
+
+          <!-- Passo 4: Execução -->
+          <div class="timeline-item" [class.active]="isPastStatus('EM_EXECUCAO')">
+            <div class="timeline-icon">
+              <ion-icon name="build-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Em Execução</h3>
+              <p>O serviço está sendo realizado.</p>
+            </div>
+          </div>
+
+          <!-- Passo 5: Concluído -->
+          <div class="timeline-item" [class.active]="isPastStatus('CONCLUIDO')">
+            <div class="timeline-icon">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Finalizado</h3>
+              <p>O serviço foi concluído com sucesso.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    }
+  }
+</ion-content>
+
+<!-- Actions Footer (Fixed at Bottom for Collaborators) -->
+@if(order(); as os) {
+  <ion-footer class="ion-no-border action-footer">
+    <ion-toolbar class="transparent-toolbar">
+      
+      @if(canStartDisplacement()) {
+        <ion-button expand="block" shape="round" color="tertiary" class="action-btn" (click)="updateStatus('EM_DESLOCAMENTO')">
+          <ion-icon slot="start" name="car-outline"></ion-icon>
+          Iniciar Deslocamento
+        </ion-button>
+      }
+      
+      @if(canCheckIn()) {
+        <ion-button expand="block" shape="round" color="warning" class="action-btn" (click)="updateStatus('CHECK_IN')">
+          <ion-icon slot="start" name="map-outline"></ion-icon>
+          Fazer Check-in no Local
+        </ion-button>
+      }
+
+      @if(canStartExecution()) {
+        <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="updateStatus('EM_EXECUCAO')">
+          <ion-icon slot="start" name="build-outline"></ion-icon>
+          Iniciar Execução
+        </ion-button>
+      }
+
+      @if(canFinish()) {
+        <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="updateStatus('CONCLUIDO')">
+          <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+          Finalizar Serviço
+        </ion-button>
+      }
+
+      @if(isCompanyOwner() && os.current_status === 'CONCLUIDO') {
+        <ion-button expand="block" shape="round" fill="outline" color="dark" class="action-btn">
+          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          Ver Relatório em PDF
+        </ion-button>
+      }
+
+    </ion-toolbar>
+  </ion-footer>
+}

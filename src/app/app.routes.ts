@@ -20,7 +20,7 @@ export const routes: Routes = [
       },
       {
         path: 'orders',
-        loadComponent: () => import('./pages/customer/orders/orders.page').then(m => m.OrdersPage)
+        loadComponent: () => import('./pages/service-orders/service-orders.page').then(m => m.ServiceOrdersPage)
       },
       {
         path: 'profile',
@@ -38,9 +38,9 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'establishment-admin',
-    loadComponent: () => import('./pages/admin/admin-layout/admin-layout.page').then(m => m.AdminLayoutPage),
-    loadChildren: () => import('./pages/admin/admin.routes').then(m => m.adminRoutes)
+    path: 'company',
+    loadComponent: () => import('./pages/company/company-layout/company-layout.page').then(m => m.CompanyLayoutPage),
+    loadChildren: () => import('./pages/company/company.routes').then(m => m.companyRoutes)
   },
   {
     path: 'super-admin',
@@ -50,6 +50,14 @@ export const routes: Routes = [
   {
     path: 'signup',
     loadComponent: () => import('./pages/login/signup/signup.page').then( m => m.SignupPage)
+  },
+  {
+    path: 'service-orders',
+    loadComponent: () => import('./pages/service-orders/service-orders.page').then( m => m.ServiceOrdersPage)
+  },
+  {
+    path: 'service-orders/details/:id',
+    loadComponent: () => import('./pages/service-orders/details/service-order-details/service-order-details.page').then( m => m.ServiceOrderDetailsPage)
   }
 ];
 

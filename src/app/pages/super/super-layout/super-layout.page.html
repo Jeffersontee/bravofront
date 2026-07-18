@@ -1,39 +1,70 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
+  <ion-split-pane contentId="main-content" when="lg" [class.collapsed]="isCollapsed">
     
-    <!-- Menu Lateral -->
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-header>
-        <ion-toolbar color="primary">
-          <ion-title>Super Admin</ion-title>
+    <ion-menu contentId="main-content">
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="bravo-menu-header">
+          <ion-buttons slot="start" class="ion-hide-lg-down">
+            <ion-button class="toggle-btn" (click)="toggleSidebar()">
+              <ion-icon slot="icon-only" [name]="isCollapsed ? 'chevron-forward' : 'menu-outline'"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          @if (!isCollapsed) {
+            <ion-title class="bravo-menu-title">Super Admin</ion-title>
+          }
+          <div class="stripe-border"></div>
         </ion-toolbar>
       </ion-header>
 
       <ion-content>
-        <ion-list>
-          <ion-menu-toggle auto-hide="false">
-            
-            <ion-item routerLink="/super-admin/super-dashboard" routerDirection="root" routerLinkActive="selected">
-              <ion-icon name="home-outline" slot="start"></ion-icon>
-              <ion-label>Dashboard</ion-label>
-            </ion-item>
-            
-          </ion-menu-toggle>
+        <ion-list id="nav-list">
+          @for (item of menuItems; track item.title) {
+            @if (!item.children || item.children.length === 0) {
+              <ion-menu-toggle auto-hide="false">
+                <ion-item routerDirection="root" [routerLink]="item.url ? [item.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-1">
+                  <ion-icon slot="start" [name]="item.icon"></ion-icon>
+                  @if (!isCollapsed) {
+                    <ion-label>{{ item.title }}</ion-label>
+                  }
+                </ion-item>
+              </ion-menu-toggle>
+            } @else {
+              <ion-item (click)="item.open = !item.open" lines="none" detail="false" button class="menu-item level-1" [class.menu-item--open]="item.open">
+                <ion-icon slot="start" [name]="item.icon"></ion-icon>
+                @if (!isCollapsed) {
+                  <ion-label>{{ item.title }}</ion-label>
+                  <ion-icon slot="end" [name]="item.open ? 'chevron-down' : 'chevron-forward'"></ion-icon>
+                }
+              </ion-item>
+
+              @if (item.open && !isCollapsed) {
+                @for (child of item.children; track child.title) {
+                  <ion-menu-toggle auto-hide="false">
+                    <ion-item (click)="onMenuClick(child)" lines="none" detail="false" class="menu-item level-2" button>
+                      <ion-icon slot="start" [name]="child.icon"></ion-icon>
+                      <ion-label>{{ child.title }}</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                }
+              }
+            }
+          }
         </ion-list>
       </ion-content>
-      
-      <ion-footer>
-        <ion-toolbar>
-          <ion-item lines="none" button (click)="logout()">
-            <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
-            <ion-label color="danger">Sair</ion-label>
+
+      <ion-footer class="ion-no-border bravo-menu-footer">
+        <ion-list id="action-list">
+          <ion-item (click)="logout()" lines="none" detail="false" class="logout-item" button>
+            <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+            @if (!isCollapsed) {
+              <ion-label color="danger">Sair</ion-label>
+            }
           </ion-item>
-        </ion-toolbar>
+        </ion-list>
       </ion-footer>
     </ion-menu>
 
-    <!-- Conteúdo Principal -->
-    <div class="ion-page" id="main-content">
+    <div id="main-content" class="ion-page">
       <ion-router-outlet></ion-router-outlet>
     </div>
 

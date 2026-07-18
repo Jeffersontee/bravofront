@@ -26,7 +26,7 @@
     </div>
 
     <!-- Seção 'Em andamento' conforme a Imagem -->
-    <div *ngIf="activeOrders().length > 0" class="section-container">
+    <div *ngIf="activeOrders().length > 0; else noActiveOrders" class="section-container">
       <h3 class="section-title">Em andamento</h3>
       
       <div *ngFor="let order of activeOrders()" (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
@@ -49,6 +49,19 @@
         <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
       </div>
     </div>
+
+    <ng-template #noActiveOrders>
+      <div class="section-container">
+        <h3 class="section-title">Em andamento</h3>
+        <div class="bravo-card empty-state-card">
+          <div class="empty-icon-wrapper">
+            <ion-icon name="document-text-outline"></ion-icon>
+          </div>
+          <h4>Nenhum serviço em andamento</h4>
+          <p>Quando você solicitar um serviço, o acompanhamento aparecerá aqui.</p>
+        </div>
+      </div>
+    </ng-template>
 
     <!-- Título de Seleção -->
     <div class="section-container with-bottom">
@@ -98,8 +111,8 @@
           class="form-textarea"
         ></textarea>
 
-        <ion-button expand="block" (click)="submitRequest()" [disabled]="!serviceDescription().trim()" class="form-submit-btn">
-          Solicitar Serviço
+        <ion-button expand="block" (click)="submitRequest()" [disabled]="!serviceDescription().trim() || isSubmitting()" class="form-submit-btn">
+          {{ isSubmitting() ? 'Solicitando...' : 'Solicitar Serviço' }}
         </ion-button>
       </div>
     </div>

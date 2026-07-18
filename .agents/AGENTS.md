@@ -26,7 +26,7 @@
 - **Padrão de Injeção:** Usar a função `inject(Service)` para injeção de dependências em vez de injetar no construtor sempre que possível (padrão moderno do Angular).
 
 ## 3. Estrutura de Pastas
-- **Layouts:** Localizados em `src/app/pages/super/super-layouts` ou `src/app/pages/admin/admin-layout`.
+- **Layouts:** Localizados em `src/app/pages/super/super-layout` ou `src/app/pages/company/company-layout`.
 - **Módulos de Faturas (Invoices):** 
   - **Página Unificada:** `src/app/pages/payments` (Gerencia tanto a visão Super Admin quanto Admin Lojista).
   - **Serviço Central:** `src/app/services/payment/payment.service` (Responsável por toda a lógica de faturas e pagamentos).
@@ -88,7 +88,7 @@ Sempre que for solicitada a criação ou modificação de uma nova feature ou m�
 5. **Strings (Frontend):** Registro dos enums de rotas e endpoints de API.
 6. **Routes (Frontend):** Registro das novas rotas de páginas no roteamento do Angular.
 7. **Components/Pages (Frontend):** Desenvolvimento usando Angular moderno (inject, signals, standalone) e Ionic.
-8. **Layout & Menu (Frontend):** Inclusão física e correta dos novos links no menu de navegação lateral (`admin-layout`, etc.).
+8. **Layout & Menu (Frontend):** Inclusão física e correta dos novos links no menu de navegação lateral (`company-layout`, `super-layout`, etc.).
 9. **Seeder (Automação):** Geração ou alteração de seeds realistas com integridade referencial.
 10. **Assinatura (Backend):** Todo estabelecimento, quando criado via Super Admin, deve gerar automaticamente sua assinatura no modelo `Subscription`. Se o plano for `Trial`, a assinatura recebe `trialing`. Se for um plano pago (Premium/Lite), a assinatura já é gerada imediatamente como `active`.
 

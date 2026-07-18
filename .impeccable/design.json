@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-18T05:17:00Z",
+  "title": "Design System: Bravo Instalações",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Bravo Yellow" },
+      "secondary": { "role": "secondary", "displayName": "Charcoal Dark" },
+      "tertiary": { "role": "tertiary", "displayName": "Pastel Purple" },
+      "neutral-bg": { "role": "neutral", "displayName": "Background Light" }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Body", "purpose": "Standard content." }
+    },
+    "shadows": [
+      { "name": "card-float", "value": "0 4px 12px rgba(0, 0, 0, 0.05)", "purpose": "Standard elevation for cards." },
+      { "name": "header-drop", "value": "0 4px 20px rgba(0, 0, 0, 0.3)", "purpose": "Deep shadow for the main app header." }
+    ]
+  },
+  "components": [
+    {
+      "name": "App Header",
+      "kind": "custom",
+      "refersTo": "app-header",
+      "description": "Main premium navigation header.",
+      "html": "<div class=\"ds-app-header\">Header Title</div>",
+      "css": ".ds-app-header { background: #1a1a1a; color: #ffc409; padding: 24px 20px; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); font-weight: 600; font-family: 'Outfit', sans-serif; }"
+    },
+    {
+      "name": "Bravo Card",
+      "kind": "card",
+      "refersTo": "bravo-card",
+      "description": "Standard tactile content card.",
+      "html": "<div class=\"ds-bravo-card\">Card Content</div>",
+      "css": ".ds-bravo-card { background: #ffffff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.04); padding: 18px; margin: 12px 16px; transition: transform 0.2s ease, box-shadow 0.2s ease; font-family: 'Outfit', sans-serif; cursor: pointer; } .ds-bravo-card:active { transform: scale(0.98); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03); }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "status-badge",
+      "description": "Status indicator pill.",
+      "html": "<span class=\"ds-status-badge\">ACTIVE</span>",
+      "css": ".ds-status-badge { background: #1a1a1a; color: #ffffff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; font-family: 'Outfit', sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Modern Technician",
+    "overview": "The design language is premium and focused, balancing dark headers and sharp contrast with polished surfaces. It conveys an efficient, clear, and professional tone tailored for service technicians and customers alike. It embraces a high-contrast aesthetic that feels distinctly modern, rejecting utilitarian blandness in favor of deliberate, tactile boundaries.",
+    "keyCharacteristics": [
+      "High-contrast elements",
+      "Premium, focused layouts",
+      "Tactile, rounded components (16px+ radius)",
+      "Layered depth"
+    ],
+    "rules": [
+      { "name": "The High-Contrast Header Rule", "body": "App headers always use the Charcoal Dark background with Bravo Yellow text to establish an immediate premium hierarchy.", "section": "colors" },
+      { "name": "The Tactile Card Rule", "body": "Cards are never entirely flat; they require a subtle shadow at rest and scale down slightly (scale(0.98)) with a reduced shadow on interaction.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Charcoal Dark for headers and main navigation areas to create a premium feel.",
+      "Do apply a 16px radius to standard content cards.",
+      "Do ensure inputs remain pure white for clarity."
+    ],
+    "donts": [
+      "Don't use flat gray backgrounds for cards; always use Surface White with the Card Float shadow.",
+      "Don't use sharp corners on main UI elements; embrace the tactile, rounded boundaries.",
+      "Don't over-use Bravo Yellow for large backgrounds; keep it as a highlight or text color against dark surfaces."
+    ]
+  }
+}

@@ -4,14 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
   IonContent, IonHeader, IonToolbar, IonTitle, IonButton, 
-  IonIcon, IonLabel, IonGrid, IonRow, IonCol, IonInput, IonTextarea 
+  IonIcon, IonLabel, IonGrid, IonRow, IonCol, IonInput, IonTextarea,
+  ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   flashOutline, hammerOutline, waterOutline, constructOutline, chevronForwardCircleOutline,
   wifiOutline, shieldCheckmarkOutline, locationOutline, chevronBackOutline, 
   construct, 
-  chevronForwardOutline
+  chevronForwardOutline, documentTextOutline
 } from 'ionicons/icons';
 import { OrderService } from '../../../services/order/order.service';
 import { CardServicesComponent } from '../../../components/card-services/card-services.component';
@@ -41,6 +42,9 @@ interface ServiceCategory {
 export class HomePage {
   private orderService = inject(OrderService);
   private router = inject(Router);
+  private toastController = inject(ToastController);
+
+  public isSubmitting = signal<boolean>(false);
 
   public activeOrders = computed(() => {
     return this.orderService.orders().filter(o => o.status !== 'Concluído');
@@ -161,7 +165,7 @@ export class HomePage {
     addIcons({ 
       flashOutline, hammerOutline, waterOutline, constructOutline, chevronForwardOutline,
       wifiOutline, shieldCheckmarkOutline, locationOutline, chevronBackOutline, 
-      construct 
+      construct, documentTextOutline
     });
   }
 
@@ -174,17 +178,50 @@ export class HomePage {
     this.selectedCategory.set(null);
   }
 
-  public submitRequest() {
+  public async submitRequest() {
     const cat = this.selectedCategory();
     const desc = this.serviceDescription().trim();
 
-    if (!cat || !desc) return;
+    if (!cat || !desc || this.isSubmitting()) return;
 
-    this.orderService.createOrder(cat.name, desc, cat.priceValue);
-    this.selectedCategory.set(null);
-    this.serviceDescription.set('');
+    this.isSubmitting.set(true);
 
-    // Navega para a aba de pedidos para acompanhar a solicitação
-    this.router.navigate(['/customer/orders']);
+    try {
+      // Simula um delay de rede para prevenir cliques duplos e demonstrar o estado de loading
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // Chance de falha em 10% das vezes para demonstrar o error state do harden
+          if (Math.random() < 0.1) reject(new Error('Network Error'));
+          else resolve(true);
+        }, 800);
+      });
+
+      this.orderService.createOrder(cat.name, desc, cat.priceValue);
+      this.selectedCategory.set(null);
+      this.serviceDescription.set('');
+
+      const toast = await this.toastController.create({
+        message: 'Serviço solicitado com sucesso!',
+        duration: 3000,
+        color: 'success',
+        position: 'bottom',
+        icon: 'checkmark-circle-outline'
+      });
+      await toast.present();
+
+      // Navega para a aba de pedidos para acompanhar a solicitação
+      this.router.navigate(['/customer/orders']);
+    } catch (error) {
+      const toast = await this.toastController.create({
+        message: 'Não foi possível solicitar o serviço. Tente novamente.',
+        duration: 4000,
+        color: 'danger',
+        position: 'bottom',
+        buttons: [{ text: 'OK', role: 'cancel' }]
+      });
+      await toast.present();
+    } finally {
+      this.isSubmitting.set(false);
+    }
   }
 }

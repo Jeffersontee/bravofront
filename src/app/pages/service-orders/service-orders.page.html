@@ -1,0 +1,93 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar class="high-contrast-header">
+    <ion-buttons slot="start">
+      <ion-menu-button color="primary"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Ordens de Serviço</ion-title>
+    <!-- Filtro / Tabs -->
+  </ion-toolbar>
+  <ion-toolbar class="high-contrast-header">
+    <ion-segment [value]="selectedSegment()" (ionChange)="segmentChanged($event)" mode="md" class="bravo-segment">
+      <ion-segment-button value="all">
+        <ion-label>Todas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="pending">
+        <ion-label>Agendadas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="in_progress">
+        <ion-label>Em Andamento</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="completed">
+        <ion-label>Concluídas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding bg-light">
+  
+  @if(isLoading()) {
+    <ion-list class="bg-transparent">
+      @for(i of [1,2,3,4]; track i) {
+        <ion-card class="card-float skeleton-card">
+          <ion-card-content>
+            <ion-skeleton-text animated style="width: 60%; height: 20px; margin-bottom: 8px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 40%; height: 16px; margin-bottom: 16px;"></ion-skeleton-text>
+            <div class="skeleton-footer">
+              <ion-skeleton-text animated style="width: 30%; height: 24px; border-radius: 12px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 25%; height: 16px;"></ion-skeleton-text>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+    </ion-list>
+  } @else {
+    
+    @if(filteredOrders().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h3>Nenhuma Ordem Encontrada</h3>
+        <p>Não há serviços para o filtro selecionado.</p>
+      </div>
+    } @else {
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          @for(order of filteredOrders(); track order._id) {
+            <ion-col size="12" size-md="6" size-lg="4">
+              <ion-card class="card-float tactile-card" [routerLink]="['/service-orders/details', order._id]">
+                <ion-card-content>
+                  
+                  <div class="card-header-flex">
+                    <div class="service-title">
+                      <h2>{{ $any(order.service_id)?.name || 'Serviço Padrão' }}</h2>
+                      <p class="unit-name">
+                        <ion-icon name="location-outline"></ion-icon>
+                        {{ $any(order.unit_id)?.name || 'Unidade não informada' }}
+                      </p>
+                    </div>
+                    <!-- Status Badge Dinâmica -->
+                    <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
+                      {{ getStatusLabel(order.current_status) }}
+                    </ion-badge>
+                  </div>
+
+                  <div class="card-footer-flex">
+                    <div class="date-info">
+                      <ion-icon name="time-outline"></ion-icon>
+                      <span>{{ (order.scheduled_date | date:'dd/MM/yyyy HH:mm') || 'A definir' }}</span>
+                    </div>
+                    <div class="action-arrow">
+                      <ion-icon name="chevron-forward-outline" color="primary"></ion-icon>
+                    </div>
+                  </div>
+
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          }
+        </ion-row>
+      </ion-grid>
+    }
+  }
+
+</ion-content>

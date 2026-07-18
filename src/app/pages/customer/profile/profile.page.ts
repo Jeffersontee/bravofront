@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { OrderService } from '../../../services/order/order.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { 
   IonContent, IonHeader, IonToolbar, IonTitle, IonButton, 
   IonIcon, IonLabel, IonNote, IonList, IonItem 
@@ -25,6 +26,7 @@ import {
 export class ProfilePage {
   private router = inject(Router);
   private orderService = inject(OrderService);
+  private authService = inject(AuthService);
 
   public customerName = this.orderService.customerName;
   public customerAddress = this.orderService.customerAddress;
@@ -42,7 +44,6 @@ export class ProfilePage {
   }
 
   public logout() {
-    // Redireciona para o login fictício
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

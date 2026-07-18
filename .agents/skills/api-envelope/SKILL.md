@@ -3,8 +3,7 @@ name: api-envelope
 description: Regras e padrões de envelopamento de respostas HTTP (API Envelope), higienização de tokens e remoção de legados no ecossistema Adega Pinguins.
 ---
 
-# API Envelope Skill
+Esta skill fornece diretrizes sobre **api-envelope**.
 
-Para obter detalhes abrangentes e orientações técnicas sobre a validação, atualização e remoção de legados de envelopes de API no Frontend e Backend, acesse a documentação oficial da skill:
-
-* [API Envelope Standard & Legacy Cleanups](file:///c:/workspace/adegaspinguinsV2/adegapinguinsfront/.agents/skills/api-envelope/references/api-envelope.md)
+Por favor, leia a documentação completa no arquivo de referência:
+[api-envelope.md](file:///c:/workspace/adegaspinguinsV2/adegapinguinsfront/.agents/skills/api-envelope/references/api-envelope.md)

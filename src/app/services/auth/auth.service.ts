@@ -325,6 +325,30 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
       await this.setUserData(response.data?.token, response.data?.refreshToken, user);
       return response;
     } catch (e) {
+      throw e;
+    }
+  }
+
+  async registerCompany(formvalue: any): Promise<AuthResponse> {
+    try {
+      const data = {
+        email: formvalue.email,
+        phone: formvalue.phone,
+        owner_name: formvalue.owner_name,
+        company_name: formvalue.company_name,
+        cnpj: formvalue.cnpj,
+        type: 'company_owner',
+        status: 'active',
+        password: formvalue.password
+      };
+      const response = await lastValueFrom(this.api.post('users/signup-company', data)) as AuthResponse;
+      
+      console.log('Registro da empresa realizado:', response);
+      
+      const user = response.data?.user ? User.fromJson(response.data.user) : undefined;
+      await this.setUserData(response.data?.token, response.data?.refreshToken, user);
+      return response;
+    } catch (e) {
       throw(e)
     }
   }
@@ -623,7 +647,7 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     let url: string | null = null;
 
     if (role === Strings.USER_TYPE) url = Strings.TABS;
-    else if (role === Strings.ADMIN_TYPE || role === 'staff') url = Strings.ADMIN;
+    else if (role === Strings.ADMIN_TYPE || role === 'staff' || role === Strings.COMPANY_OWNER_TYPE || role === 'company_owner') url = Strings.ADMIN;
     else if (role === Strings.SUPER_TYPE || role === 'super_staff') url = Strings.SUPER_DASHBOARD;
 
     return url ? this.router.parseUrl(url) : this.router.parseUrl(Strings.LOGIN);

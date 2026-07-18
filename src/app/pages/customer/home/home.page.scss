@@ -160,6 +160,9 @@
 .chevron-arrow {
   color: #cbd5e1;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  transform: translateY(1px);
 }
 
 .services-grid {
@@ -210,6 +213,51 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--ion-color-primary);
+}
+
+/* Empty State */
+.empty-state-card {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+  background: rgba(241, 245, 249, 0.5);
+  border: 1px dashed #cbd5e1;
+  box-shadow: none;
+}
+
+.empty-icon-wrapper {
+  background: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.empty-icon-wrapper ion-icon {
+  font-size: 28px;
+  color: #94a3b8;
+}
+
+.empty-state-card h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.empty-state-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
 }
 
 /* Request Form */
@@ -301,6 +349,12 @@
   resize: none;
   font-family: inherit;
   margin-bottom: 20px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-textarea:focus {
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 0 0 4px rgba(255, 196, 9, 0.15);
 }
 
 .form-submit-btn {

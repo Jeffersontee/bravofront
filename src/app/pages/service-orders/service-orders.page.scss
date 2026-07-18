@@ -1,0 +1,175 @@
+// The Modern Technician Aesthetics
+.high-contrast-header {
+  --background: var(--ion-color-dark, #1a1a1a);
+  --color: var(--ion-color-primary, #ffc409);
+  
+  ion-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+.bravo-segment {
+  --background: transparent;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  
+  ion-segment-button {
+    --color: rgba(255, 255, 255, 0.6);
+    --color-checked: var(--ion-color-primary, #ffc409);
+    --indicator-color: var(--ion-color-primary, #ffc409);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: -0.01em;
+  }
+}
+
+.bg-light {
+  --background: #f4f5f8;
+}
+
+.bg-transparent {
+  background: transparent;
+}
+
+// Card Float Rule
+.card-float {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+  margin: 16px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+
+  &.tactile-card {
+    cursor: pointer;
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  ion-card-content {
+    padding: 20px;
+  }
+}
+
+// Inner Layout
+.card-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  .service-title {
+    flex: 1;
+    padding-right: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ion-color-dark);
+      line-height: 1.3;
+    }
+
+    .unit-name {
+      margin: 6px 0 0 0;
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.card-footer-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  .date-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ion-color-medium);
+    font-size: 0.85rem;
+    font-weight: 600;
+    
+    ion-icon {
+      font-size: 1.1rem;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .action-arrow {
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  color: var(--ion-color-medium);
+
+  ion-icon {
+    font-size: 4rem;
+    color: var(--ion-color-light);
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+// Skeleton State
+.skeleton-card {
+  .skeleton-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+}
