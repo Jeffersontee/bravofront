@@ -7,7 +7,7 @@ import { Unit } from '../unit/unit.service';
 import { ServiceItem } from '../service/service.service';
 
 export interface TimelineEvent {
-  status: 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO';
+  status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
   timestamp: string | Date;
   location?: { lat: number; lng: number };
   notes?: string;
@@ -20,7 +20,7 @@ export interface ServiceOrder {
   service_id: string | ServiceItem;
   collaborator_id?: string | any;
   scheduled_date?: string | Date;
-  current_status: 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO';
+  current_status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
   timeline?: TimelineEvent[];
   checkin_location?: { lat: number; lng: number };
   checkin_time?: string | Date;
@@ -36,6 +36,13 @@ export interface ServiceOrder {
   zone?: string;
   address_override?: string;
   observations?: string;
+
+  // Novos campos comerciais e de acompanhante
+  client_price?: number;
+  client_price_addition?: number;
+  technician_price?: number;
+  requested_by?: string;
+  contract_type?: 'subscription' | 'avulso';
 
   createdAt?: string;
   updatedAt?: string;

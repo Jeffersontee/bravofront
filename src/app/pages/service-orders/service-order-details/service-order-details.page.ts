@@ -1,13 +1,14 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import { IonicModule, NavController, AlertController, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack, locationOutline, timeOutline, checkmarkCircle, 
   ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
-  personOutline, buildOutline, businessOutline
+  personOutline, buildOutline, businessOutline, closeCircleOutline,
+  checkmarkDoneOutline, calendarOutline
 } from 'ionicons/icons';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
@@ -25,6 +26,8 @@ export class ServiceOrderDetailsPage implements OnInit {
   private navCtrl = inject(NavController);
   private serviceOrderService = inject(ServiceOrderService);
   private profileService = inject(ProfileService);
+  private alertCtrl = inject(AlertController);
+  private toastCtrl = inject(ToastController);
 
   orderId = signal<string>('');
   order = signal<ServiceOrder | null>(null);
@@ -35,6 +38,7 @@ export class ServiceOrderDetailsPage implements OnInit {
   isCollaborator = computed(() => this.userType() === Strings.COLLABORATOR_TYPE);
   isCompanyOwner = computed(() => this.userType() === Strings.COMPANY_OWNER_TYPE);
   isSuperAdmin = computed(() => this.userType() === Strings.SUPER_TYPE);
+  isNormalUser = computed(() => this.userType() === 'user');
 
   // Status computation for actions
   canStartDisplacement = computed(() => this.isCollaborator() && this.order()?.current_status === 'AGENDADO');
@@ -46,7 +50,8 @@ export class ServiceOrderDetailsPage implements OnInit {
     addIcons({
       arrowBack, locationOutline, timeOutline, checkmarkCircle, 
       ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
-      personOutline, buildOutline, businessOutline
+      personOutline, buildOutline, businessOutline, closeCircleOutline,
+      checkmarkDoneOutline, calendarOutline
     });
   }
 
@@ -81,54 +86,219 @@ export class ServiceOrderDetailsPage implements OnInit {
 
   // --- ACTIONS ---
   updateStatus(newStatus: string) {
-    // Implement mock updating for now to demonstrate UI reactivity
-    const currentOrder = this.order();
-    if (!currentOrder) return;
-    
-    // Optimistic Update
-    const updated = { ...currentOrder, current_status: newStatus as any };
-    if (!updated.timeline) updated.timeline = [];
-    
-    updated.timeline.push({
-      status: newStatus as any,
-      timestamp: new Date().toISOString()
+    this.isLoading.set(true);
+    this.serviceOrderService.updateStatus(this.orderId(), newStatus).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.order.set(res.data);
+          this.showToast(`Status atualizado para ${this.getStatusLabel(newStatus)}`);
+        }
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Error updating status', err);
+        this.isLoading.set(false);
+      }
     });
-    
-    this.order.set(updated);
+  }
 
-    // TODO: Connect to Real Backend call
-    // this.serviceOrderService.updateStatus(this.orderId(), newStatus).subscribe(...)
+  // Super Admin: Propor preço de negociação e data provável
+  async proposePriceAndDate() {
+    const alert = await this.alertCtrl.create({
+      header: 'Enviar Proposta Comercial',
+      inputs: [
+        {
+          name: 'client_price',
+          type: 'number',
+          placeholder: 'Valor para o Lojista (R$)'
+        },
+        {
+          name: 'technician_price',
+          type: 'number',
+          placeholder: 'Repasse do Técnico (R$)'
+        },
+        {
+          name: 'scheduled_date',
+          type: 'datetime-local',
+          placeholder: 'Data Provável'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Enviar Proposta',
+          handler: (data) => {
+            if (!data.client_price || !data.scheduled_date) {
+              this.showToast('Por favor, preencha o valor e a data provável.');
+              return false;
+            }
+            this.isLoading.set(true);
+            const payload: any = {
+              client_price: Number(data.client_price),
+              technician_price: Number(data.technician_price || 0),
+              scheduled_date: new Date(data.scheduled_date).toISOString(),
+              current_status: 'PROPOSTO'
+            };
+            this.serviceOrderService.updateServiceOrder(this.orderId(), payload).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Proposta comercial enviada com sucesso!');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Super Admin: Sugerir Nova Data/Horário
+  async suggestNewDateSuper() {
+    const alert = await this.alertCtrl.create({
+      header: 'Sugerir Nova Data/Horário',
+      inputs: [
+        {
+          name: 'scheduled_date',
+          type: 'datetime-local',
+          placeholder: 'Nova Data Provável'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Sugerir',
+          handler: (data) => {
+            if (!data.scheduled_date) return false;
+            this.isLoading.set(true);
+            this.serviceOrderService.updateServiceOrder(this.orderId(), {
+              scheduled_date: new Date(data.scheduled_date).toISOString(),
+              current_status: 'DATA_SUGERIDA'
+            }).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Nova data sugerida ao cliente.');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Lojista / User: Aceitar valor comercial e data da proposta
+  approvePriceAndDate() {
+    this.updateStatus('APROVADO');
+  }
+
+  // Lojista / User: Contraproposta ou Sugerir Outra Data
+  async proposeNewDateClient() {
+    const alert = await this.alertCtrl.create({
+      header: 'Sugerir Outra Data',
+      subHeader: 'Proponha uma data e horário de preferência:',
+      inputs: [
+        {
+          name: 'scheduled_date',
+          type: 'datetime-local'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Enviar Sugestão',
+          handler: (data) => {
+            if (!data.scheduled_date) return false;
+            this.isLoading.set(true);
+            this.serviceOrderService.updateServiceOrder(this.orderId(), {
+              scheduled_date: new Date(data.scheduled_date).toISOString(),
+              current_status: 'SOLICITADO'
+            }).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Sugestão de agenda enviada para a Central.');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Cancelar Chamado
+  cancelOrder() {
+    this.updateStatus('CANCELADO');
+  }
+
+  // Recusar Chamado
+  rejectProposal() {
+    this.updateStatus('RECUSADO');
+  }
+
+  private async showToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: 'dark'
+    });
+    await toast.present();
   }
 
   // --- HELPERS ---
   getStatusColor(status: string): string {
     switch (status) {
-      case 'AGENDADO': return 'medium';
+      case 'SOLICITADO': return 'medium';
+      case 'DATA_SUGERIDA': return 'warning';
+      case 'PROPOSTO': return 'primary';
+      case 'APROVADO': return 'success';
+      case 'AGENDADO': return 'secondary';
       case 'EM_DESLOCAMENTO': return 'tertiary';
       case 'CHECK_IN': return 'warning';
       case 'EM_EXECUCAO': return 'warning';
       case 'CONCLUIDO': return 'success';
       case 'CANCELADO': return 'danger';
+      case 'RECUSADO': return 'danger';
       default: return 'medium';
     }
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
+      case 'SOLICITADO': return 'Solicitado / Pendente';
+      case 'DATA_SUGERIDA': return 'Nova Data Sugerida';
+      case 'PROPOSTO': return 'Proposta de Valor';
+      case 'APROVADO': return 'Aprovado Lojista';
       case 'AGENDADO': return 'Agendado';
-      case 'EM_DESLOCAMENTO': return 'Deslocamento';
-      case 'CHECK_IN': return 'Check-in Efetuado';
+      case 'EM_DESLOCAMENTO': return 'Técnico a caminho';
+      case 'CHECK_IN': return 'Técnico no local';
       case 'EM_EXECUCAO': return 'Em Execução';
       case 'CONCLUIDO': return 'Concluído';
       case 'CANCELADO': return 'Cancelado';
+      case 'RECUSADO': return 'Recusado';
       default: return status;
     }
   }
 
   isPastStatus(status: string): boolean {
-    const sequence = ['AGENDADO', 'EM_DESLOCAMENTO', 'CHECK_IN', 'EM_EXECUCAO', 'CONCLUIDO'];
+    const sequence = ['SOLICITADO', 'APROVADO', 'AGENDADO', 'EM_DESLOCAMENTO', 'CHECK_IN', 'EM_EXECUCAO', 'CONCLUIDO'];
     const currentStatus = this.order()?.current_status;
-    if (!currentStatus || currentStatus === 'CANCELADO') return false;
+    if (!currentStatus || currentStatus === 'CANCELADO' || currentStatus === 'RECUSADO') return false;
     
     const currentIndex = sequence.indexOf(currentStatus);
     const checkIndex = sequence.indexOf(status);
@@ -146,7 +316,8 @@ export class ServiceOrderDetailsPage implements OnInit {
       scheduled_date: new Date().toISOString(),
       current_status: 'EM_DESLOCAMENTO',
       timeline: [
-        { status: 'AGENDADO', timestamp: new Date(Date.now() - 3600000).toISOString() },
+        { status: 'SOLICITADO', timestamp: new Date(Date.now() - 3600000).toISOString() },
+        { status: 'AGENDADO', timestamp: new Date(Date.now() - 1800000).toISOString() },
         { status: 'EM_DESLOCAMENTO', timestamp: new Date().toISOString() }
       ]
     };
