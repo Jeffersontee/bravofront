@@ -106,13 +106,21 @@ export class CompanyDashboardPage implements OnInit {
   loadCompanyData(companyId: string) {
     forkJoin({
       company: this.companyService.getCompanyById(companyId),
-      services: this.serviceService.getServices(companyId),
+      services: this.serviceService.getServices(),
       units: this.unitService.getUnits(companyId),
-      orders: this.serviceOrderService.getServiceOrders(companyId)
+      orders: this.serviceOrderService.getServiceOrders({ company_id: companyId })
     }).subscribe({
       next: (res) => {
-        if (res.company.success) this.company.set(res.company.data);
-        if (res.services.success) this.services.set(res.services.data);
+        if (res.company.success) {
+          const comp = res.company.data;
+          this.company.set(comp);
+          
+          if (res.services.success) {
+            const activeServiceIds = comp.services || [];
+            const filtered = (res.services.data || []).filter(s => activeServiceIds.includes(s._id!));
+            this.services.set(filtered);
+          }
+        }
         if (res.units.success) this.units.set(res.units.data);
         if (res.orders.success) this.serviceOrders.set(res.orders.data);
       },

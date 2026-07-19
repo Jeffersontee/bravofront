@@ -154,11 +154,22 @@ export class ServiceOrderFormComponent implements OnInit {
       }
     });
 
-    // 3. Carregar serviços da empresa (ou globais)
-    this.serviceService.getServices().subscribe({
-      next: (res) => {
-        const allServices = res.data || [];
-        this.services.set(allServices.filter((s: any) => s.company_id === companyId || s.company_id?._id === companyId || !s.company_id));
+    // 3. Carregar serviços da empresa baseados no array company.services
+    this.companyService.getCompanyById(companyId).subscribe({
+      next: (companyRes) => {
+        if (companyRes.success && companyRes.data) {
+          const activeServiceIds = companyRes.data.services || [];
+          
+          this.serviceService.getServices().subscribe({
+            next: (servicesRes) => {
+              if (servicesRes.success) {
+                const allServices = servicesRes.data || [];
+                // Filtra mantendo apenas os serviços habilitados para a empresa
+                this.services.set(allServices.filter(s => activeServiceIds.includes(s._id!)));
+              }
+            }
+          });
+        }
       }
     });
   }

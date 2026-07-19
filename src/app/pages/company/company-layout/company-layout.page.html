@@ -10,7 +10,7 @@
             </ion-button>
           </ion-buttons>
           @if (!isCollapsed) {
-            <ion-title class="bravo-menu-title">Bravo Instalações</ion-title>
+            <ion-title class="bravo-menu-title">Bravo Lojista</ion-title>
           }
           <div class="stripe-border"></div>
         </ion-toolbar>
@@ -40,7 +40,7 @@
               @if (item.open && !isCollapsed) {
                 @for (child of item.children; track child.title) {
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item (click)="onMenuClick(child)" lines="none" detail="false" class="menu-item level-2" button>
+                    <ion-item routerDirection="root" [routerLink]="child.url ? [child.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-2">
                       <ion-icon slot="start" [name]="child.icon"></ion-icon>
                       <ion-label>{{ child.title }}</ion-label>
                     </ion-item>

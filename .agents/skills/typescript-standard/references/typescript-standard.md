@@ -38,5 +38,15 @@ Não deixe retornos de serviços com `Observable<any>` ou `Promise<any>`.
 - **Early Return**: Reduza o aninhamento de `if/else` fazendo retornos precoces.
 - **Optional Chaining (`?.`)** e **Nullish Coalescing (`??`)**: Use sempre que precisar acessar propriedades aninhadas em vez de testar a existência do pai `if (pai && pai.filho)`.
 
-## 7. Script de Verificação
-Esta skill disponibiliza o script `check-typescript.ts` para varrer o projeto e garantir que arquivos estáticos não estão fora do padrão (ex: alertar sobre a existência indevida de arquivos `.js` na pasta `src` ou desativação de strict mode).
+## 7. Segurança de Rotas (Guards OBRIGATÓRIOS)
+Para garantir que nenhuma rota restrita (Super Admin, Lojista, Colaborador/Técnico, Cliente) fique pública ou exposta a manipulação de URLs no navegador:
+- **Rotas de Perfil (Role Isolation)**: Toda rota principal no `app.routes.ts` (exceto `login`, `signup` e a raiz `""`) deve possuir obrigatoriamente um Guard de acesso `canMatch` apontando para o `roleGuard` e especificando o cargo esperado na propriedade `data.role`.
+- **Rotas Globais / Comuns**: Rotas comuns a múltiplos perfis que exigem autenticação mínima (ex: `/service-orders`) devem possuir o guard de autenticação `canActivate` apontando para `authGuard`.
+- **Isolamento de Tenant**: Páginas internas de lojistas com parâmetros variáveis de ID devem usar o `companyOwnerGuard` no `canActivate` para impedir manipulação maliciosa de parâmetros na barra de endereços.
+
+## 8. Script de Verificação Integrado
+Esta skill disponibiliza o script `check-typescript.ts` para varrer o projeto de forma automatizada. Ele executa:
+1. Validação de ativação do `strict mode` no `tsconfig.json`.
+2. Busca por arquivos `.js` ou `.mjs` não autorizados na pasta `src`.
+3. **Auditoria de segurança de rotas principais no `app.routes.ts`**, validando se as rotas possuem guards ativos e bloqueando o build em caso de falha.
+4. Validação de compilação sem erros via `npx tsc --noEmit`.

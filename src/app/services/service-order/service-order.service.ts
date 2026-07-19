@@ -48,8 +48,14 @@ export class ServiceOrderService {
   private http = inject(HttpClient);
   private url = `${environment.serverUrl}${Strings.API_SERVICE_ORDERS}`;
 
-  getServiceOrders(companyId?: string): Observable<{ success: boolean; data: ServiceOrder[] }> {
-    const query = companyId ? `?company_id=${companyId}` : '';
+  getServiceOrders(filters?: { company_id?: string; collaborator_id?: string }): Observable<{ success: boolean; data: ServiceOrder[] }> {
+    let query = '';
+    if (filters) {
+      const params = new URLSearchParams();
+      if (filters.company_id) params.append('company_id', filters.company_id);
+      if (filters.collaborator_id) params.append('collaborator_id', filters.collaborator_id);
+      query = `?${params.toString()}`;
+    }
     return this.http.get<{ success: boolean; data: ServiceOrder[] }>(`${this.url}${query}`);
   }
 

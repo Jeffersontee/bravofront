@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/company/dashboard"></ion-back-button>
+      <ion-back-button [defaultHref]="'/company/companies/' + companyId() + '/dashboard'"></ion-back-button>
     </ion-buttons>
     <ion-title>
       {{ isLoading() ? 'Carregando...' : (isEditMode() ? 'Editar Unidade' : (isDetailsMode() ? 'Detalhes da Unidade' : (isListMode() ? 'Unidades' : 'Nova Unidade'))) }}

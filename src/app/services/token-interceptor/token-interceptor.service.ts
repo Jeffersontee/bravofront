@@ -23,6 +23,13 @@ export const TokenInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
   }
   const sanitizedReq = req.clone({ url: sanitizedUrl });
 
+  const isRefreshRoute = sanitizedReq.url.includes('/users/refresh_token');
+  const isLoginRoute = sanitizedReq.url.includes('/users/login') || sanitizedReq.url.includes('/users/signup');
+
+  if (isRefreshRoute || isLoginRoute) {
+    return next(sanitizedReq);
+  }
+
   // Lê o token de forma assíncrona do storage/signal
   return from(auth.getToken()).pipe(
     switchMap(currentToken => {

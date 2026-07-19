@@ -34,6 +34,10 @@ export const companyRoutes: Routes = [
   },
 
   {
+    path: 'companies/:id/catalog',
+    loadComponent: () => import('./catalog/catalog.page').then( m => m.CatalogPage)
+  },
+  {
     path: 'companies/:id/units',
     loadComponent: () => import('./unit/unit.page').then( m => m.UnitPage)
   },

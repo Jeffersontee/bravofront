@@ -1,0 +1,51 @@
+<ion-app>
+  <ion-split-pane contentId="main-content" when="lg" [class.collapsed]="isCollapsed">
+    
+    <ion-menu contentId="main-content">
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="bravo-menu-header">
+          <ion-buttons slot="start" class="ion-hide-lg-down">
+            <ion-button class="toggle-btn" (click)="toggleSidebar()">
+              <ion-icon slot="icon-only" [name]="isCollapsed ? 'chevron-forward' : 'menu-outline'"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          @if (!isCollapsed) {
+            <ion-title class="bravo-menu-title">Técnico Bravo</ion-title>
+          }
+          <div class="stripe-border"></div>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <ion-list id="nav-list">
+          @for (item of menuItems; track item.title) {
+            <ion-menu-toggle auto-hide="false">
+              <ion-item routerDirection="root" [routerLink]="[item.url]" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-1">
+                <ion-icon slot="start" [name]="item.icon"></ion-icon>
+                @if (!isCollapsed) {
+                  <ion-label>{{ item.title }}</ion-label>
+                }
+              </ion-item>
+            </ion-menu-toggle>
+          }
+        </ion-list>
+      </ion-content>
+ 
+      <ion-footer class="ion-no-border bravo-menu-footer">
+        <ion-list id="action-list">
+          <ion-item (click)="logout()" lines="none" detail="false" class="logout-item" button>
+            <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+            @if (!isCollapsed) {
+              <ion-label color="danger">Sair</ion-label>
+            }
+          </ion-item>
+        </ion-list>
+      </ion-footer>
+    </ion-menu>
+
+    <div id="main-content" class="ion-page">
+      <ion-router-outlet></ion-router-outlet>
+    </div>
+
+  </ion-split-pane>
+</ion-app>

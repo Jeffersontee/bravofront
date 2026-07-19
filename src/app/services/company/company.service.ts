@@ -13,6 +13,7 @@ export interface Company {
   cnpj: string;
   email?: string;
   active: boolean;
+  services?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -45,6 +46,10 @@ export class CompanyService {
 
   updateCompany(id: string, data: Partial<Company>): Observable<{ success: boolean; data: Company }> {
     return this.http.put<{ success: boolean; data: Company }>(`${this.url}/${id}`, data, { headers: this.getHeaders() });
+  }
+
+  updateCompanyServices(id: string, services: string[]): Observable<{ success: boolean; data: Company }> {
+    return this.http.patch<{ success: boolean; data: Company }>(`${this.url}/${id}/services`, { services }, { headers: this.getHeaders() });
   }
 
   deleteCompany(id: string): Observable<{ success: boolean }> {

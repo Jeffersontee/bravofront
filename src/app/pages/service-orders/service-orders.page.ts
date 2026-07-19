@@ -1,12 +1,17 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
+import { 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton, 
+  IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton, 
+  IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   buildOutline, locationOutline, timeOutline, alertCircleOutline, 
-  checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline 
+  checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
+  receiptOutline, calendarOutline, flashOutline, chevronForwardOutline
 } from 'ionicons/icons';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
@@ -17,7 +22,12 @@ import { Strings } from 'src/app/enum/strings';
   templateUrl: './service-orders.page.html',
   styleUrls: ['./service-orders.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule]
+  imports: [
+    CommonModule, FormsModule, RouterModule,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton, 
+    IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton, 
+    IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent
+  ]
 })
 export class ServiceOrdersPage implements OnInit {
   private serviceOrderService = inject(ServiceOrderService);
@@ -28,6 +38,14 @@ export class ServiceOrdersPage implements OnInit {
   selectedSegment = signal<'all' | 'pending' | 'in_progress' | 'completed'>('all');
   
   Strings = Strings; // para uso no template
+
+  // Métricas para os cards de resumo no topo
+  totalCount = computed(() => this.orders().length);
+  scheduledCount = computed(() => this.orders().filter(o => o.current_status === 'AGENDADO').length);
+  inProgressCount = computed(() => this.orders().filter(o => 
+    o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO'
+  ).length);
+  completedCount = computed(() => this.orders().filter(o => o.current_status === 'CONCLUIDO').length);
 
   filteredOrders = computed(() => {
     const segment = this.selectedSegment();
@@ -50,7 +68,8 @@ export class ServiceOrdersPage implements OnInit {
   constructor() {
     addIcons({
       buildOutline, locationOutline, timeOutline, alertCircleOutline, 
-      checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline
+      checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
+      receiptOutline, calendarOutline, flashOutline, chevronForwardOutline
     });
   }
 
@@ -58,26 +77,41 @@ export class ServiceOrdersPage implements OnInit {
     this.loadOrders();
   }
 
-  loadOrders() {
+  async loadOrders(event?: any) {
     this.isLoading.set(true);
     
-    const userData = this.profileService.profile() as any;
-    const companyId = (userData?.type === Strings.COMPANY_OWNER_TYPE) ? userData.company_id : undefined;
+    try {
+      const userData = await this.profileService.getProfile() as any;
+      const filters: { company_id?: string; collaborator_id?: string } = {};
 
-    this.serviceOrderService.getServiceOrders(companyId).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.orders.set(res.data);
+      if (userData) {
+        if (userData.type === Strings.COMPANY_OWNER_TYPE || userData.type === Strings.USER_TYPE) {
+          filters.company_id = userData.company_id;
+        } else if (userData.type === Strings.COLLABORATOR_TYPE || userData.type === 'collaborator') {
+          filters.collaborator_id = userData._id;
         }
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        console.error('Error fetching service orders', err);
-        // Fallback for visual testing if API fails
-        this.orders.set(this.getMockOrders());
-        this.isLoading.set(false);
       }
-    });
+
+      this.serviceOrderService.getServiceOrders(filters).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.orders.set(res.data || []);
+          }
+          this.isLoading.set(false);
+          if (event?.target) event.target.complete();
+        },
+        error: (err) => {
+          console.error('Error fetching service orders', err);
+          this.orders.set(this.getMockOrders());
+          this.isLoading.set(false);
+          if (event?.target) event.target.complete();
+        }
+      });
+    } catch (e) {
+      console.error('Error loading profile in service orders list', e);
+      this.isLoading.set(false);
+      if (event?.target) event.target.complete();
+    }
   }
 
   segmentChanged(event: any) {

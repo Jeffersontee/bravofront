@@ -1,0 +1,133 @@
+$bravo-dark: #1a1a1a;
+$bravo-yellow: #ffc409;
+$bravo-yellow-soft: rgba(255, 196, 9, 0.10);
+$bravo-surface: #f5f6f8;
+$bravo-menu-bg: #fafafa;
+$bravo-ink: #2d2d2d;
+$bravo-muted: #6b7280;
+
+ion-split-pane {
+  --border: none;
+}
+
+.bravo-menu-header {
+  --background: #{$bravo-dark};
+  --color: #{$bravo-yellow};
+  position: relative;
+
+  .bravo-menu-title {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .toggle-btn {
+    --color: #{$bravo-yellow};
+  }
+
+  .stripe-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: $bravo-yellow;
+  }
+}
+
+ion-menu {
+  --background: #{$bravo-menu-bg};
+  --width: 260px;
+  transition: width 0.3s ease;
+}
+
+@media (min-width: 992px) {
+  ion-split-pane.collapsed {
+    --side-width: 70px !important;
+    --side-min-width: 70px !important;
+    --side-max-width: 70px !important;
+
+    .bravo-menu-header {
+      ion-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .toggle-btn {
+        margin: 0 !important;
+      }
+    }
+
+    ion-menu {
+      --width: 70px;
+    }
+
+    .level-1 {
+      justify-content: center;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      
+      ion-icon {
+        margin: 0 !important;
+      }
+    }
+  }
+}
+
+#nav-list, #action-list {
+  background: transparent;
+  padding: 16px 8px;
+}
+
+.menu-item {
+  --border-radius: 8px;
+  margin-bottom: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  --color: #{$bravo-ink};
+  --background: transparent;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 20px;
+    margin-right: 12px;
+    color: #{$bravo-muted};
+    transition: color 0.2s ease;
+  }
+
+  &.selected {
+    --color: #{$bravo-dark};
+    --background: #{$bravo-yellow-soft};
+
+    ion-icon {
+      color: #{$bravo-yellow};
+    }
+  }
+
+  &::part(native) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+.bravo-menu-footer {
+  background: #{$bravo-menu-bg};
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logout-item {
+  --border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  --color: var(--ion-color-danger);
+
+  ion-icon {
+    font-size: 20px;
+    margin-right: 12px;
+  }
+}

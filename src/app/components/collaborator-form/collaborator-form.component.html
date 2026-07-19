@@ -33,7 +33,10 @@
     @if (!isEditMode()) {
       <ion-item>
         <ion-icon name="key" slot="start"></ion-icon>
-        <ion-input label="Senha" labelPlacement="floating" type="password" formControlName="password"></ion-input>
+        <ion-input label="Senha" labelPlacement="floating" [type]="passwordVisible() ? 'text' : 'password'" formControlName="password"></ion-input>
+        <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()" aria-label="Alternar visibilidade da senha">
+          <ion-icon [name]="passwordVisible() ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+        </ion-button>
       </ion-item>
     }
 

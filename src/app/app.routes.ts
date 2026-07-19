@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { roleGuard } from './guards/role.guard';
+import { authGuard } from './guards/auth.guard';
+import { Strings } from './enum/strings';
 
 export const routes: Routes = [
   {
@@ -12,6 +15,8 @@ export const routes: Routes = [
   },
   {
     path: 'customer',
+    canMatch: [roleGuard],
+    data: { role: Strings.USER_TYPE },
     loadComponent: () => import('./pages/customer/customer-layout/customer-layout.page').then(m => m.CustomerLayoutPage),
     children: [
       {
@@ -39,13 +44,34 @@ export const routes: Routes = [
   },
   {
     path: 'company',
+    canMatch: [roleGuard],
+    data: { role: Strings.COMPANY_OWNER_TYPE },
     loadComponent: () => import('./pages/company/company-layout/company-layout.page').then(m => m.CompanyLayoutPage),
     loadChildren: () => import('./pages/company/company.routes').then(m => m.companyRoutes)
   },
   {
     path: 'super-admin',
+    canMatch: [roleGuard],
+    data: { role: Strings.SUPER_TYPE },
     loadComponent: () => import('./pages/super/super-layout/super-layout.page').then(m => m.SuperLayoutPage),
     loadChildren: () => import('./pages/super/super-admin.routes').then(m => m.superAdminRoutes)
+  },
+  {
+    path: 'collaborator',
+    canMatch: [roleGuard],
+    data: { role: Strings.COLLABORATOR_TYPE },
+    loadComponent: () => import('./pages/collaborator/collaborator-layout/collaborator-layout.page').then(m => m.CollaboratorLayoutPage),
+    children: [
+      {
+        path: 'orders',
+        loadComponent: () => import('./pages/service-orders/service-orders.page').then(m => m.ServiceOrdersPage)
+      },
+      {
+        path: '',
+        redirectTo: 'orders',
+        pathMatch: 'full'
+      }
+    ]
   },
   {
     path: 'signup',
@@ -53,10 +79,12 @@ export const routes: Routes = [
   },
   {
     path: 'service-orders',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/service-orders/service-orders.page').then( m => m.ServiceOrdersPage)
   },
   {
     path: 'service-orders/details/:id',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/service-orders/service-order-details/service-order-details.page').then( m => m.ServiceOrderDetailsPage)
   }
 ];

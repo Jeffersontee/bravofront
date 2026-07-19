@@ -28,6 +28,13 @@
       <ion-item>
         <ion-input formControlName="description" label="Descrição / Notas" labelPlacement="stacked"></ion-input>
       </ion-item>
+      <ion-item>
+        <ion-select formControlName="services" label="Serviços Autorizados" labelPlacement="stacked" [multiple]="true" placeholder="Selecione os serviços...">
+          @for (service of globalServices(); track service._id) {
+            <ion-select-option [value]="service._id">{{ service.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
       <ion-item lines="none">
         <ion-label>Ativo no sistema</ion-label>
         <ion-toggle formControlName="active" slot="end"></ion-toggle>

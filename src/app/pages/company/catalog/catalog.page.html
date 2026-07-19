@@ -1,0 +1,77 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Catálogo de Serviços</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg-light">
+  <!-- Header do Painel -->
+  <div class="catalog-header mb-4">
+    <h6 class="subtitle">CATÁLOGO DE INSTALAÇÕES — {{ (companyName() | uppercase) || 'CARREGANDO...' }}</h6>
+    <h1 class="title">Serviços Disponíveis</h1>
+    <p class="description">
+      Gerencie a grade de serviços técnicos autorizados para a sua empresa. Habilite novos serviços para permitir que suas filiais realizem novas ordens de serviço e solicitações em tempo real.
+    </p>
+    <div class="striped-divider"></div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="ion-text-center ion-padding mt-5">
+      <ion-spinner color="primary"></ion-spinner>
+      <p class="text-muted mt-2">Carregando catálogo de serviços da Bravo...</p>
+    </div>
+  } @else {
+    @if (services().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="layers-outline"></ion-icon>
+        <h3>Nenhum Serviço Disponível</h3>
+        <p>A central da Bravo Instalações não cadastrou serviços globais no momento.</p>
+      </div>
+    } @else {
+      <ion-grid class="ion-no-padding">
+        <ion-row class="services-grid-row">
+          @for (service of services(); track service._id) {
+            <ion-col size="12" size-md="6" size-lg="4">
+              <ion-card class="service-card" [class.service-card--active]="service.isActive">
+                <ion-card-content class="d-flex flex-column justify-content-between h-100">
+                  
+                  <div class="service-info-block">
+                    <div class="d-flex align-items-center mb-3">
+                      <div class="service-icon-box" [class.bg-yellow]="service.isActive">
+                        <ion-icon [name]="service.icon || 'build-outline'"></ion-icon>
+                      </div>
+                      <div class="ms-3">
+                        <span class="service-category">{{ service.category || 'Geral' }}</span>
+                        <h2 class="service-name">{{ service.name }}</h2>
+                      </div>
+                    </div>
+                    
+                    <p class="service-description">
+                      {{ service.description || 'Instalação e manutenção padrão executada com peças originais e garantia da Bravo Instalações.' }}
+                    </p>
+                  </div>
+
+                  <div class="service-action-block pt-3 mt-3 d-flex align-items-center justify-content-between">
+                    <ion-label class="toggle-label">
+                      {{ service.isActive ? 'Habilitado' : 'Desabilitado' }}
+                    </ion-label>
+                    <ion-toggle 
+                      [checked]="service.isActive" 
+                      (ionChange)="toggleService(service, $event)"
+                      mode="md"
+                      color="success">
+                    </ion-toggle>
+                  </div>
+
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          }
+        </ion-row>
+      </ion-grid>
+    }
+  }
+</ion-content>
