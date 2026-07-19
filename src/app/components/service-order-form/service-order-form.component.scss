@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+ion-item {
+  --background: var(--ion-card-background, #fff);
+  --border-radius: 8px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+  &::part(native) {
+    border: none !important;
+  }
+
+  ion-icon {
+    font-size: 20px;
+    margin-right: 8px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.section-divider {
+  --background: transparent;
+  --color: var(--ion-color-primary);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  margin: 16px 0 8px 4px;
+}

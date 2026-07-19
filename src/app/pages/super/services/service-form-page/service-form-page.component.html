@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/super-admin/services"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode() ? 'Editar Serviço' : 'Novo Serviço' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="form-container" style="max-width: 600px; margin: 0 auto;">
+    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0 0 16px 16px;">
+      {{ isEditMode() ? 'Atualizar Dados do Serviço' : 'Formulário de Cadastro' }}
+    </h2>
+    
+    <app-service-form
+      [data]="serviceData()"
+      [isEditMode]="isEditMode()"
+      [isLoading]="isLoading()"
+      (save)="onSave($event)"
+      (cancel)="onCancel()"
+    ></app-service-form>
+  </div>
+</ion-content>

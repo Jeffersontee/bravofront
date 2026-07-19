@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Equipe de Campo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadCollaborators()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <div>
+      <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0;">Colaboradores / Técnicos</h2>
+      <p class="text-muted small" style="margin: 4px 0 0;">Gerencie os técnicos e equipe de campo no ecossistema.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center mt-2 mt-sm-0">
+      <div class="toggle-container">
+        <ion-button [fill]="viewMode() === 'list' ? 'solid' : 'outline'" size="small" (click)="viewMode.set('list')">
+          <ion-icon name="list-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button [fill]="viewMode() === 'card' ? 'solid' : 'outline'" size="small" (click)="viewMode.set('card')">
+          <ion-icon name="grid-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-button (click)="goToCreate()" color="success" size="small">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Novo Técnico
+      </ion-button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="text-center ion-padding">
+      <ion-spinner></ion-spinner>
+      <p class="text-muted mt-2">Carregando equipe de campo...</p>
+    </div>
+  }
+
+  @if (!isLoading() && collaborators().length > 0) {
+    <!-- MODO LISTA -->
+    @if (viewMode() === 'list') {
+      <ion-list lines="inset" style="background: transparent;">
+        <ion-item *ngFor="let collab of collaborators()" button (click)="goToEdit(collab._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+          <ion-icon name="person-circle-outline" slot="start" color="primary" style="font-size: 24px;"></ion-icon>
+          <ion-label>
+            <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ collab.name }}</h2>
+            <p style="font-family: 'Outfit', sans-serif;">{{ collab.email }} | {{ collab.phone }}</p>
+            <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
+              Empresa: {{ collab.company_id?.name || 'Global / Sem Vínculo' }}
+            </p>
+          </ion-label>
+          <ion-badge [color]="collab.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
+            {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
+          </ion-badge>
+        </ion-item>
+      </ion-list>
+    }
+
+    <!-- MODO CARD -->
+    @if (viewMode() === 'card') {
+      <div class="collab-grid">
+        @for (collab of collaborators(); track collab._id) {
+          <div class="collab-card" (click)="goToEdit(collab._id!)">
+            <div class="collab-card__header">
+              <ion-icon name="person-circle-outline" class="collab-card__icon"></ion-icon>
+              <span class="collab-card__status" [class.active]="collab.status === 'active'">
+                {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+            <h3 class="collab-card__name">{{ collab.name }}</h3>
+            <p class="collab-card__role">Cargo: {{ collab.role }}</p>
+            <p class="collab-card__detail">{{ collab.email }}</p>
+            <p class="collab-card__company">Empresa: {{ collab.company_id?.name || 'Global' }}</p>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  @if (!isLoading() && collaborators().length === 0) {
+    <ion-card>
+      <ion-card-content class="text-center">
+        <p>Nenhum técnico cadastrado.</p>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

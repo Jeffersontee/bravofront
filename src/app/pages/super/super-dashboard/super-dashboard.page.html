@@ -1,13 +1,105 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar color="secondary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Dashboard (Super Admin)</ion-title>
+    <ion-title>Dashboard</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h1>Bem-vindo ao Painel do Super Admin</h1>
-  <p>Em breve, métricas globais do sistema aparecerão aqui.</p>
+<ion-content>
+  <div class="dashboard-container">
+
+    <!-- LOADING -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Carregando dados...</p>
+      </div>
+    }
+
+    @if (!isLoading() && stats()) {
+      <!-- KPI CARDS -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--companies">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ stats()!.kpis.totalCompanies }}</span>
+            <span class="kpi-label">Empresas</span>
+          </div>
+          <span class="kpi-sub">{{ stats()!.kpis.activeCompanies }} ativas</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--users">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ stats()!.kpis.totalUsers }}</span>
+            <span class="kpi-label">Usuários</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--orders">
+            <ion-icon name="clipboard-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ stats()!.kpis.totalOrders }}</span>
+            <span class="kpi-label">Ordens de Serviço</span>
+          </div>
+          <span class="kpi-sub">{{ stats()!.kpis.pendingOrders }} pendentes</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--completed">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ stats()!.kpis.completedOrders }}</span>
+            <span class="kpi-label">Concluídas</span>
+          </div>
+          <span class="kpi-sub">{{ stats()!.kpis.canceledOrders }} canceladas</span>
+        </div>
+      </section>
+
+      <!-- CHARTS ROW -->
+      <section class="charts-row">
+        <div class="chart-card chart-card--wide">
+          <h3 class="chart-title">Ordens por Mês</h3>
+          <div class="chart-wrapper">
+            <canvas #ordersChart></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card chart-card--narrow">
+          <h3 class="chart-title">Assinaturas</h3>
+          <div class="chart-wrapper">
+            <canvas #subscriptionsChart></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- FULL WIDTH CHART -->
+      <section class="charts-row">
+        <div class="chart-card chart-card--full">
+          <h3 class="chart-title">Ordens por Status</h3>
+          <div class="chart-wrapper chart-wrapper--horizontal">
+            <canvas #statusChart></canvas>
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (!isLoading() && !stats()) {
+      <div class="empty-state">
+        <ion-icon name="clipboard-outline"></ion-icon>
+        <h2>Sem dados disponíveis</h2>
+        <p>Cadastre empresas e crie ordens de serviço para visualizar as métricas aqui.</p>
+      </div>
+    }
+
+  </div>
 </ion-content>

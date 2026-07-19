@@ -1,0 +1,75 @@
+@if (isLoading()) {
+  <ion-progress-bar type="indeterminate" color="primary"></ion-progress-bar>
+}
+
+<form [formGroup]="staffForm" (ngSubmit)="onSubmit()">
+  <ion-list lines="inset" style="background: transparent;">
+    
+    <ion-item-divider style="--background: transparent; margin-top: 10px;">
+      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">DADOS DE IDENTIDADE</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="person" slot="start" color="primary"></ion-icon>
+      <ion-input label="Nome Completo *" labelPlacement="stacked" formControlName="name" placeholder="Ex: João da Silva"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="mail" slot="start" color="primary"></ion-icon>
+      <ion-input type="email" label="E-mail *" labelPlacement="stacked" formControlName="email" placeholder="Ex: joao@empresa.com"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="call" slot="start" color="primary"></ion-icon>
+      <ion-input label="Telefone" labelPlacement="stacked" formControlName="phone" placeholder="Ex: (11) 99999-9999" (ionInput)="onPhoneInput($event)"></ion-input>
+    </ion-item>
+
+    <ion-item-divider style="--background: transparent; margin-top: 15px;">
+      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">CREDENCIAIS E PERMISSÕES</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="key" slot="start" color="primary"></ion-icon>
+      <ion-input type="password" [label]="isEditMode() ? 'Nova Senha (deixe em branco para manter)' : 'Senha de Acesso *'" labelPlacement="stacked" formControlName="password" placeholder="Mínimo 6 caracteres"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="person" slot="start" color="primary"></ion-icon>
+      <ion-select label="Nível de Acesso *" labelPlacement="stacked" formControlName="type" interface="popover">
+        @for (t of types; track t.value) {
+          <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    @if (staffForm.get('type')?.value !== 'super_admin') {
+      <ion-item>
+        <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
+        <ion-select label="Empresa Associada" labelPlacement="stacked" formControlName="company_id" interface="action-sheet" placeholder="Selecione a empresa">
+          <ion-select-option value="">Nenhuma (Global)</ion-select-option>
+          @for (c of companies(); track c._id) {
+            <ion-select-option [value]="c._id">{{ c.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    }
+
+    <ion-item lines="none" style="margin-top: 10px;">
+      <ion-label>
+        <h3 style="font-family: 'Outfit', sans-serif; font-weight: 600;">Conta Ativa</h3>
+        <p style="font-size: 0.85rem; color: var(--ion-color-medium);">Se inativa, o usuário não conseguirá realizar login.</p>
+      </ion-label>
+      <ion-toggle slot="end" formControlName="active" [checked]="staffForm.get('active')?.value === true" (ionChange)="staffForm.get('active')?.setValue($event.detail.checked)"></ion-toggle>
+    </ion-item>
+
+    <div class="ion-padding-top ion-padding-horizontal">
+      <ion-button type="submit" expand="block" color="primary" [disabled]="!hasChanges() || isLoading()">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ isEditMode() ? 'Salvar Alterações' : 'Cadastrar Usuário' }}
+      </ion-button>
+    </div>
+
+  </ion-list>
+</form>

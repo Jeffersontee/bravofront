@@ -48,11 +48,15 @@ ion-toolbar {
 }
 
 /* Inputs globais brancos para contraste */
-ion-input, ion-textarea, ion-select, input, select, textarea {
-  --background: #ffffff !important;
+input, select, textarea {
   background: #ffffff !important;
   color: #111111 !important;
-  --color: #111111 !important;
+  border-radius: 4px;
+}
+
+ion-input, ion-textarea, ion-select {
+  --background: #ffffff;
+  --color: #111111;
   --placeholder-color: #666666;
   border-radius: 4px;
 }

@@ -1,18 +1,19 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
   IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
   IonLabel, IonButtons, IonButton, IonRouterOutlet, IonFooter } from '@ionic/angular/standalone';
-import { RouterLink, RouterOutlet, Router } from '@angular/router';
+import { RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
-import { 
+import {
   homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
   peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
   menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
-  businessOutline
+  businessOutline, receiptOutline, gridOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Strings } from 'src/app/enum/strings';
@@ -51,22 +52,23 @@ export class SuperLayoutPage implements OnInit {
   private readonly MENU_DATA: MenuConfig[] = [
     {
       title: 'Dashboard',
+      stringKey: 'SUPER_DASHBOARD',
       icon: 'speedometer-outline',
-      children: [
-        { title: 'Painel Geral', stringKey: 'SUPER_DASHBOARD', icon: 'trending-up-outline' }
-      ]
     },
     {
       title: 'Operacional',
       icon: 'receipt-outline',
       children: [
-        { title: 'Ordens de Serviço', stringKey: 'SERVICE_ORDERS', icon: 'list-outline' }
+        { title: 'Painel', stringKey: 'SUPER_OPERATIONAL_PANEL', icon: 'grid-outline' },
+        { title: 'Lista', stringKey: 'SUPER_OPERATIONAL_ORDERS', icon: 'list-outline' },
+        { title: 'Cadastrar Ordem', stringKey: 'SUPER_OPERATIONAL_ORDERS_CREATE', icon: 'add-circle-outline' },
       ]
     },
     {
       title: 'Empresas / Clientes',
       icon: 'business-outline',
       children: [
+        { title: 'Painel', stringKey: 'SUPER_COMPANIES_PANEL', icon: 'grid-outline' },
         { title: 'Ver Empresas', stringKey: 'SUPER_COMPANIES', icon: 'list-outline' },
         { title: 'Cadastrar Empresa', stringKey: 'SUPER_COMPANIES_CREATE', icon: 'add-circle-outline' },
       ]
@@ -75,22 +77,26 @@ export class SuperLayoutPage implements OnInit {
       title: 'Catálogo',
       icon: 'construct-outline',
       children: [
-        { title: 'Ver Serviços', stringKey: 'SUPER_SERVICES', icon: 'list-outline' },
-        { title: 'Cadastrar Serviços', stringKey: 'SUPER_SERVICES_CREATE', icon: 'add-circle-outline' },
+        { title: 'Painel', stringKey: 'SUPER_SERVICES_PANEL', icon: 'grid-outline' },
+        { title: 'Lista', stringKey: 'SUPER_SERVICES', icon: 'list-outline' },
+        { title: 'Cadastrar Serviço', stringKey: 'SUPER_SERVICES_CREATE', icon: 'add-circle-outline' },
       ]
     },
     {
       title: 'Colaboradores',
       icon: 'briefcase-outline',
       children: [
-        { title: 'Equipe de Campo', stringKey: 'SUPER_COLLABORATORS', icon: 'list-outline' },
-        { title: 'Cadastrar Técnico', stringKey: 'SUPER_COLLABORATORS_CREATE', icon: 'person-add-outline' },
+        { title: 'Painel', stringKey: 'SUPER_COLLABORATORS_PANEL', icon: 'grid-outline' },
+        { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-outline' },
+        { title: 'Lista', stringKey: 'SUPER_COLLABORATORS', icon: 'list-outline' },
+        { title: 'Cadastrar Colaborador', stringKey: 'SUPER_COLLABORATORS_CREATE', icon: 'person-add-outline' },
       ]
     },
     {
       title: 'Usuários Globais',
       icon: 'people-outline',
       children: [
+        { title: 'Painel', stringKey: 'SUPER_STAFF_PANEL', icon: 'grid-outline' },
         { title: 'Listar Usuários', stringKey: 'SUPER_STAFF', icon: 'list-outline' },
         { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline' },
       ]
@@ -106,12 +112,34 @@ export class SuperLayoutPage implements OnInit {
       homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
       peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
-      businessOutline
+      businessOutline, receiptOutline, gridOutline
     });
   }
 
   ngOnInit() {
     this.menuItems = this.buildMenu(this.MENU_DATA);
+    
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.checkRouteForMenuCollapse(event.urlAfterRedirects || event.url);
+    });
+
+    this.checkRouteForMenuCollapse(this.router.url);
+  }
+
+  private checkRouteForMenuCollapse(url: string) {
+    const isDesktop = window.innerWidth >= 992;
+    if (isDesktop && url.includes('/companies/') && url.includes('/dashboard')) {
+      this.isCollapsed = true;
+    } else {
+      this.isCollapsed = false;
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkRouteForMenuCollapse(this.router.url);
   }
 
   private buildMenu(configList: MenuConfig[]): MenuItem[] {
@@ -133,33 +161,6 @@ export class SuperLayoutPage implements OnInit {
 
   public toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
-  }
-
-  public async onMenuClick(item: MenuItem) {
-    if (item.url) {
-      if (this.router.url === item.url || this.router.url.includes(item.url)) {
-        return;
-      }
-      try {
-        const success = await this.router.navigateByUrl(item.url);
-        if (success === false) {
-          this.showNotImplementedAlert();
-        }
-      } catch (err) {
-        this.showNotImplementedAlert();
-      }
-    } else {
-      item.open = !item.open;
-    }
-  }
-
-  private async showNotImplementedAlert() {
-    const alert = await this.alertCtrl.create({
-      header: 'Em Breve',
-      message: 'Esta funcionalidade ainda está em desenvolvimento e será disponibilizada em breve.',
-      buttons: ['OK']
-    });
-    await alert.present();
   }
 
   public logout() {

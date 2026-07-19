@@ -1,0 +1,89 @@
+$bravo-dark: #1a1a1a;
+$bravo-yellow: #ffc409;
+$bravo-ink: #2d2d2d;
+$bravo-muted: #6b7280;
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.team-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.04);
+  padding: 24px;
+}
+
+.team-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 14px;
+}
+
+.team-card__icon {
+  font-size: 28px;
+}
+
+.text-yellow { color: $bravo-yellow; }
+.text-blue { color: #2563eb; }
+.text-grey { color: #6b7280; }
+
+.team-card__title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: $bravo-ink;
+  margin: 0;
+}
+
+.team-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fcfcfd;
+  border: 1px solid rgba(0,0,0,0.02);
+}
+
+.member-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: $bravo-ink;
+}
+
+.member-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #dc2626;
+
+  &.active {
+    background: #f0fdf4;
+    color: #16a34a;
+  }
+}
+
+.no-members {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $bravo-muted;
+  text-align: center;
+  padding: 20px 0;
+}

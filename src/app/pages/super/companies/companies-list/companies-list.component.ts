@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -7,9 +7,13 @@ import { Strings } from 'src/app/enum/strings';
 import { FormsModule } from '@angular/forms';
 import { GlobalService } from 'src/app/services/global/global.service';
 
+import { addIcons } from 'ionicons';
+import { gridOutline, listOutline, addOutline, refreshOutline } from 'ionicons/icons';
+
 @Component({
   selector: 'app-companies-list',
   templateUrl: './companies-list.component.html',
+  styleUrls: ['./companies-list.component.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
 })
@@ -20,6 +24,11 @@ export class CompaniesListComponent implements OnInit {
   
   public companies: Company[] = [];
   public isLoading = true;
+  public viewMode = signal<'list' | 'card'>('list');
+
+  constructor() {
+    addIcons({ gridOutline, listOutline, addOutline, refreshOutline });
+  }
 
   ngOnInit() {
     this.loadCompanies();

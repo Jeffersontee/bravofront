@@ -1,1 +1,190 @@
-// SCSS Vazio
+// Bravo Design Tokens (Dashboard)
+$bravo-dark: #1a1a1a;
+$bravo-yellow: #ffc409;
+$bravo-surface: #f5f6f8;
+$bravo-ink: #2d2d2d;
+$bravo-muted: #6b7280;
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+// --- Loading ---
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+
+  p {
+    color: $bravo-muted;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+  }
+}
+
+// --- KPI Grid ---
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+.kpi-icon--companies {
+  background: rgba(255, 196, 9, 0.12);
+  ion-icon { color: #e0ac08; }
+}
+
+.kpi-icon--users {
+  background: rgba(37, 99, 235, 0.10);
+  ion-icon { color: #2563eb; }
+}
+
+.kpi-icon--orders {
+  background: rgba(124, 58, 237, 0.10);
+  ion-icon { color: #7c3aed; }
+}
+
+.kpi-icon--completed {
+  background: rgba(22, 163, 74, 0.10);
+  ion-icon { color: #16a34a; }
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kpi-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: $bravo-ink;
+  line-height: 1.1;
+}
+
+.kpi-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: $bravo-muted;
+}
+
+.kpi-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $bravo-muted;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+// --- Charts ---
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.chart-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.chart-card--full {
+  grid-column: 1 / -1;
+}
+
+.chart-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: $bravo-ink;
+  margin: 0 0 16px 0;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 280px;
+}
+
+.chart-wrapper--horizontal {
+  height: 240px;
+}
+
+// --- Empty State ---
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 12px;
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 64px;
+    color: rgba(0, 0, 0, 0.08);
+  }
+
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: $bravo-ink;
+    margin: 0;
+  }
+
+  p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    color: $bravo-muted;
+    margin: 0;
+    max-width: 400px;
+  }
+}

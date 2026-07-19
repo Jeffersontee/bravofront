@@ -50,6 +50,17 @@
       </ion-select>
     </ion-item>
 
+    @if (collaboratorForm.get('role')?.value === 'técnico') {
+      <ion-item>
+        <ion-icon name="construct-outline" slot="start"></ion-icon>
+        <ion-select label="Especialidades" labelPlacement="floating" formControlName="specialties" [multiple]="true">
+          <ion-select-option value="ELÉTRICA">Elétrica</ion-select-option>
+          <ion-select-option value="HIDRÁULICA/CIVIL">Hidráulica / Civil</ion-select-option>
+          <ion-select-option value="SERRALHERIA">Serralheria</ion-select-option>
+        </ion-select>
+      </ion-item>
+    }
+
     <ion-item lines="none" class="toggle-item">
       <ion-label>
         <h3>Colaborador Ativo</h3>

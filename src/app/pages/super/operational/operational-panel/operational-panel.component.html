@@ -1,0 +1,136 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Painel Operacional</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="mb-4">
+    <h2 class="page-title">Métricas e Atividades</h2>
+    <p class="page-subtitle">Visão geral das ordens de serviço, agendamentos e execuções.</p>
+  </div>
+
+  <!-- KPIs -->
+  <ion-grid class="ion-no-padding mb-4">
+    <ion-row>
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-primary-light text-primary">
+              <ion-icon name="receipt-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Total de OS</span>
+              <h3 class="kpi-value">{{ totalCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-tertiary-light text-tertiary">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Agendadas</span>
+              <h3 class="kpi-value">{{ scheduledCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-warning-light text-warning">
+              <ion-icon name="flash-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Em Andamento</span>
+              <h3 class="kpi-value">{{ inProgressCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-success-light text-success">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Concluídas</span>
+              <h3 class="kpi-value">{{ completedCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Ações Rápidas -->
+  <div class="mb-4">
+    <h3 class="section-title">Ações Rápidas</h3>
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="12" size-md="6">
+          <ion-card class="action-card" (click)="goToList()">
+            <ion-card-content>
+              <div class="d-flex align-items-center">
+                <ion-icon name="list-outline" class="action-icon text-primary"></ion-icon>
+                <div class="ms-3">
+                  <h4 class="action-title">Ver Todas as Ordens</h4>
+                  <p class="action-desc text-muted">Acesse a listagem completa com filtros de status e pesquisa.</p>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="6">
+          <ion-card class="action-card" (click)="goToCreate()">
+            <ion-card-content>
+              <div class="d-flex align-items-center">
+                <ion-icon name="add-circle-outline" class="action-icon text-success"></ion-icon>
+                <div class="ms-3">
+                  <h4 class="action-title">Cadastrar Nova Ordem</h4>
+                  <p class="action-desc text-muted">Agende uma nova visita técnica ou ordem de serviço.</p>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Últimas Ordens -->
+  @if (recentOrders().length > 0) {
+    <div class="mb-4">
+      <h3 class="section-title">Últimas Ordens</h3>
+      <div class="recent-orders-list">
+        @for (order of recentOrders(); track order._id) {
+          <ion-card class="recent-order-card" (click)="goToEdit(order)">
+            <ion-card-content>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h4 class="recent-order-service">{{ $any(order.service_id)?.name || 'Serviço' }}</h4>
+                  <p class="recent-order-unit text-muted">{{ $any(order.unit_id)?.name || 'Unidade' }}</p>
+                </div>
+                <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
+                  {{ getStatusLabel(order.current_status) }}
+                </ion-badge>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        }
+      </div>
+    </div>
+  }
+</ion-content>

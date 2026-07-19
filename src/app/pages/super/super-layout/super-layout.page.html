@@ -36,11 +36,11 @@
                   <ion-icon slot="end" [name]="item.open ? 'chevron-down' : 'chevron-forward'"></ion-icon>
                 }
               </ion-item>
-
+ 
               @if (item.open && !isCollapsed) {
                 @for (child of item.children; track child.title) {
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item (click)="onMenuClick(child)" lines="none" detail="false" class="menu-item level-2" button>
+                    <ion-item routerDirection="root" [routerLink]="child.url ? [child.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-2">
                       <ion-icon slot="start" [name]="child.icon"></ion-icon>
                       <ion-label>{{ child.title }}</ion-label>
                     </ion-item>
@@ -51,7 +51,7 @@
           }
         </ion-list>
       </ion-content>
-
+ 
       <ion-footer class="ion-no-border bravo-menu-footer">
         <ion-list id="action-list">
           <ion-item (click)="logout()" lines="none" detail="false" class="logout-item" button>

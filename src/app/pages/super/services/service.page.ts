@@ -4,8 +4,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButton, IonBut
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
-import { addCircleOutline } from 'ionicons/icons';
-import { ServiceFormComponent } from 'src/app/components/service-form/service-form.component';
+import { addCircleOutline, refreshOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './service.page.html',
   styleUrls: ['./service.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButton, IonButtons, IonMenuButton, CommonModule, ServiceFormComponent]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButton, IonButtons, IonMenuButton, CommonModule]
 })
 export class ServicesPage implements OnInit {
   private serviceService = inject(ServiceService);
@@ -21,59 +20,39 @@ export class ServicesPage implements OnInit {
   private router = inject(Router);
 
   services = signal<ServiceItem[]>([]);
-  isModalOpen = signal<boolean>(false);
-  editingService = signal<ServiceItem | null>(null);
-  isEditMode = signal<boolean>(false);
+  isLoading = signal<boolean>(false);
 
   constructor() {
-    addIcons({ addCircleOutline });
+    addIcons({ addCircleOutline, refreshOutline });
   }
 
   ngOnInit() {
     this.loadServices();
   }
 
-  ionViewWillEnter() {
-    if (this.router.url.includes('/services/create')) {
-      this.openModal();
-    }
-  }
-
   loadServices() {
+    this.isLoading.set(true);
     this.serviceService.getServices().subscribe({
       next: (res) => {
         if (res.success) {
           this.services.set(res.data);
         }
+        this.isLoading.set(false);
       },
-      error: () => this.globalService.errorToast('Erro ao carregar serviços')
+      error: () => {
+        this.globalService.errorToast('Erro ao carregar serviços');
+        this.isLoading.set(false);
+      }
     });
   }
 
-  openModal(service?: ServiceItem) {
-    if (service) {
-      this.editingService.set(service);
-      this.isEditMode.set(true);
-    } else {
-      this.editingService.set(null);
-      this.isEditMode.set(false);
+  goToCreate() {
+    this.router.navigateByUrl('/super-admin/services/create');
+  }
+
+  goToEdit(service: ServiceItem) {
+    if (service && service._id) {
+      this.router.navigateByUrl(`/super-admin/services/edit/${service._id}`);
     }
-    this.isModalOpen.set(true);
-  }
-
-  closeModal() {
-    this.isModalOpen.set(false);
-    if (this.router.url.includes('/services/create')) {
-      this.router.navigate(['/company/services'], { replaceUrl: true });
-    }
-  }
-
-  onServiceSaved() {
-    this.closeModal();
-    this.loadServices();
-  }
-
-  deleteService(id: string) {
-    // Add logic later if needed
   }
 }

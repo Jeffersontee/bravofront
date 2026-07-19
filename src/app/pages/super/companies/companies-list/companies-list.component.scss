@@ -1,0 +1,80 @@
+$bravo-dark: #1a1a1a;
+$bravo-yellow: #ffc409;
+$bravo-ink: #2d2d2d;
+$bravo-muted: #6b7280;
+
+.companies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.company-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+}
+
+.company-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.company-card__icon {
+  font-size: 28px;
+  color: $bravo-yellow;
+}
+
+.company-card__status {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #fef2f2;
+  color: #dc2626;
+
+  &.active {
+    background: #f0fdf4;
+    color: #16a34a;
+  }
+}
+
+.company-card__name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: $bravo-ink;
+  margin: 0 0 4px;
+}
+
+.company-card__cnpj {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $bravo-muted;
+  margin: 0 0 2px;
+}
+
+.company-card__email {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $bravo-muted;
+  margin: 0;
+}
+
+.toggle-container {
+  display: flex;
+  gap: 8px;
+}

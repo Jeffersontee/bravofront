@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Equipes / Cargos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="teams-container" style="max-width: 1200px; margin: 0 auto;">
+    
+    @if (isLoading()) {
+      <div class="text-center ion-padding">
+        <ion-spinner></ion-spinner>
+        <p class="text-muted mt-2">Carregando divisão de equipes...</p>
+      </div>
+    }
+
+    @if (!isLoading()) {
+      <div class="teams-grid">
+        
+        <!-- CARD TÉCNICOS -->
+        <div class="team-card">
+          <div class="team-card__header">
+            <ion-icon name="hammer-outline" class="team-card__icon text-yellow"></ion-icon>
+            <h3 class="team-card__title">Equipe Técnica ({{ technicians.length }})</h3>
+          </div>
+          <div class="team-card__body">
+            @for (tech of technicians; track tech._id) {
+              <div class="team-member">
+                <span class="member-name">{{ tech.name }}</span>
+                <span class="member-badge" [class.active]="tech.status === 'active'">
+                  {{ tech.status === 'active' ? 'Ativo' : 'Inativo' }}
+                </span>
+              </div>
+            }
+            @if (technicians.length === 0) {
+              <p class="no-members">Nenhum técnico alocado.</p>
+            }
+          </div>
+        </div>
+
+        <!-- CARD SUPERVISORES -->
+        <div class="team-card">
+          <div class="team-card__header">
+            <ion-icon name="shield-checkmark-outline" class="team-card__icon text-blue"></ion-icon>
+            <h3 class="team-card__title">Supervisores ({{ supervisors.length }})</h3>
+          </div>
+          <div class="team-card__body">
+            @for (sup of supervisors; track sup._id) {
+              <div class="team-member">
+                <span class="member-name">{{ sup.name }}</span>
+                <span class="member-badge" [class.active]="sup.status === 'active'">
+                  {{ sup.status === 'active' ? 'Ativo' : 'Inativo' }}
+                </span>
+              </div>
+            }
+            @if (supervisors.length === 0) {
+              <p class="no-members">Nenhum supervisor alocado.</p>
+            }
+          </div>
+        </div>
+
+        <!-- CARD ADMINISTRATIVOS -->
+        <div class="team-card">
+          <div class="team-card__header">
+            <ion-icon name="briefcase-outline" class="team-card__icon text-grey"></ion-icon>
+            <h3 class="team-card__title">Administrativo ({{ adminStaff.length }})</h3>
+          </div>
+          <div class="team-card__body">
+            @for (adm of adminStaff; track adm._id) {
+              <div class="team-member">
+                <span class="member-name">{{ adm.name }}</span>
+                <span class="member-badge" [class.active]="adm.status === 'active'">
+                  {{ adm.status === 'active' ? 'Ativo' : 'Inativo' }}
+                </span>
+              </div>
+            }
+            @if (adminStaff.length === 0) {
+              <p class="no-members">Nenhum operador administrativo alocado.</p>
+            }
+          </div>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</ion-content>

@@ -1,4 +1,4 @@
-﻿import { Injectable, inject, Injector, signal } from '@angular/core';
+import { Injectable, inject, Injector, signal } from '@angular/core';
 import { Strings } from 'src/app/enum/strings';
 import { ApiService } from '../api/api.service';
 import { BehaviorSubject, from, lastValueFrom, Observable, Subject, throwError } from 'rxjs';
@@ -423,7 +423,7 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     this._refreshToken.set(null); // Atualiza o signal
     this.addressService.clearAddress();
     this.profile.updateProfileData(null);
-    if(!nav) this.router.navigateByUrl(Strings.LOGIN, { replaceUrl: true });
+    if(nav) this.router.navigateByUrl(Strings.LOGIN, { replaceUrl: true });
   }
 
   async logout(nav?: boolean) {

@@ -6,7 +6,7 @@ import {
   IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, briefcaseOutline } from 'ionicons/icons';
+import { person, mail, call, key, briefcaseOutline, constructOutline } from 'ionicons/icons';
 import { Collaborator } from 'src/app/services/collaborator/collaborator.service';
 
 @Component({
@@ -48,7 +48,7 @@ export class CollaboratorFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, briefcaseOutline });
+    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline });
 
     effect(() => {
       if (!this.formReady() || !this.collaboratorForm) return;
@@ -103,6 +103,7 @@ export class CollaboratorFormComponent implements OnInit {
       phone: [''],
       password: ['', this.isEditMode() ? [] : [Validators.required, Validators.minLength(6)]],
       role: ['', Validators.required],
+      specialties: [[]],
       active: [true]
     });
     this.formReady.set(true);
@@ -130,11 +131,13 @@ export class CollaboratorFormComponent implements OnInit {
   private patchForm(data: Collaborator) {
     if (!this.collaboratorForm) this.initForm();
 
+    const rawData = data as any;
     this.collaboratorForm.patchValue({
       name: data.name || '',
       email: data.email || '',
       phone: this.applyPhoneMask(data.phone || ''),
       role: data.role || '',
+      specialties: rawData.technician_profile?.specialties || [],
       active: data.status === 'active'
     });
     
@@ -155,6 +158,12 @@ export class CollaboratorFormComponent implements OnInit {
       role: formValue.role,
       status: formValue.active ? 'active' : 'inactive'
     };
+
+    if (formValue.role === 'técnico') {
+      payload.technician_profile = {
+        specialties: formValue.specialties || []
+      };
+    }
 
     if (!this.isEditMode() || formValue.password) {
       payload.password = formValue.password;

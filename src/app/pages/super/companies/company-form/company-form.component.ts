@@ -1,9 +1,13 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { 
+  IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
+  IonList, IonItem, IonInput, IonTextarea, IonLabel, IonToggle, IonButton, 
+  IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption 
+} from '@ionic/angular/standalone';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CompanyService, Company } from 'src/app/services/company/company.service';
+import { CompanyService } from 'src/app/services/company/company.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { Strings } from 'src/app/enum/strings';
 
@@ -11,7 +15,12 @@ import { Strings } from 'src/app/enum/strings';
   selector: 'app-company-form',
   templateUrl: './company-form.component.html',
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule]
+  imports: [
+    CommonModule, ReactiveFormsModule,
+    IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
+    IonList, IonItem, IonInput, IonTextarea, IonLabel, IonToggle, IonButton, 
+    IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption
+  ]
 })
 export class CompanyFormComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -22,12 +31,12 @@ export class CompanyFormComponent implements OnInit {
 
   public form!: FormGroup;
   public userForm!: FormGroup;
-  public isEditMode = false;
+  public isEditMode = signal(false);
   public companyId: string | null = null;
-  public isLoading = false;
-  public isUsersLoading = false;
-  public companyUsers: any[] = [];
-  public showUserForm = false;
+  public isLoading = signal(false);
+  public isUsersLoading = signal(false);
+  public companyUsers = signal<any[]>([]);
+  public showUserForm = signal(false);
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -50,38 +59,38 @@ export class CompanyFormComponent implements OnInit {
 
     this.companyId = this.route.snapshot.paramMap.get('id');
     if (this.companyId) {
-      this.isEditMode = true;
+      this.isEditMode.set(true);
       this.loadCompany(this.companyId);
       this.loadUsers(this.companyId);
     }
   }
 
   loadCompany(id: string) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.companyService.getCompanyById(id).subscribe({
       next: (res: any) => {
         this.form.patchValue(res.data);
-        this.isLoading = false;
+        this.isLoading.set(false);
       },
       error: (err: any) => {
         console.error(err);
         this.global.errorToast('Erro ao carregar empresa');
-        this.isLoading = false;
+        this.isLoading.set(false);
       }
     });
   }
 
   loadUsers(id: string) {
-    this.isUsersLoading = true;
+    this.isUsersLoading.set(true);
     this.companyService.getCompanyUsers(id).subscribe({
       next: (res: any) => {
-        this.companyUsers = res.data;
-        this.isUsersLoading = false;
+        this.companyUsers.set(res.data || []);
+        this.isUsersLoading.set(false);
       },
       error: (err: any) => {
         console.error(err);
         this.global.errorToast('Erro ao carregar usuários');
-        this.isUsersLoading = false;
+        this.isUsersLoading.set(false);
       }
     });
   }
@@ -92,20 +101,20 @@ export class CompanyFormComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     const data = this.form.getRawValue();
 
-    if (this.isEditMode) {
+    if (this.isEditMode()) {
       this.companyService.updateCompany(this.companyId!, data).subscribe({
         next: (res: any) => {
           this.global.successToast('Empresa atualizada!');
           this.router.navigateByUrl(Strings.SUPER_COMPANIES);
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
         error: (err: any) => {
           console.error(err);
           this.global.errorToast('Erro ao salvar');
-          this.isLoading = false;
+          this.isLoading.set(false);
         }
       });
     } else {
@@ -113,12 +122,12 @@ export class CompanyFormComponent implements OnInit {
         next: (res: any) => {
           this.global.successToast('Empresa criada!');
           this.router.navigateByUrl(Strings.SUPER_COMPANIES);
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
         error: (err: any) => {
           console.error(err);
           this.global.errorToast('Erro ao salvar');
-          this.isLoading = false;
+          this.isLoading.set(false);
         }
       });
     }
@@ -127,8 +136,8 @@ export class CompanyFormComponent implements OnInit {
   // --- Usuários ---
 
   toggleUserForm() {
-    this.showUserForm = !this.showUserForm;
-    if (!this.showUserForm) {
+    this.showUserForm.set(!this.showUserForm());
+    if (!this.showUserForm()) {
       this.userForm.reset({ type: 'company_owner' });
     }
   }
@@ -138,7 +147,7 @@ export class CompanyFormComponent implements OnInit {
       this.userForm.markAllAsTouched();
       return;
     }
-    this.isUsersLoading = true;
+    this.isUsersLoading.set(true);
     const data = this.userForm.getRawValue();
     this.companyService.assignUser(this.companyId!, data).subscribe({
       next: (res: any) => {
@@ -149,7 +158,7 @@ export class CompanyFormComponent implements OnInit {
       error: (err: any) => {
         console.error(err);
         this.global.errorToast(err.error?.message || 'Erro ao vincular usuário');
-        this.isUsersLoading = false;
+        this.isUsersLoading.set(false);
       }
     });
   }
@@ -158,7 +167,7 @@ export class CompanyFormComponent implements OnInit {
     const confirm = await this.global.showButtonToast('Tem certeza que deseja desvincular este usuário?');
     if (!confirm) return;
 
-    this.isUsersLoading = true;
+    this.isUsersLoading.set(true);
     this.companyService.removeUser(this.companyId!, userId).subscribe({
       next: () => {
         this.global.successToast('Usuário removido da empresa');
@@ -167,7 +176,7 @@ export class CompanyFormComponent implements OnInit {
       error: (err: any) => {
         console.error(err);
         this.global.errorToast('Erro ao remover usuário');
-        this.isUsersLoading = false;
+        this.isUsersLoading.set(false);
       }
     });
   }

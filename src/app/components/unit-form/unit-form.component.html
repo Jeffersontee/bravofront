@@ -11,7 +11,27 @@
 
     <ion-item>
       <ion-icon name="business-outline" slot="start"></ion-icon>
-      <ion-input label="Nome da Unidade" labelPlacement="floating" formControlName="name" placeholder="Ex: Loja Centro"></ion-input>
+      <ion-input label="Nome da Unidade *" labelPlacement="floating" formControlName="name" placeholder="Ex: Loja Centro"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="document-text-outline" slot="start"></ion-icon>
+      <ion-input label="Identificador / Nome Curto" labelPlacement="floating" formControlName="short_name" placeholder="Ex: LOJA_CENTRO"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="document-text-outline" slot="start"></ion-icon>
+      <ion-input label="CNPJ da Filial" labelPlacement="floating" formControlName="cnpj" placeholder="Ex: 00.000.000/0000-00"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="call-outline" slot="start"></ion-icon>
+      <ion-input label="Telefone de Contato" labelPlacement="floating" formControlName="phone" placeholder="Ex: (11) 99999-9999"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="mail" slot="start"></ion-icon>
+      <ion-input type="email" label="E-mail da Filial" labelPlacement="floating" formControlName="email" placeholder="Ex: filial@empresa.com"></ion-input>
     </ion-item>
 
     <ion-item-divider class="section-divider">

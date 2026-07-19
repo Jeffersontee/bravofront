@@ -25,6 +25,10 @@ export interface Unit {
   manager_id?: Collaborator;
   follower_ids?: Collaborator[];
   status: 'ACTIVE' | 'INACTIVE';
+  cnpj?: string;
+  phone?: string;
+  email?: string;
+  short_name?: string;
   createdAt?: string;
   updatedAt?: string;
 }

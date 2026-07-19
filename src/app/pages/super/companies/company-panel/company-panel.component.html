@@ -1,0 +1,112 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Painel de Empresas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="panel-container">
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Carregando empresas...</p>
+      </div>
+    }
+
+    <!-- VISÃO SEM SELEÇÃO (lista de empresas) -->
+    @if (!isLoading() && !selectedCompany()) {
+      <div class="panel-header">
+        <h2 class="panel-title">Selecione uma empresa para visualizar</h2>
+        <ion-searchbar
+          placeholder="Buscar por nome ou CNPJ..."
+          debounce="300"
+          (ionInput)="onSearch($event)"
+          class="panel-search"
+        ></ion-searchbar>
+      </div>
+
+      <div class="companies-grid">
+        @for (company of filteredCompanies; track company._id) {
+          <div class="company-card" (click)="selectCompany(company)">
+            <div class="company-card__header">
+              <ion-icon name="business-outline" class="company-card__icon"></ion-icon>
+              <span class="company-card__status" [class.active]="company.active">
+                {{ company.active ? 'Ativa' : 'Inativa' }}
+              </span>
+            </div>
+            <h3 class="company-card__name">{{ company.name }}</h3>
+            <p class="company-card__cnpj">{{ company.cnpj }}</p>
+            @if (company.owner_name) {
+              <p class="company-card__owner">{{ company.owner_name }}</p>
+            }
+            <div class="company-card__footer">
+              <span class="company-card__action">Ver painel <ion-icon name="chevron-forward-outline"></ion-icon></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (!isLoading() && filteredCompanies.length === 0) {
+        <div class="empty-state">
+          <ion-icon name="business-outline"></ion-icon>
+          <p>Nenhuma empresa encontrada.</p>
+        </div>
+      }
+    }
+
+    <!-- VISÃO COM EMPRESA SELECIONADA -->
+    @if (!isLoading() && selectedCompany()) {
+      <div class="selected-header">
+        <ion-button fill="clear" size="small" (click)="clearSelection()">
+          ← Voltar à lista
+        </ion-button>
+      </div>
+
+      <div class="selected-company">
+        <div class="selected-company__info">
+          <div class="selected-company__badge" [class.active]="selectedCompany()!.active">
+            {{ selectedCompany()!.active ? 'Ativa' : 'Inativa' }}
+          </div>
+          <h2 class="selected-company__name">{{ selectedCompany()!.name }}</h2>
+          <p class="selected-company__detail">CNPJ: {{ selectedCompany()!.cnpj }}</p>
+          @if (selectedCompany()!.email) {
+            <p class="selected-company__detail">E-mail: {{ selectedCompany()!.email }}</p>
+          }
+          @if (selectedCompany()!.owner_name) {
+            <p class="selected-company__detail">Responsável: {{ selectedCompany()!.owner_name }}</p>
+          }
+          <ion-button fill="outline" size="small" class="ion-margin-top" (click)="goToEdit(selectedCompany()!._id!)">
+            Editar Dados
+          </ion-button>
+        </div>
+
+        <!-- USUÁRIOS VINCULADOS -->
+        <div class="selected-company__users">
+          <h3 class="section-title">
+            <ion-icon name="people-outline"></ion-icon> Usuários Vinculados
+          </h3>
+          @if (isUsersLoading()) {
+            <div class="loading-inline"><ion-spinner name="dots"></ion-spinner></div>
+          } @else if (companyUsers().length > 0) {
+            <ion-list>
+              @for (user of companyUsers(); track user._id) {
+                <ion-item lines="inset">
+                  <ion-label>
+                    <h3>{{ user.name }}</h3>
+                    <p>{{ user.email }} · {{ user.type }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          } @else {
+            <p class="no-data">Nenhum usuário vinculado.</p>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>

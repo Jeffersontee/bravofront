@@ -35,6 +35,10 @@ export class UnitFormComponent implements OnInit {
     this.unitForm = this.fb.group({
       name: ['', Validators.required],
       status: ['ACTIVE'],
+      cnpj: [''],
+      phone: [''],
+      email: ['', Validators.email],
+      short_name: [''],
       address: this.fb.group({
         street: ['', Validators.required],
         number: ['', Validators.required],
@@ -57,6 +61,10 @@ export class UnitFormComponent implements OnInit {
       this.unitForm.patchValue({
         name: data.name,
         status: data.status,
+        cnpj: data.cnpj || '',
+        phone: data.phone || '',
+        email: data.email || '',
+        short_name: data.short_name || '',
         address: data.address,
         manager_id: data.manager_id?._id || data.manager_id,
         follower_ids: data.follower_ids?.map((f: any) => f._id || f) || []

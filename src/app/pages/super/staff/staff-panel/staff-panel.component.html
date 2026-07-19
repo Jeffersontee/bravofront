@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Painel de Usuários Globais</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="panel-container" style="max-width: 1200px; margin: 0 auto;">
+    
+    @if (isLoading()) {
+      <div class="text-center ion-padding">
+        <ion-spinner></ion-spinner>
+        <p class="text-muted mt-2">Carregando painel de usuários...</p>
+      </div>
+    }
+
+    @if (!isLoading()) {
+      <!-- KPIs -->
+      <div class="kpi-grid mb-4">
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--total">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ staffList().length }}</span>
+            <span class="kpi-label">Usuários Administrativos</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--super">
+            <ion-icon name="key-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ superAdminsCount() }}</span>
+            <span class="kpi-label">Super Administradores</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--owner">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ companyOwnersCount() }}</span>
+            <span class="kpi-label">Donos de Empresa</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTA DE USUÁRIOS RECENTES -->
+      <h3 style="font-family: 'Outfit', sans-serif; font-weight: 600; margin-bottom: 12px;">Usuários do Sistema</h3>
+      <ion-list lines="inset" style="background: transparent;">
+        @for (user of staffList(); track user._id) {
+          <ion-item button (click)="goToEdit(user._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+            <ion-label>
+              <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ user.name }}</h2>
+              <p style="font-family: 'Outfit', sans-serif;">{{ user.email }} | Tipo: <strong>{{ user.type }}</strong></p>
+              <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
+                Vínculo: {{ user.company_id?.name || 'Global / Sem Vínculo' }}
+              </p>
+            </ion-label>
+            <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
+              {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
+            </ion-badge>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+  </div>
+</ion-content>

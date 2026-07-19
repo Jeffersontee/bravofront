@@ -1,0 +1,94 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Painel de Colaboradores</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="panel-container" style="max-width: 1200px; margin: 0 auto;">
+    
+    @if (isLoading()) {
+      <div class="text-center ion-padding">
+        <ion-spinner></ion-spinner>
+        <p class="text-muted mt-2">Carregando painel de controle...</p>
+      </div>
+    }
+
+    @if (!isLoading()) {
+      <!-- KPIs -->
+      <div class="kpi-grid mb-4">
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--total">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ collaborators().length }}</span>
+            <span class="kpi-label">Total de Colaboradores</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--active">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ activeCount() }}</span>
+            <span class="kpi-label">Ativos</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--tech">
+            <ion-icon name="briefcase-outline"></ion-icon>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ technicianCount() }}</span>
+            <span class="kpi-label">Técnicos de Campo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTRO POR EMPRESA -->
+      <div class="mb-4" style="background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.04);">
+        <ion-item lines="none">
+          <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
+          <ion-select label="Filtrar por Empresa Parceira" labelPlacement="floating" (ionChange)="filterByCompany($event)" placeholder="Selecione a empresa">
+            <ion-select-option value="">Todas as Empresas</ion-select-option>
+            @for (company of companies(); track company._id) {
+              <ion-select-option [value]="company._id">{{ company.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <!-- LISTA FILTRADA -->
+      <h3 style="font-family: 'Outfit', sans-serif; font-weight: 600; margin-bottom: 12px;">Equipe Associada</h3>
+      <ion-list lines="inset" style="background: transparent;">
+        @for (collab of filteredCollaborators; track collab._id) {
+          <ion-item button (click)="goToEdit(collab._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+            <ion-label>
+              <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ collab.name }}</h2>
+              <p style="font-family: 'Outfit', sans-serif;">{{ collab.email }} | Cargo: <strong>{{ collab.role }}</strong></p>
+              <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
+                Empresa: {{ collab.company_id?.name || 'Global / Sem Empresa' }}
+              </p>
+            </ion-label>
+            <ion-badge [color]="collab.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
+              {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
+            </ion-badge>
+          </ion-item>
+        }
+
+        @if (filteredCollaborators.length === 0) {
+          <div class="text-center ion-padding" style="background: #ffffff; border-radius: 12px;">
+            <p class="text-muted">Nenhum colaborador encontrado para o filtro selecionado.</p>
+          </div>
+        }
+      </ion-list>
+    }
+
+  </div>
+</ion-content>

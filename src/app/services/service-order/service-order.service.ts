@@ -48,31 +48,24 @@ export class ServiceOrderService {
   private http = inject(HttpClient);
   private url = `${environment.serverUrl}${Strings.API_SERVICE_ORDERS}`;
 
-  getHeaders() {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
   getServiceOrders(companyId?: string): Observable<{ success: boolean; data: ServiceOrder[] }> {
     const query = companyId ? `?company_id=${companyId}` : '';
-    return this.http.get<{ success: boolean; data: ServiceOrder[] }>(`${this.url}${query}`, { headers: this.getHeaders() });
+    return this.http.get<{ success: boolean; data: ServiceOrder[] }>(`${this.url}${query}`);
   }
 
   getServiceOrderById(id: string): Observable<{ success: boolean; data: ServiceOrder }> {
-    return this.http.get<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}`);
   }
 
   createServiceOrder(data: Partial<ServiceOrder>): Observable<{ success: boolean; data: ServiceOrder }> {
-    return this.http.post<{ success: boolean; data: ServiceOrder }>(this.url, data, { headers: this.getHeaders() });
+    return this.http.post<{ success: boolean; data: ServiceOrder }>(this.url, data);
   }
 
   updateServiceOrder(id: string, data: Partial<ServiceOrder>): Observable<{ success: boolean; data: ServiceOrder }> {
-    return this.http.put<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}`, data, { headers: this.getHeaders() });
+    return this.http.put<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}`, data);
   }
 
   updateStatus(id: string, status: string, location?: { lat: number, lng: number }): Observable<{ success: boolean; data: ServiceOrder }> {
-    return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/status`, { status, location }, { headers: this.getHeaders() });
+    return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/status`, { status, location });
   }
 }

@@ -1,70 +1,77 @@
-<ion-modal [isOpen]="isOpen()" (didDismiss)="closeModal()">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{ isEditMode() ? 'Editar Serviço' : 'Novo Serviço' }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeModal()">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding">
-      <form [formGroup]="form" (ngSubmit)="saveService()">
-        
-        <div class="form-group">
-          <label>Nome do Serviço</label>
-          <input type="text" formControlName="name" placeholder="Ex: Elétrica" class="custom-input">
-        </div>
+@if (isLoading()) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
 
-        <div class="form-group">
-          <label>Descrição</label>
-          <textarea formControlName="description" rows="3" placeholder="Descrição do serviço" class="custom-input"></textarea>
-        </div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <ion-list lines="none">
+    
+    <ion-item-divider class="section-divider">
+      <ion-label>Dados do Serviço</ion-label>
+    </ion-item-divider>
 
-        <div class="form-group">
-          <label>Preço Base (R$)</label>
-          <input type="number" formControlName="price" placeholder="0.00" class="custom-input">
-        </div>
+    <ion-item>
+      <ion-icon name="list-outline" slot="start"></ion-icon>
+      <ion-input label="Nome do Serviço *" labelPlacement="floating" formControlName="name" placeholder="Ex: Manutenção de Quadro Elétrico"></ion-input>
+    </ion-item>
 
-        <div class="form-group">
-          <label>Categoria</label>
-          <select formControlName="category" class="custom-input">
-            <option value="GERAL">Geral</option>
-            <option value="MANUTENCAO">Manutenção</option>
-            <option value="INSTALACAO">Instalação</option>
-          </select>
-        </div>
+    <ion-item>
+      <ion-icon name="list-outline" slot="start"></ion-icon>
+      <ion-textarea label="Descrição *" labelPlacement="floating" formControlName="description" placeholder="Descreva brevemente o escopo do serviço..." rows="3"></ion-textarea>
+    </ion-item>
 
-        <div class="form-group">
-          <label>Ícone</label>
-          <div class="icon-selector">
-            @for (icon of availableIcons; track icon.name) {
-              <div class="icon-option" 
-                   [class.selected]="form.get('icon')?.value === icon.name"
-                   (click)="form.get('icon')?.setValue(icon.name)">
-                <ion-icon [name]="icon.name"></ion-icon>
-                <span>{{ icon.label }}</span>
-              </div>
-            }
+    <ion-item>
+      <ion-icon name="save-outline" slot="start"></ion-icon>
+      <ion-input type="number" label="Preço Base (R$) *" labelPlacement="floating" formControlName="price" placeholder="0.00"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="list-outline" slot="start"></ion-icon>
+      <ion-select label="Categoria / Especialidade *" labelPlacement="floating" formControlName="category">
+        <ion-select-option value="ELÉTRICA">Elétrica</ion-select-option>
+        <ion-select-option value="HIDRÁULICA/CIVIL">Hidráulica / Civil</ion-select-option>
+        <ion-select-option value="SERRALHERIA">Serralheria</ion-select-option>
+        <ion-select-option value="GERAL">Geral</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Aparência (Ícone no App)</ion-label>
+    </ion-item-divider>
+
+    <div class="icon-selector-container ion-padding">
+      <p class="text-muted small mb-3">Escolha um ícone para representar visualmente este serviço:</p>
+      <div class="icon-grid">
+        @for (icon of availableIcons; track icon.name) {
+          <div class="icon-box" 
+               [class.selected]="form.get('icon')?.value === icon.name"
+               (click)="!isReadOnly() && !isLoading() && form.get('icon')?.setValue(icon.name)">
+            <ion-icon [name]="icon.name"></ion-icon>
+            <span class="icon-label">{{ icon.label }}</span>
           </div>
-        </div>
-
-        <div class="form-group toggle-group">
-          <label>Status Ativo</label>
-          <ion-toggle [checked]="form.get('status')?.value === 'ACTIVE'" 
-                      (ionChange)="form.get('status')?.setValue($event.detail.checked ? 'ACTIVE' : 'INACTIVE')">
-          </ion-toggle>
-        </div>
-
-      </form>
-    </ion-content>
-    <div class="modal-footer">
-      <button class="btn-outline" (click)="closeModal()">Cancelar</button>
-      <button class="btn-primary" (click)="saveService()" [disabled]="form.invalid || isLoading">
-        {{ isLoading ? 'Salvando...' : 'Salvar' }}
-      </button>
+        }
+      </div>
     </div>
-  </ng-template>
-</ion-modal>
+
+    <ion-item lines="none" class="toggle-item mt-3">
+      <ion-label>
+        <h3>Serviço Ativo</h3>
+        <p>Definir se este serviço está disponível para agendamento</p>
+      </ion-label>
+      <ion-toggle slot="end" [checked]="form.get('status')?.value === 'ACTIVE'" 
+                  (ionChange)="form.get('status')?.setValue($event.detail.checked ? 'ACTIVE' : 'INACTIVE')">
+      </ion-toggle>
+    </ion-item>
+
+    <div class="ion-padding d-flex gap-2">
+      <ion-button type="button" fill="outline" color="medium" class="flex-grow-1" (click)="onCancel()" [disabled]="isLoading()">
+        Cancelar
+      </ion-button>
+      <ion-button type="submit" class="flex-grow-1" [disabled]="!form.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ isLoading() ? 'Gravando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Serviço') }}
+      </ion-button>
+    </div>
+  </ion-list>
+</form>

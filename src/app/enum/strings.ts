@@ -14,13 +14,22 @@ export enum Strings {
 
   SUPER_STAFF = '/super-admin/staff',
   SUPER_STAFF_CREATE = '/super-admin/staff/create',
+  SUPER_OPERATIONAL_PANEL = '/super-admin/operational/panel',
+  SUPER_OPERATIONAL_ORDERS = '/super-admin/operational/orders',
+  SUPER_OPERATIONAL_ORDERS_CREATE = '/super-admin/operational/orders/create',
+  SUPER_OPERATIONAL_ORDERS_EDIT = '/super-admin/operational/orders/edit',
   SUPER_STAFF_EDIT = '/super-admin/staff/edit',
+  SUPER_STAFF_PANEL = '/super-admin/staff/panel',
   SUPER_SERVICES = '/super-admin/services',
   SUPER_SERVICES_CREATE = '/super-admin/services/create',
+  SUPER_SERVICES_PANEL = '/super-admin/services/panel',
   SUPER_COMPANIES = '/super-admin/companies',
   SUPER_COMPANIES_CREATE = '/super-admin/companies/create',
+  SUPER_COMPANIES_PANEL = '/super-admin/companies/panel',
   SUPER_COLLABORATORS = '/super-admin/collaborators',
   SUPER_COLLABORATORS_CREATE = '/super-admin/collaborators/create',
+  SUPER_COLLABORATORS_PANEL = '/super-admin/collaborators/panel',
+  SUPER_COLLABORATORS_TEAMS = '/super-admin/collaborators/teams',
   STAFF_TYPE = 'staff',
   SUPER_STAFF_TYPE = 'super_staff',
 
@@ -74,6 +83,7 @@ export enum Strings {
   API_UNITS = 'units',
   API_SERVICE_ORDERS = 'service-orders',
   API_HEALTH = 'health',
+  API_DASHBOARD = 'dashboard',
 
   // TOKENS
   TOKEN = 'hub_token',

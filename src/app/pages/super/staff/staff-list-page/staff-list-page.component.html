@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Usuários Globais</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadStaff()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <div>
+      <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0;">Usuários e Permissões</h2>
+      <p class="text-muted small" style="margin: 4px 0 0;">Gerencie todos os perfis administrativos e operadores do sistema.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center mt-2 mt-sm-0">
+      <div class="toggle-container">
+        <ion-button [fill]="viewMode() === 'list' ? 'solid' : 'outline'" size="small" (click)="viewMode.set('list')">
+          <ion-icon name="list-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button [fill]="viewMode() === 'card' ? 'solid' : 'outline'" size="small" (click)="viewMode.set('card')">
+          <ion-icon name="grid-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-button (click)="goToCreate()" color="success" size="small">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Novo Usuário
+      </ion-button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="text-center ion-padding">
+      <ion-spinner></ion-spinner>
+      <p class="text-muted mt-2">Carregando lista de usuários...</p>
+    </div>
+  }
+
+  @if (!isLoading() && staffList().length > 0) {
+    <!-- MODO LISTA -->
+    @if (viewMode() === 'list') {
+      <ion-list lines="inset" style="background: transparent;">
+        <ion-item *ngFor="let user of staffList()" button (click)="goToEdit(user._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+          <ion-icon name="person-outline" slot="start" color="primary" style="font-size: 24px;"></ion-icon>
+          <ion-label>
+            <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ user.name }}</h2>
+            <p style="font-family: 'Outfit', sans-serif;">{{ user.email }} · Tipo: <strong>{{ user.type }}</strong></p>
+            <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
+              Vínculo: {{ user.company_id?.name || 'Global / Sem Empresa' }}
+            </p>
+          </ion-label>
+          <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
+            {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
+          </ion-badge>
+        </ion-item>
+      </ion-list>
+    }
+
+    <!-- MODO CARD -->
+    @if (viewMode() === 'card') {
+      <div class="staff-grid">
+        @for (user of staffList(); track user._id) {
+          <div class="staff-card" (click)="goToEdit(user._id!)">
+            <div class="staff-card__header">
+              <ion-icon name="person-outline" class="staff-card__icon"></ion-icon>
+              <span class="staff-card__status" [class.active]="user.status === 'active'">
+                {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
+              </span>
+            </div>
+            <h3 class="staff-card__name">{{ user.name }}</h3>
+            <p class="staff-card__role">Tipo: {{ user.type }}</p>
+            <p class="staff-card__detail">{{ user.email }}</p>
+            <p class="staff-card__company">Empresa: {{ user.company_id?.name || 'Global' }}</p>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  @if (!isLoading() && staffList().length === 0) {
+    <ion-card>
+      <ion-card-content class="text-center">
+        <p>Nenhum usuário administrativo cadastrado.</p>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

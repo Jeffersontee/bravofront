@@ -1,0 +1,76 @@
+$bravo-dark: #1a1a1a;
+$bravo-yellow: #ffc409;
+$bravo-ink: #2d2d2d;
+$bravo-muted: #6b7280;
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.kpi-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+.kpi-icon--total {
+  background: rgba(37, 99, 235, 0.10);
+  ion-icon { color: #2563eb; }
+}
+
+.kpi-icon--super {
+  background: rgba(124, 58, 237, 0.10);
+  ion-icon { color: #7c3aed; }
+}
+
+.kpi-icon--owner {
+  background: rgba(22, 163, 74, 0.10);
+  ion-icon { color: #16a34a; }
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kpi-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: $bravo-ink;
+  line-height: 1.1;
+}
+
+.kpi-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: $bravo-muted;
+}

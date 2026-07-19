@@ -1,0 +1,240 @@
+$bravo-dark: #1a1a1a;
+$bravo-yellow: #ffc409;
+$bravo-ink: #2d2d2d;
+$bravo-muted: #6b7280;
+
+.panel-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 12px;
+
+  p {
+    color: $bravo-muted;
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+.panel-header {
+  margin-bottom: 24px;
+}
+
+.panel-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: $bravo-ink;
+  margin: 0 0 16px;
+}
+
+.panel-search {
+  --border-radius: 12px;
+  --background: #ffffff;
+  --box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+// Grid de empresas
+.companies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.company-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+}
+
+.company-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.company-card__icon {
+  font-size: 28px;
+  color: $bravo-yellow;
+}
+
+.company-card__status {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #fef2f2;
+  color: #dc2626;
+
+  &.active {
+    background: #f0fdf4;
+    color: #16a34a;
+  }
+}
+
+.company-card__name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: $bravo-ink;
+  margin: 0 0 4px;
+}
+
+.company-card__cnpj {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $bravo-muted;
+  margin: 0 0 2px;
+}
+
+.company-card__owner {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: $bravo-muted;
+  margin: 0;
+}
+
+.company-card__footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.company-card__action {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: $bravo-yellow;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  ion-icon { font-size: 14px; }
+}
+
+// Visão selecionada
+.selected-header {
+  margin-bottom: 8px;
+}
+
+.selected-company {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.selected-company__info {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.selected-company__badge {
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #fef2f2;
+  color: #dc2626;
+  margin-bottom: 12px;
+
+  &.active {
+    background: #f0fdf4;
+    color: #16a34a;
+  }
+}
+
+.selected-company__name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: $bravo-ink;
+  margin: 0 0 8px;
+}
+
+.selected-company__detail {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: $bravo-muted;
+  margin: 0 0 4px;
+}
+
+.selected-company__users {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: $bravo-ink;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+
+  ion-icon {
+    font-size: 20px;
+    color: $bravo-yellow;
+  }
+}
+
+.loading-inline {
+  text-align: center;
+  padding: 20px;
+}
+
+.no-data {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: $bravo-muted;
+  text-align: center;
+  padding: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  ion-icon {
+    font-size: 48px;
+    color: rgba(0,0,0,0.08);
+  }
+
+  p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    color: $bravo-muted;
+    margin-top: 12px;
+  }
+}

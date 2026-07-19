@@ -1,0 +1,88 @@
+@if (isLoading() || isLoadingData()) {
+  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+}
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <ion-list lines="none">
+    
+    <ion-item-divider class="section-divider">
+      <ion-label>Cliente & Empresa</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="business-outline" slot="start"></ion-icon>
+      <ion-select label="Empresa / Cliente *" labelPlacement="floating" formControlName="company_id">
+        @for (comp of companies(); track comp._id) {
+          <ion-select-option [value]="comp._id">{{ comp.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="location-outline" slot="start"></ion-icon>
+      <ion-select label="Unidade / Filial *" labelPlacement="floating" formControlName="unit_id">
+        @for (unit of units(); track unit._id) {
+          <ion-select-option [value]="unit._id">{{ unit.name }} - {{ unit.short_name || 'Geral' }}</ion-select-option>
+        } @empty {
+          <ion-select-option value="" disabled>Selecione uma empresa primeiro</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Escopo do Serviço</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="construct-outline" slot="start"></ion-icon>
+      <ion-select label="Serviço do Catálogo *" labelPlacement="floating" formControlName="service_id">
+        @for (serv of services(); track serv._id) {
+          <ion-select-option [value]="serv._id">{{ serv.name }} (R$ {{ serv.price | number:'1.2-2' }})</ion-select-option>
+        } @empty {
+          <ion-select-option value="" disabled>Selecione uma empresa primeiro</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item-divider class="section-divider">
+      <ion-label>Execução & Agenda</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-icon name="people-outline" slot="start"></ion-icon>
+      <ion-select label="Técnico / Responsável" labelPlacement="floating" formControlName="collaborator_id">
+        <ion-select-option value="">Não atribuído (Pendente)</ion-select-option>
+        @for (collab of collaborators(); track collab._id) {
+          <ion-select-option [value]="collab._id">{{ collab.name }} - {{ collab.role || 'Equipe' }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-input type="datetime-local" label="Data de Agendamento *" labelPlacement="floating" formControlName="scheduled_date"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="document-text-outline" slot="start"></ion-icon>
+      <ion-textarea label="Observações / Instruções" labelPlacement="floating" formControlName="observations" placeholder="Instruções para o técnico ou observações do cliente..." rows="3"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="location-outline" slot="start"></ion-icon>
+      <ion-input label="Endereço de Execução (Opcional)" labelPlacement="floating" formControlName="address_override" placeholder="Preencha apenas se for diferente do endereço da filial"></ion-input>
+    </ion-item>
+
+    <div class="ion-padding d-flex gap-2">
+      <ion-button type="button" fill="outline" color="medium" class="flex-grow-1" (click)="onCancel()" [disabled]="isLoading()">
+        Cancelar
+      </ion-button>
+      <ion-button type="submit" class="flex-grow-1" [disabled]="!form.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
+        @if (isLoading()) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ isLoading() ? 'Gravando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Ordem') }}
+      </ion-button>
+    </div>
+  </ion-list>
+</form>

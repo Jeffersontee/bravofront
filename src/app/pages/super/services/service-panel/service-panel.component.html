@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Painel do Catálogo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Título principal da página -->
+  <div class="mb-4">
+    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0;">Métricas e Atividades</h2>
+    <p class="text-muted small" style="margin: 4px 0 0;">Visão geral dos serviços, categorias e precificação.</p>
+  </div>
+
+  <!-- Cards de métricas/KPIs -->
+  <ion-grid class="ion-no-padding mb-4">
+    <ion-row>
+      <ion-col size="12" size-md="4">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-primary-light text-primary">
+              <ion-icon name="construct-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Serviços Cadastrados</span>
+              <h3 class="kpi-value">{{ totalCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="12" size-md="4">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-success-light text-success">
+              <ion-icon name="grid-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Categorias Ativas</span>
+              <h3 class="kpi-value">{{ categoriesCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="12" size-md="4">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-warning-light text-warning">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Preço Médio (Base)</span>
+              <h3 class="kpi-value">R$ {{ avgPrice() | number:'1.2-2' }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Seção de Ações Rápidas -->
+  <div class="mb-4">
+    <h3 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0 0 12px 0; font-size: 16px;">Ações Rápidas</h3>
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="12" size-md="6">
+          <ion-card class="action-card" (click)="goToList()">
+            <ion-card-content>
+              <div class="d-flex align-items-center">
+                <ion-icon name="list-outline" class="action-icon text-primary"></ion-icon>
+                <div class="ms-3">
+                  <h4 class="action-title">Ver Todos os Serviços</h4>
+                  <p class="action-desc text-muted">Acesse a listagem completa de especialidades, preços e status.</p>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-md="6">
+          <ion-card class="action-card" (click)="goToCreate()">
+            <ion-card-content>
+              <div class="d-flex align-items-center">
+                <ion-icon name="add-circle-outline" class="action-icon text-success"></ion-icon>
+                <div class="ms-3">
+                  <h4 class="action-title">Cadastrar Novo Serviço</h4>
+                  <p class="action-desc text-muted">Crie uma nova especialidade para disponibilizar no catálogo.</p>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

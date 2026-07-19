@@ -10,6 +10,7 @@ export interface Collaborator {
   phone?: string;
   role: string;
   status: string;
+  company_id?: any;
   created_at?: string;
   updated_at?: string;
 }
@@ -21,30 +22,23 @@ export class CollaboratorService {
   private http = inject(HttpClient);
   private url = `${environment.serverUrl}collaborators`;
 
-  getHeaders() {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-  }
-
   getCollaborators(): Observable<{ success: boolean; data: Collaborator[] }> {
-    return this.http.get<{ success: boolean; data: Collaborator[] }>(this.url, { headers: this.getHeaders() });
+    return this.http.get<{ success: boolean; data: Collaborator[] }>(this.url);
   }
 
   getCollaboratorById(id: string): Observable<{ success: boolean; data: Collaborator }> {
-    return this.http.get<{ success: boolean; data: Collaborator }>(`${this.url}/${id}`, { headers: this.getHeaders() });
+    return this.http.get<{ success: boolean; data: Collaborator }>(`${this.url}/${id}`);
   }
 
   createCollaborator(data: Partial<Collaborator>): Observable<{ success: boolean; data: Collaborator }> {
-    return this.http.post<{ success: boolean; data: Collaborator }>(this.url, data, { headers: this.getHeaders() });
+    return this.http.post<{ success: boolean; data: Collaborator }>(this.url, data);
   }
 
   updateCollaborator(id: string, data: Partial<Collaborator>): Observable<{ success: boolean; data: Collaborator }> {
-    return this.http.put<{ success: boolean; data: Collaborator }>(`${this.url}/${id}`, data, { headers: this.getHeaders() });
+    return this.http.put<{ success: boolean; data: Collaborator }>(`${this.url}/${id}`, data);
   }
 
   deleteCollaborator(id: string): Observable<{ success: boolean }> {
-    return this.http.delete<{ success: boolean }>(`${this.url}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete<{ success: boolean }>(`${this.url}/${id}`);
   }
 }

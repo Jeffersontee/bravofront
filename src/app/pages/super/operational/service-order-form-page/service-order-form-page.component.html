@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="secondary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/super-admin/operational/orders"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ isEditMode() ? 'Editar Visita / OS' : 'Novo Agendamento' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="form-container" style="max-width: 600px; margin: 0 auto;">
+    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0 0 16px 16px;">
+      {{ isEditMode() ? 'Atualizar Solicitação de Visita' : 'Formulário de Cadastro' }}
+    </h2>
+    
+    <app-service-order-form
+      [data]="orderData()"
+      [isEditMode]="isEditMode()"
+      [isLoading]="isLoading()"
+      (save)="onSave($event)"
+      (cancel)="onCancel()"
+    ></app-service-order-form>
+  </div>
+</ion-content>
