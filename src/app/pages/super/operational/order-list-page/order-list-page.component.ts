@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButton, IonButtons,
   IonMenuButton, IonBadge, IonGrid, IonRow, IonCol, IonCard, IonCardContent,
-  IonSegment, IonSegmentButton, IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent
+  IonSegment, IonSegmentButton, IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent,
+  IonSearchbar
 } from '@ionic/angular/standalone';
 import { ServiceOrderService, ServiceOrder } from 'src/app/services/service-order/service-order.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
 import {
   addCircleOutline, refreshOutline, locationOutline, timeOutline,
-  documentTextOutline, chevronForwardOutline
+  documentTextOutline, chevronForwardOutline, pencilOutline,
+  calendarOutline, flashOutline, checkmarkCircleOutline, receiptOutline
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
 
@@ -22,7 +24,8 @@ import { Router } from '@angular/router';
   imports: [
     CommonModule, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButton, IonButtons,
     IonMenuButton, IonBadge, IonGrid, IonRow, IonCol, IonCard, IonCardContent,
-    IonSegment, IonSegmentButton, IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent
+    IonSegment, IonSegmentButton, IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent,
+    IonSearchbar
   ]
 })
 export class OrderListPageComponent implements OnInit {
@@ -33,30 +36,53 @@ export class OrderListPageComponent implements OnInit {
   orders = signal<ServiceOrder[]>([]);
   isLoading = signal<boolean>(false);
   selectedSegment = signal<'all' | 'pending' | 'in_progress' | 'completed'>('all');
+  searchQuery = signal<string>('');
+
+  // Métricas de topo para o Super Admin
+  totalCount = computed(() => this.orders().length);
+  scheduledCount = computed(() => this.orders().filter(o => o.current_status === 'AGENDADO').length);
+  inProgressCount = computed(() => this.orders().filter(o => 
+    o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO'
+  ).length);
+  completedCount = computed(() => this.orders().filter(o => o.current_status === 'CONCLUIDO').length);
 
   filteredOrders = computed(() => {
     const segment = this.selectedSegment();
-    const allOrders = this.orders();
+    const query = this.searchQuery().toLowerCase().trim();
+    let list = this.orders();
 
-    if (segment === 'all') return allOrders;
     if (segment === 'pending') {
-      return allOrders.filter(o => o.current_status === 'AGENDADO');
-    }
-    if (segment === 'in_progress') {
-      return allOrders.filter(o =>
+      list = list.filter(o => o.current_status === 'AGENDADO');
+    } else if (segment === 'in_progress') {
+      list = list.filter(o =>
         o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO'
       );
+    } else if (segment === 'completed') {
+      list = list.filter(o => o.current_status === 'CONCLUIDO');
     }
-    if (segment === 'completed') {
-      return allOrders.filter(o => o.current_status === 'CONCLUIDO');
+
+    if (query) {
+      list = list.filter(o => {
+        const serviceName = (o.service_id as any)?.name || '';
+        const companyName = (o.company_id as any)?.name || '';
+        const unitName = (o.unit_id as any)?.name || '';
+        const statusLabel = this.getStatusLabel(o.current_status) || '';
+
+        return serviceName.toLowerCase().includes(query) ||
+               companyName.toLowerCase().includes(query) ||
+               unitName.toLowerCase().includes(query) ||
+               statusLabel.toLowerCase().includes(query);
+      });
     }
-    return allOrders;
+
+    return list;
   });
 
   constructor() {
     addIcons({
       addCircleOutline, refreshOutline, locationOutline, timeOutline,
-      documentTextOutline, chevronForwardOutline
+      documentTextOutline, chevronForwardOutline, pencilOutline,
+      calendarOutline, flashOutline, checkmarkCircleOutline, receiptOutline
     });
   }
 
@@ -86,11 +112,22 @@ export class OrderListPageComponent implements OnInit {
     this.selectedSegment.set(event.detail.value);
   }
 
+  onSearchInput(event: any) {
+    this.searchQuery.set(event.target.value || '');
+  }
+
   goToCreate() {
     this.router.navigateByUrl('/super-admin/operational/orders/create');
   }
 
-  goToEdit(order: ServiceOrder) {
+  goToDetails(order: ServiceOrder) {
+    if (order._id) {
+      this.router.navigateByUrl(`/service-orders/details/${order._id}`);
+    }
+  }
+
+  goToEdit(event: Event, order: ServiceOrder) {
+    event.stopPropagation();
     if (order._id) {
       this.router.navigateByUrl(`/super-admin/operational/orders/edit/${order._id}`);
     }

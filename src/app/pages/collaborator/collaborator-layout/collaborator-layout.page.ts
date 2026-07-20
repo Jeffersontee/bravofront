@@ -9,14 +9,17 @@ import {
 import { RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
-  logOutOutline, listOutline, menuOutline, chevronForwardOutline, receiptOutline
+  logOutOutline, listOutline, menuOutline, chevronForwardOutline, receiptOutline, statsChartOutline,
+  chevronDown, chevronForward
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 
 interface MenuItem {
   title: string;
-  url: string;
+  url?: string | null;
   icon: string;
+  children?: MenuItem[];
+  open?: boolean;
 }
 
 @Component({
@@ -36,6 +39,11 @@ export class CollaboratorLayoutPage implements OnInit {
   
   public menuItems: MenuItem[] = [
     {
+      title: 'Painel Gerencial',
+      url: '/collaborator/dashboard',
+      icon: 'stats-chart-outline'
+    },
+    {
       title: 'Minhas Visitas',
       url: '/collaborator/orders',
       icon: 'receipt-outline'
@@ -47,7 +55,8 @@ export class CollaboratorLayoutPage implements OnInit {
 
   constructor() {
     addIcons({ 
-      logOutOutline, listOutline, menuOutline, chevronForwardOutline, receiptOutline
+      logOutOutline, listOutline, menuOutline, chevronForwardOutline, receiptOutline, statsChartOutline,
+      chevronDown, chevronForward
     });
   }
 

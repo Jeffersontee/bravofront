@@ -13,7 +13,7 @@ import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
 import { 
   layersOutline, buildOutline, checkmarkCircleOutline, 
-  closeCircleOutline, settingsOutline
+  closeCircleOutline, settingsOutline, waterOutline, flashOutline
 } from 'ionicons/icons';
 
 interface CatalogServiceItem extends ServiceItem {
@@ -29,7 +29,7 @@ interface CatalogServiceItem extends ServiceItem {
     CommonModule, FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
     IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonToggle, IonLabel,
-    IonSpinner, IonList, IonItem, IonIcon
+    IonSpinner, IonIcon
   ]
 })
 export class CatalogPage implements OnInit {
@@ -46,7 +46,7 @@ export class CatalogPage implements OnInit {
   constructor() {
     addIcons({ 
       layersOutline, buildOutline, checkmarkCircleOutline, 
-      closeCircleOutline, settingsOutline 
+      closeCircleOutline, settingsOutline, waterOutline, flashOutline 
     });
   }
 

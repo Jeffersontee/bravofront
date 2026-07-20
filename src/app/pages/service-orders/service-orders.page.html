@@ -4,6 +4,11 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Minhas Ordens de Serviço</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadOrders()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   
   <ion-toolbar color="secondary">
@@ -28,6 +33,29 @@
   <ion-refresher slot="fixed" (ionRefresh)="loadOrders($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <div>
+      <h2 class="page-title">Listagem de Ordens</h2>
+      <p class="page-subtitle">Acompanhe suas solicitações e visitas técnicas em tempo real.</p>
+    </div>
+    @if (isLojista()) {
+      <ion-button (click)="openCreateVisitModal()" color="success" size="small" class="mt-2 mt-sm-0">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Solicitar Serviço
+      </ion-button>
+    }
+  </div>
+
+  <!-- Barra de Busca -->
+  <div class="ion-margin-bottom">
+    <ion-searchbar 
+      [value]="searchQuery()" 
+      (ionInput)="onSearchInput($event)" 
+      placeholder="Buscar por serviço, empresa ou unidade..." 
+      class="custom-searchbar">
+    </ion-searchbar>
+  </div>
 
   <!-- Painel Informativo / Cards de Resumo no topo -->
   <ion-grid class="ion-no-padding mb-4">

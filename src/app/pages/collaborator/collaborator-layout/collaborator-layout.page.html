@@ -19,14 +19,35 @@
       <ion-content>
         <ion-list id="nav-list">
           @for (item of menuItems; track item.title) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[item.url]" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-1">
+            @if (!item.children || item.children.length === 0) {
+              <ion-menu-toggle auto-hide="false">
+                <ion-item routerDirection="root" [routerLink]="item.url ? [item.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-1">
+                  <ion-icon slot="start" [name]="item.icon"></ion-icon>
+                  @if (!isCollapsed) {
+                    <ion-label>{{ item.title }}</ion-label>
+                  }
+                </ion-item>
+              </ion-menu-toggle>
+            } @else {
+              <ion-item (click)="item.open = !item.open" lines="none" detail="false" button class="menu-item level-1" [class.menu-item--open]="item.open">
                 <ion-icon slot="start" [name]="item.icon"></ion-icon>
                 @if (!isCollapsed) {
                   <ion-label>{{ item.title }}</ion-label>
+                  <ion-icon slot="end" [name]="item.open ? 'chevron-down' : 'chevron-forward'"></ion-icon>
                 }
               </ion-item>
-            </ion-menu-toggle>
+
+              @if (item.open && !isCollapsed) {
+                @for (child of item.children; track child.title) {
+                  <ion-menu-toggle auto-hide="false">
+                    <ion-item routerDirection="root" [routerLink]="child.url ? [child.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-2">
+                      <ion-icon slot="start" [name]="child.icon"></ion-icon>
+                      <ion-label>{{ child.title }}</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                }
+              }
+            }
           }
         </ion-list>
       </ion-content>

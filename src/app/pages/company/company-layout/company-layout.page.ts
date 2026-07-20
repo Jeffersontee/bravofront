@@ -73,10 +73,79 @@ export class CompanyLayoutPage implements OnInit {
       ]
     },
     {
+      title: 'Colaborador',
+      icon: 'people-outline',
+      children: [
+        { title: 'Usuários', stringKey: 'ADMIN_STAFF', icon: 'people-outline' },
+        { title: 'Cadastro de Colaborador', stringKey: 'ADMIN_STAFF_CREATE', icon: ''},
+      ]
+    },
+    {
       title: 'Ordens de Serviço',
       icon: 'receipt-outline',
       url: (companyId: string) => `/service-orders`
-    }
+    },
+    {
+      title: 'Financeiro',
+      icon: 'cash-outline',
+      children: [
+        { title: 'Minhas Faturas', stringKey: 'ADMIN_INVOICES', icon: 'receipt-outline' }, // Aponta para a página unificada
+        { title: 'Contas', stringKey: 'ADMIN_FIADOS', icon: 'mail-outline' },
+        { title: 'Fiados (Conta Corrente)', stringKey: 'ADMIN_FIADOS', icon: 'folder-open-outline' },
+        { title: 'Pagamentos', stringKey: 'ADMIN_PAYMENTS', icon: 'wallet-outline'},
+        { title: 'Assinaturas', stringKey: 'ADMIN_SUBSCRIPTIONS', icon: 'repeat-outline' },
+      ]
+    },
+    { 
+      title: 'Inteligência', 
+      icon: 'analytics-outline',
+      children: [
+        { title: 'Relatórios Consolidados', stringKey: 'ADMIN_REPORTS', icon: 'pie-chart-outline' },
+        { title: 'Logs de Auditoria', stringKey: 'ADMIN_AUDIT', icon: 'shield-checkmark-outline' },
+      ]
+    },
+    {
+      title: 'Relatórios',
+      icon: 'storefront-outline',
+      children: [
+        { title: 'Dados da Empresa', icon: 'document-text-outline', url: (companyId: string) => `/company/companies/edit/${companyId}` },
+        { title: 'Unidades / Filiais', icon: 'business-outline', url: (companyId: string) => `/company/companies/${companyId}/units` },
+        { title: 'Catálogo de Serviços', icon: 'layers-outline', url: (companyId: string) => `/company/companies/${companyId}/catalog` }
+      ]
+    },
+       {
+      title: 'Configurações',
+      icon: 'settings-outline',
+      children: [
+        { 
+          title: 'Gerais', 
+          //stringKey: 'ADMIN_PAYMENTS', 
+          icon: 'settings-outline',
+          children: [
+            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline' },
+          ] 
+        
+        },
+        { 
+          title: 'Plataforma de Pagamento', 
+          icon: 'construct-outline',
+          children: [
+            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline' },
+            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline' },
+            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline' }
+          ]
+        },
+        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline' },
+      ]
+    },
+    { 
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline' 
+    },
+    { 
+      title: 'Ajuda', 
+      stringKey: 'ADMIN_HELP',
+      icon: 'help-circle-outline',
+    },
   ];
 
   constructor() {
@@ -118,10 +187,17 @@ export class CompanyLayoutPage implements OnInit {
 
   private buildMenuWithCompany(configList: any[], companyId: string): MenuItem[] {
     return configList.map(config => {
+      let resolvedUrl: string | null = null;
+      if (config.url) {
+        resolvedUrl = config.url(companyId);
+      } else if (config.stringKey && (Strings as any)[config.stringKey]) {
+        resolvedUrl = (Strings as any)[config.stringKey];
+      }
+
       const item: MenuItem = {
         title: config.title,
         icon: config.icon,
-        url: config.url ? config.url(companyId) : null,
+        url: resolvedUrl,
         open: false
       };
 

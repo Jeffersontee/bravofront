@@ -116,16 +116,21 @@
       <h3 class="section-title">Últimas Ordens</h3>
       <div class="recent-orders-list">
         @for (order of recentOrders(); track order._id) {
-          <ion-card class="recent-order-card" (click)="goToEdit(order)">
+          <ion-card class="recent-order-card" (click)="goToDetails(order)" style="cursor: pointer;">
             <ion-card-content>
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <h4 class="recent-order-service">{{ $any(order.service_id)?.name || 'Serviço' }}</h4>
                   <p class="recent-order-unit text-muted">{{ $any(order.unit_id)?.name || 'Unidade' }}</p>
                 </div>
-                <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
-                  {{ getStatusLabel(order.current_status) }}
-                </ion-badge>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
+                    {{ getStatusLabel(order.current_status) }}
+                  </ion-badge>
+                  <ion-button fill="clear" size="small" (click)="goToEdit($event, order)" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 28px;">
+                    <ion-icon slot="icon-only" name="pencil-outline" color="primary"></ion-icon>
+                  </ion-button>
+                </div>
               </div>
             </ion-card-content>
           </ion-card>

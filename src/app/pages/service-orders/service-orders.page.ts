@@ -5,16 +5,20 @@ import { RouterModule } from '@angular/router';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton, 
   IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton, 
-  IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent
+  IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, ModalController,
+  IonSearchbar
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   buildOutline, locationOutline, timeOutline, alertCircleOutline, 
   checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
-  receiptOutline, calendarOutline, flashOutline, chevronForwardOutline
+  receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, addCircleOutline, refreshOutline
 } from 'ionicons/icons';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
+import { CompanyService } from 'src/app/services/company/company.service';
+import { UnitService } from 'src/app/services/unit/unit.service';
+import { ServiceService } from 'src/app/services/service/service.service';
 import { Strings } from 'src/app/enum/strings';
 
 @Component({
@@ -26,17 +30,27 @@ import { Strings } from 'src/app/enum/strings';
     CommonModule, FormsModule, RouterModule,
     IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton, 
     IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton, 
-    IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent
+    IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, IonSearchbar
   ]
 })
 export class ServiceOrdersPage implements OnInit {
   private serviceOrderService = inject(ServiceOrderService);
   private profileService = inject(ProfileService);
+  private modalCtrl = inject(ModalController);
+  private companyService = inject(CompanyService);
+  private unitService = inject(UnitService);
+  private serviceService = inject(ServiceService);
 
   orders = signal<ServiceOrder[]>([]);
   isLoading = signal<boolean>(true);
   selectedSegment = signal<'all' | 'pending' | 'in_progress' | 'completed'>('all');
+  searchQuery = signal<string>('');
   
+  isLojista = signal<boolean>(false);
+  company = signal<any>(null);
+  units = signal<any[]>([]);
+  services = signal<any[]>([]);
+
   Strings = Strings; // para uso no template
 
   // Métricas para os cards de resumo no topo
@@ -49,32 +63,65 @@ export class ServiceOrdersPage implements OnInit {
 
   filteredOrders = computed(() => {
     const segment = this.selectedSegment();
-    const allOrders = this.orders();
-    
-    if (segment === 'all') return allOrders;
+    const query = this.searchQuery().toLowerCase().trim();
+    let list = this.orders();
     
     if (segment === 'pending') {
-      return allOrders.filter(o => o.current_status === 'AGENDADO');
+      list = list.filter(o => o.current_status === 'AGENDADO');
+    } else if (segment === 'in_progress') {
+      list = list.filter(o => o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO');
+    } else if (segment === 'completed') {
+      list = list.filter(o => o.current_status === 'CONCLUIDO');
     }
-    if (segment === 'in_progress') {
-      return allOrders.filter(o => o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO');
+
+    if (query) {
+      list = list.filter(o => {
+        const serviceName = (o.service_id as any)?.name || '';
+        const companyName = (o.company_id as any)?.name || '';
+        const unitName = (o.unit_id as any)?.name || '';
+        const statusLabel = this.getStatusLabel(o.current_status) || '';
+
+        return serviceName.toLowerCase().includes(query) ||
+               companyName.toLowerCase().includes(query) ||
+               unitName.toLowerCase().includes(query) ||
+               statusLabel.toLowerCase().includes(query);
+      });
     }
-    if (segment === 'completed') {
-      return allOrders.filter(o => o.current_status === 'CONCLUIDO');
-    }
-    return allOrders;
+
+    return list;
   });
 
   constructor() {
     addIcons({
       buildOutline, locationOutline, timeOutline, alertCircleOutline, 
       checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
-      receiptOutline, calendarOutline, flashOutline, chevronForwardOutline
+      receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, addCircleOutline, refreshOutline
     });
   }
 
   ngOnInit() {
     this.loadOrders();
+  }
+
+  async openCreateVisitModal() {
+    const { VisitModalComponent } = await import('../../components/visit-modal/visit-modal.component');
+    const modal = await this.modalCtrl.create({
+      component: VisitModalComponent,
+      componentProps: {
+        company: this.company(),
+        units: this.units(),
+        services: this.services()
+      },
+      cssClass: 'custom-visit-modal'
+    });
+    
+    modal.onDidDismiss().then((result: any) => {
+      if (result.data && result.data.refresh) {
+        this.loadOrders();
+      }
+    });
+
+    return await modal.present();
   }
 
   async loadOrders(event?: any) {
@@ -87,8 +134,32 @@ export class ServiceOrdersPage implements OnInit {
       if (userData) {
         if (userData.type === Strings.COMPANY_OWNER_TYPE || userData.type === Strings.USER_TYPE) {
           filters.company_id = userData.company_id;
+          this.isLojista.set(true);
+          const companyId = userData.company_id;
+
+          // Carrega dados para o modal de criação de OS
+          this.companyService.getCompanyById(companyId).subscribe((res: any) => {
+            if (res.success && res.data) {
+              this.company.set(res.data);
+              const activeServiceIds = res.data.services || [];
+              
+              this.serviceService.getServices().subscribe((srvRes: any) => {
+                if (srvRes.success) {
+                  this.services.set(srvRes.data.filter((s: any) => activeServiceIds.includes(s._id)));
+                }
+              });
+            }
+          });
+
+          this.unitService.getUnits().subscribe((res: any) => {
+            if (res.success) {
+              this.units.set(res.data.filter((u: any) => u.company_id === companyId || u.company_id?._id === companyId));
+            }
+          });
+
         } else if (userData.type === Strings.COLLABORATOR_TYPE || userData.type === 'collaborator') {
           filters.collaborator_id = userData._id;
+          this.isLojista.set(false);
         }
       }
 
@@ -116,6 +187,10 @@ export class ServiceOrdersPage implements OnInit {
 
   segmentChanged(event: any) {
     this.selectedSegment.set(event.detail.value);
+  }
+
+  onSearchInput(event: any) {
+    this.searchQuery.set(event.target.value || '');
   }
 
   getStatusColor(status: string): string {

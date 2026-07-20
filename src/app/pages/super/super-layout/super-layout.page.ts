@@ -13,7 +13,8 @@ import {
   homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
   peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
   menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
-  businessOutline, receiptOutline, gridOutline
+  businessOutline, receiptOutline, gridOutline, settingsOutline,
+  colorPaletteOutline, 
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Strings } from 'src/app/enum/strings';
@@ -39,7 +40,7 @@ interface MenuConfig {
   styleUrls: ['./super-layout.page.scss'],
   standalone: true,
   imports: [IonFooter, 
-    CommonModule, FormsModule, RouterLink, RouterOutlet,
+    CommonModule, FormsModule, RouterLink,
     IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
     IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
     IonLabel, IonButtons, IonButton, IonRouterOutlet
@@ -100,7 +101,40 @@ export class SuperLayoutPage implements OnInit {
         { title: 'Listar Usuários', stringKey: 'SUPER_STAFF', icon: 'list-outline' },
         { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline' },
       ]
-    }
+    },
+       {
+      title: 'Configurações',
+      icon: 'settings-outline',
+      children: [
+        { 
+          title: 'Gerais', 
+          //stringKey: 'ADMIN_PAYMENTS', 
+          icon: 'settings-outline',
+          children: [
+            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline' },
+          ] 
+        
+        },
+        { 
+          title: 'Plataforma de Pagamento', 
+          icon: 'construct-outline',
+          children: [
+            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline' },
+            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline' },
+            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline' }
+          ]
+        },
+        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline' },
+      ]
+    },
+    { 
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline' 
+    },
+    { 
+      title: 'Ajuda', 
+      stringKey: 'ADMIN_HELP',
+      icon: 'help-circle-outline',
+    },
   ];
 
   private authService = inject(AuthService);
@@ -112,7 +146,7 @@ export class SuperLayoutPage implements OnInit {
       homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
       peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
-      businessOutline, receiptOutline, gridOutline
+      businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline
     });
   }
 
@@ -147,7 +181,7 @@ export class SuperLayoutPage implements OnInit {
       const item: MenuItem = {
         title: config.title,
         icon: config.icon,
-        url: config.stringKey && Strings[config.stringKey] ? `/${Strings[config.stringKey]}` : null,
+        url: config.stringKey && Strings[config.stringKey] ? Strings[config.stringKey] : null,
         open: false
       };
 

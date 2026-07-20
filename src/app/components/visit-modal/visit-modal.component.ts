@@ -39,8 +39,13 @@ export class VisitModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const localNow = new Date(now.getTime() - (offset * 60 * 1000));
+    const defaultDateTime = localNow.toISOString().slice(0, 16);
+
     this.visitForm = this.fb.group({
-      scheduled_date: [new Date().toISOString().split('T')[0], Validators.required],
+      scheduled_date: [defaultDateTime, Validators.required],
       unit_id: ['', Validators.required],
       service_id: ['', Validators.required],
       notes: [''],
@@ -50,7 +55,7 @@ export class VisitModalComponent implements OnInit {
       zone: [''],
       address_override: [''],
       observations: [''],
-      current_status: ['AGENDADO']
+      current_status: ['SOLICITADO']
     });
 
     if (this.serviceOrder) {
@@ -58,11 +63,19 @@ export class VisitModalComponent implements OnInit {
       const unitId = typeof this.serviceOrder.unit_id === 'object' ? (this.serviceOrder.unit_id as any)._id : this.serviceOrder.unit_id;
       const serviceId = typeof this.serviceOrder.service_id === 'object' ? (this.serviceOrder.service_id as any)._id : this.serviceOrder.service_id;
       
+      let formattedDate = '';
+      if (this.serviceOrder.scheduled_date) {
+        const d = new Date(this.serviceOrder.scheduled_date);
+        const off = d.getTimezoneOffset();
+        const loc = new Date(d.getTime() - (off * 60 * 1000));
+        formattedDate = loc.toISOString().slice(0, 16);
+      }
+      
       this.visitForm.patchValue({
         ...this.serviceOrder,
         unit_id: unitId,
         service_id: serviceId,
-        scheduled_date: this.serviceOrder.scheduled_date ? new Date(this.serviceOrder.scheduled_date).toISOString().split('T')[0] : ''
+        scheduled_date: formattedDate
       });
 
       // Find the category of the selected service

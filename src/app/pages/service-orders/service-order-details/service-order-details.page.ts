@@ -1,17 +1,21 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController, AlertController, ToastController } from '@ionic/angular';
+import { IonicModule, NavController, AlertController, ToastController, ModalController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack, locationOutline, timeOutline, checkmarkCircle, 
   ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
   personOutline, buildOutline, businessOutline, closeCircleOutline,
-  checkmarkDoneOutline, calendarOutline
+  checkmarkDoneOutline, calendarOutline,
+  carOutline,
+  documentTextOutline,
+  ribbonOutline
 } from 'ionicons/icons';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
+import { CollaboratorService } from 'src/app/services/collaborator/collaborator.service';
 import { Strings } from 'src/app/enum/strings';
 
 @Component({
@@ -28,10 +32,17 @@ export class ServiceOrderDetailsPage implements OnInit {
   private profileService = inject(ProfileService);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
+  private modalCtrl = inject(ModalController);
+  private collaboratorService = inject(CollaboratorService);
 
   orderId = signal<string>('');
   order = signal<ServiceOrder | null>(null);
   isLoading = signal<boolean>(true);
+
+  // Campos para designação do técnico e data/hora
+  collaborators = signal<any[]>([]);
+  selectedCollaboratorId = signal<string>('');
+  selectedScheduleDate = signal<string>('');
 
   // Exposing roles for logic in HTML
   userType = computed(() => (this.profileService.profile() as any)?.type);
@@ -51,7 +62,8 @@ export class ServiceOrderDetailsPage implements OnInit {
       arrowBack, locationOutline, timeOutline, checkmarkCircle, 
       ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
       personOutline, buildOutline, businessOutline, closeCircleOutline,
-      checkmarkDoneOutline, calendarOutline
+      checkmarkDoneOutline, calendarOutline, carOutline, documentTextOutline,
+      ribbonOutline
     });
   }
 
@@ -68,7 +80,29 @@ export class ServiceOrderDetailsPage implements OnInit {
     this.serviceOrderService.getServiceOrderById(id).subscribe({
       next: (res) => {
         if (res.success) {
-          this.order.set(res.data);
+          const os = res.data;
+          this.order.set(os);
+          
+          if (os.collaborator_id) {
+            this.selectedCollaboratorId.set(typeof os.collaborator_id === 'object' ? os.collaborator_id._id : os.collaborator_id);
+          }
+          if (os.scheduled_date) {
+            const date = new Date(os.scheduled_date);
+            const offset = date.getTimezoneOffset();
+            const localDate = new Date(date.getTime() - (offset*60*1000));
+            this.selectedScheduleDate.set(localDate.toISOString().slice(0, 16));
+          }
+
+          // Carrega colaboradores se for Super Admin
+          if (this.isSuperAdmin()) {
+            this.collaboratorService.getCollaborators().subscribe({
+              next: (colRes) => {
+                if (colRes.success) {
+                  this.collaborators.set(colRes.data || []);
+                }
+              }
+            });
+          }
         }
         this.isLoading.set(false);
       },
@@ -100,6 +134,37 @@ export class ServiceOrderDetailsPage implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  async openFinishModal() {
+    const { ServiceOrderFinishModalComponent } = await import('../../../components/service-order-finish-modal/service-order-finish-modal.component');
+    const modal = await this.modalCtrl.create({
+      component: ServiceOrderFinishModalComponent,
+      componentProps: {
+        orderId: this.orderId()
+      },
+      cssClass: 'custom-finish-modal'
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.refresh) {
+        this.loadOrder(this.orderId());
+      }
+    });
+
+    return await modal.present();
+  }
+
+  async openReportModal() {
+    const { ServiceOrderReportModalComponent } = await import('../../../components/service-order-report-modal/service-order-report-modal.component');
+    const modal = await this.modalCtrl.create({
+      component: ServiceOrderReportModalComponent,
+      componentProps: {
+        order: this.order()
+      },
+      cssClass: 'custom-report-modal'
+    });
+    return await modal.present();
   }
 
   // Super Admin: Propor preço de negociação e data provável
@@ -240,14 +305,123 @@ export class ServiceOrderDetailsPage implements OnInit {
     await alert.present();
   }
 
+  // Super Admin: Confirmar designação do técnico e data de agendamento (move status para AGENDADO)
+  confirmAndSchedule() {
+    const collId = this.selectedCollaboratorId();
+    const dateStr = this.selectedScheduleDate();
+
+    if (!collId) {
+      this.showToast('Por favor, selecione um técnico.');
+      return;
+    }
+    if (!dateStr) {
+      this.showToast('Por favor, informe a data e horário do agendamento.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    const payload = {
+      collaborator_id: collId,
+      scheduled_date: new Date(dateStr).toISOString(),
+      current_status: 'AGENDADO' as const
+    };
+
+    this.serviceOrderService.updateServiceOrder(this.orderId(), payload).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.order.set(res.data);
+          this.showToast('Ordem de serviço agendada com sucesso!');
+        }
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
   // Cancelar Chamado
-  cancelOrder() {
-    this.updateStatus('CANCELADO');
+  async cancelOrder() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cancelar Solicitação',
+      message: 'Por favor, insira o motivo do cancelamento:',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Motivo do cancelamento'
+        }
+      ],
+      buttons: [
+        { text: 'Voltar', role: 'cancel' },
+        {
+          text: 'Confirmar Cancelamento',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Por favor, informe o motivo do cancelamento.');
+              return false;
+            }
+            this.isLoading.set(true);
+            this.serviceOrderService.updateServiceOrder(this.orderId(), {
+              current_status: 'CANCELADO',
+              observations: `[Cancelado] Motivo: ${data.reason}`
+            }).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Solicitação cancelada com sucesso!');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   // Recusar Chamado
-  rejectProposal() {
-    this.updateStatus('RECUSADO');
+  async rejectProposal() {
+    const alert = await this.alertCtrl.create({
+      header: 'Recusar Chamado / Proposta',
+      message: 'Por favor, insira o motivo da recusa:',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Motivo da recusa'
+        }
+      ],
+      buttons: [
+        { text: 'Voltar', role: 'cancel' },
+        {
+          text: 'Confirmar Recusa',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Por favor, informe o motivo da recusa.');
+              return false;
+            }
+            this.isLoading.set(true);
+            this.serviceOrderService.updateServiceOrder(this.orderId(), {
+              current_status: 'RECUSADO',
+              observations: `[Recusado] Motivo: ${data.reason}`
+            }).subscribe({
+              next: (res) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Chamado recusado com sucesso!');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   private async showToast(message: string) {

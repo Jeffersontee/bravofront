@@ -5,7 +5,9 @@ import { addIcons } from 'ionicons';
 import {
   businessOutline, peopleOutline, clipboardOutline,
   checkmarkCircleOutline, timeOutline, closeCircleOutline,
-  menuOutline
+  menuOutline,
+  helpCircleOutline,
+  personCircleOutline
 } from 'ionicons/icons';
 import { DashboardService, DashboardStats } from 'src/app/services/dashboard/dashboard.service';
 import {
@@ -58,7 +60,7 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
     addIcons({
       businessOutline, peopleOutline, clipboardOutline,
       checkmarkCircleOutline, timeOutline, closeCircleOutline,
-      menuOutline
+      menuOutline, helpCircleOutline, personCircleOutline, 
     });
   }
 

@@ -63,12 +63,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/collaborator/collaborator-layout/collaborator-layout.page').then(m => m.CollaboratorLayoutPage),
     children: [
       {
+        path: 'dashboard',
+        loadComponent: () => import('./pages/collaborator/dashboard/collaborator-dashboard.page').then(m => m.CollaboratorDashboardPage)
+      },
+      {
         path: 'orders',
         loadComponent: () => import('./pages/service-orders/service-orders.page').then(m => m.ServiceOrdersPage)
       },
       {
         path: '',
-        redirectTo: 'orders',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
       }
     ]

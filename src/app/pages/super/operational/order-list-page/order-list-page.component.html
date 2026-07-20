@@ -44,6 +44,77 @@
     </ion-button>
   </div>
 
+  <!-- Barra de Busca -->
+  <div class="ion-margin-bottom">
+    <ion-searchbar 
+      [value]="searchQuery()" 
+      (ionInput)="onSearchInput($event)" 
+      placeholder="Buscar por serviço, empresa ou unidade..." 
+      class="custom-searchbar">
+    </ion-searchbar>
+  </div>
+
+  <!-- Painel Informativo / Cards de Resumo no topo -->
+  <ion-grid class="ion-no-padding mb-4">
+    <ion-row>
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-primary-light text-primary">
+              <ion-icon name="receipt-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Total</span>
+              <h3 class="kpi-value">{{ totalCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-tertiary-light text-tertiary">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Agendadas</span>
+              <h3 class="kpi-value">{{ scheduledCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-warning-light text-warning">
+              <ion-icon name="flash-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Em Andamento</span>
+              <h3 class="kpi-value">{{ inProgressCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col size="6" size-md="3">
+        <ion-card class="kpi-card">
+          <ion-card-content class="d-flex align-items-center">
+            <div class="kpi-icon-wrapper bg-success-light text-success">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <div class="ms-3">
+              <span class="kpi-label">Concluídas</span>
+              <h3 class="kpi-value">{{ completedCount() }}</h3>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
   @if (isLoading()) {
     <ion-list class="bg-transparent">
       @for (i of [1,2,3,4]; track i) {
@@ -72,30 +143,35 @@
         <ion-row>
           @for (order of filteredOrders(); track order._id) {
             <ion-col size="12" size-md="6" size-lg="4">
-              <ion-card class="order-card tactile-card" (click)="goToEdit(order)">
+              <ion-card class="order-card tactile-card" (click)="goToDetails(order)">
                 <ion-card-content>
-                  <div class="card-header-flex">
-                    <div class="service-title">
-                      <h2>{{ $any(order.service_id)?.name || 'Serviço Padrão' }}</h2>
-                      <p class="unit-name">
-                        <ion-icon name="location-outline"></ion-icon>
-                        {{ $any(order.unit_id)?.name || 'Unidade não informada' }}
-                      </p>
-                    </div>
-                    <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
-                      {{ getStatusLabel(order.current_status) }}
-                    </ion-badge>
-                  </div>
+                   <div class="card-header-flex">
+                     <div class="service-title">
+                       <h2>{{ $any(order.service_id)?.name || 'Serviço Padrão' }}</h2>
+                       <p class="unit-name">
+                         <ion-icon name="location-outline"></ion-icon>
+                         {{ $any(order.unit_id)?.name || 'Unidade não informada' }}
+                       </p>
+                     </div>
+                     <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
+                       {{ getStatusLabel(order.current_status) }}
+                     </ion-badge>
+                   </div>
 
-                  <div class="card-footer-flex">
-                    <div class="date-info">
-                      <ion-icon name="time-outline"></ion-icon>
-                      <span>{{ (order.scheduled_date | date:'dd/MM/yyyy HH:mm') || 'A definir' }}</span>
-                    </div>
-                    <div class="action-arrow">
-                      <ion-icon name="chevron-forward-outline" color="primary"></ion-icon>
-                    </div>
-                  </div>
+                   <div class="card-footer-flex">
+                     <div class="date-info">
+                       <ion-icon name="time-outline"></ion-icon>
+                       <span>{{ (order.scheduled_date | date:'dd/MM/yyyy HH:mm') || 'A definir' }}</span>
+                     </div>
+                     <div style="display: flex; gap: 8px; align-items: center;">
+                       <ion-button fill="clear" size="small" (click)="goToEdit($event, order)" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 28px;">
+                         <ion-icon slot="icon-only" name="pencil-outline" color="primary"></ion-icon>
+                       </ion-button>
+                       <div class="action-arrow">
+                         <ion-icon name="chevron-forward-outline" color="primary"></ion-icon>
+                       </div>
+                     </div>
+                   </div>
                 </ion-card-content>
               </ion-card>
             </ion-col>
