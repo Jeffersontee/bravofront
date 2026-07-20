@@ -6,7 +6,7 @@ import {
   IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, briefcaseOutline, constructOutline } from 'ionicons/icons';
+import { person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import { Collaborator } from 'src/app/services/collaborator/collaborator.service';
 
 @Component({
@@ -48,7 +48,7 @@ export class CollaboratorFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline });
+    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline });
 
     effect(() => {
       if (!this.formReady() || !this.collaboratorForm) return;
@@ -82,6 +82,13 @@ export class CollaboratorFormComponent implements OnInit {
       }
       passwordControl.updateValueAndValidity({ onlySelf: true, emitEvent: false });
     });
+  }
+
+  // Controla visibilidade da senha no formulário de colaborador
+  passwordVisible = signal<boolean>(false);
+
+  togglePasswordVisibility() {
+    this.passwordVisible.set(!this.passwordVisible());
   }
 
   ngOnInit() {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
   IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonContent,
-  IonItemDivider, IonProgressBar, IonNote, IonTextarea 
+  IonItemDivider, IonProgressBar, IonTextarea 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { person, mail, call, businessOutline, documentTextOutline, addCircleOutline } from 'ionicons/icons';
@@ -16,8 +16,8 @@ import { Company } from 'src/app/services/company/company.service';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
-    IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonContent,
-    IonItemDivider, IonTextarea, IonSpinner, IonNote, IonProgressBar
+    IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, 
+    IonItemDivider, IonTextarea, IonSpinner, IonProgressBar
   ]
 })
 export class CompanyFormComponent implements OnInit {
@@ -81,7 +81,7 @@ export class CompanyFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       owner_name: ['', Validators.required],
       short_name: [''],
-      cnpj: ['', [Validators.required, Validators.minLength(14)]],
+      cnpj: ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
       email: ['', [Validators.email]],
       description: [''],
       active: [true]

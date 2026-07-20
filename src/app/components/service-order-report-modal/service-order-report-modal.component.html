@@ -1,0 +1,160 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="high-contrast-header">
+    <ion-title>Visualizar Relatório Técnico</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light">
+  <div class="report-wrapper">
+    
+    <!-- PDF Sheet Preview Container -->
+    <div class="pdf-sheet">
+      
+      <!-- Logo and Header -->
+      <div class="sheet-header">
+        <div class="logo-area">
+          <span class="bravo-accent">B</span>
+          <span class="logo-text">Bravo Instalações</span>
+        </div>
+        <div class="doc-title-area">
+          <h2>Relatório Técnico</h2>
+          <span>OS #{{ order._id?.substring(18) || '1023' }}</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Resumo Técnico -->
+      <div class="sheet-section">
+        <h3>1. Identificação e Localização</h3>
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="6">
+              <div class="info-block">
+                <small>CLIENTE</small>
+                <span>{{ companyName }}</span>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="info-block">
+                <small>UNIDADE</small>
+                <span>{{ unitName }}</span>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-margin-top">
+            <ion-col size="6">
+              <div class="info-block">
+                <small>DATA DE AGENDAMENTO</small>
+                <span>{{ order.scheduled_date | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="info-block">
+                <small>TÉCNICO RESPONSÁVEL</small>
+                <span>{{ collaboratorName }}</span>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <!-- Resumo dos Serviços -->
+      <div class="sheet-section ion-margin-top">
+        <h3>2. Escopo do Serviço Executado</h3>
+        <div class="info-block full-width">
+          <small>SERVIÇO SOLICITADO</small>
+          <span class="service-title">{{ serviceName }}</span>
+        </div>
+
+        <div class="info-block full-width ion-margin-top">
+          <small>DESCRIÇÃO DOS TRABALHOS EFETUADOS</small>
+          <p class="description-text">{{ order.observations || 'Nenhuma observação técnica fornecida.' }}</p>
+        </div>
+      </div>
+
+      <!-- Recursos e KM -->
+      <div class="sheet-section ion-margin-top">
+        <h3>3. Recursos Utilizados</h3>
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="4">
+              <div class="resource-pill">
+                <ion-icon name="time-outline"></ion-icon>
+                <div>
+                  <small>Tempo</small>
+                  <span>{{ order.time_spent || '1h 30m' }}</span>
+                </div>
+              </div>
+            </ion-col>
+            <ion-col size="4">
+              <div class="resource-pill">
+                <ion-icon name="car-outline"></ion-icon>
+                <div>
+                  <small>KM Rodado</small>
+                  <span>{{ order.km_driven || '12 km' }}</span>
+                </div>
+              </div>
+            </ion-col>
+            <ion-col size="4">
+              <div class="resource-pill">
+                <ion-icon name="cash-outline"></ion-icon>
+                <div>
+                  <small>Combustível</small>
+                  <span>R$ {{ order.fuel_cost || '25,00' }}</span>
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+
+      <!-- Fotos Antes e Depois -->
+      @if (order.images_url && order.images_url.length > 0) {
+        <div class="sheet-section ion-margin-top">
+          <h3>4. Registro Fotográfico</h3>
+          
+          <div class="photos-container">
+            @for (img of order.images_url; track img; let idx = $index) {
+              <div class="photo-card">
+                <img [src]="img" />
+                <span class="photo-label">{{ idx % 2 === 0 ? 'Antes' : 'Depois' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Assinatura do Cliente -->
+      @if (order.follower_signature) {
+        <div class="sheet-section ion-margin-top">
+          <h3>5. Assinatura e Encerramento</h3>
+          <div class="signature-block">
+            <img [src]="order.follower_signature" />
+            <div class="signature-line"></div>
+            <span>Assinatura do Cliente / Responsável da Unidade</span>
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- SHARE ACTIONS -->
+    <div class="sheet-actions">
+      <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="generatePdf()">
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        Gerar PDF
+      </ion-button>
+      <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="shareWhatsApp()">
+        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+        Enviar WhatsApp
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

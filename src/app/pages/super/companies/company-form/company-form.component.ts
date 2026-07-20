@@ -8,6 +8,7 @@ import {
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'src/app/services/company/company.service';
+import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { Strings } from 'src/app/enum/strings';
 
@@ -25,6 +26,7 @@ import { Strings } from 'src/app/enum/strings';
 export class CompanyFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private companyService = inject(CompanyService);
+  private serviceService = inject(ServiceService);
   private global = inject(GlobalService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -37,6 +39,7 @@ export class CompanyFormComponent implements OnInit {
   public isUsersLoading = signal(false);
   public companyUsers = signal<any[]>([]);
   public showUserForm = signal(false);
+  public globalServices = signal<ServiceItem[]>([]);
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -46,7 +49,8 @@ export class CompanyFormComponent implements OnInit {
       description: [''],
       cnpj: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      active: [true]
+      active: [true],
+      services: [[]]
     });
 
     this.userForm = this.fb.group({
@@ -57,12 +61,28 @@ export class CompanyFormComponent implements OnInit {
       password: ['']
     });
 
+    this.loadGlobalServices();
+
     this.companyId = this.route.snapshot.paramMap.get('id');
     if (this.companyId) {
       this.isEditMode.set(true);
       this.loadCompany(this.companyId);
       this.loadUsers(this.companyId);
     }
+  }
+
+  loadGlobalServices() {
+    this.serviceService.getServices().subscribe({
+      next: (res) => {
+        if (res.success) {
+          const activeServices = (res.data || []).filter(s => s.status === 'ACTIVE');
+          this.globalServices.set(activeServices);
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar serviços globais:', err);
+      }
+    });
   }
 
   loadCompany(id: string) {

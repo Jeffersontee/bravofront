@@ -649,6 +649,7 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     if (role === Strings.USER_TYPE) url = Strings.TABS;
     else if (role === Strings.ADMIN_TYPE || role === 'staff' || role === Strings.COMPANY_OWNER_TYPE || role === 'company_owner') url = Strings.ADMIN;
     else if (role === Strings.SUPER_TYPE || role === 'super_staff') url = Strings.SUPER_DASHBOARD;
+    else if (role === Strings.COLLABORATOR_TYPE || role === 'collaborator') url = '/collaborator/orders';
 
     return url ? this.router.parseUrl(url) : this.router.parseUrl(Strings.LOGIN);
   }

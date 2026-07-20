@@ -9,7 +9,7 @@ import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
 import {
   receiptOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline,
-  listOutline, addCircleOutline, gridOutline, carOutline, flashOutline
+  listOutline, addCircleOutline, gridOutline, carOutline, flashOutline, pencilOutline
 } from 'ionicons/icons';
 import { Router } from '@angular/router';
 
@@ -48,7 +48,7 @@ export class OperationalPanelComponent implements OnInit {
   constructor() {
     addIcons({
       receiptOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline,
-      listOutline, addCircleOutline, gridOutline, carOutline, flashOutline
+      listOutline, addCircleOutline, gridOutline, carOutline, flashOutline, pencilOutline
     });
   }
 
@@ -80,7 +80,14 @@ export class OperationalPanelComponent implements OnInit {
     this.router.navigateByUrl('/super-admin/operational/orders/create');
   }
 
-  goToEdit(order: ServiceOrder) {
+  goToDetails(order: ServiceOrder) {
+    if (order._id) {
+      this.router.navigateByUrl(`/service-orders/details/${order._id}`);
+    }
+  }
+
+  goToEdit(event: Event, order: ServiceOrder) {
+    event.stopPropagation();
     if (order._id) {
       this.router.navigateByUrl(`/super-admin/operational/orders/edit/${order._id}`);
     }

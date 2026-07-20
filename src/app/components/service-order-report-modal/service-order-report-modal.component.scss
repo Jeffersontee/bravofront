@@ -1,0 +1,254 @@
+.report-wrapper {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pdf-sheet {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 30px;
+  font-family: 'Inter', sans-serif;
+  color: #1a1a1a;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .bravo-accent {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      color: #ffc409;
+      background: #1a1a1a;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: #1a1a1a;
+    }
+  }
+
+  .doc-title-area {
+    text-align: right;
+    
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #1a1a1a;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    span {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #6b7280;
+    }
+  }
+}
+
+.divider {
+  height: 2px;
+  background: #ffc409;
+  margin: 20px 0;
+}
+
+.sheet-section {
+  h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 6px;
+    margin: 0 0 16px 0;
+  }
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  small {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    color: #9ca3af;
+    letter-spacing: 0.5px;
+  }
+
+  span {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  .service-title {
+    font-size: 16px;
+    color: #ffc409;
+    font-weight: 700;
+  }
+}
+
+.description-text {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.6;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  margin: 0;
+}
+
+.resource-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+
+  ion-icon {
+    font-size: 20px;
+    color: #ffc409;
+  }
+
+  small {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    color: #9ca3af;
+    display: block;
+    text-transform: uppercase;
+  }
+
+  span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+}
+
+.photos-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.photo-card {
+  position: relative;
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-label {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #ffffff;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+}
+
+.signature-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+
+  img {
+    height: 70px;
+    object-fit: contain;
+    margin-bottom: 8px;
+  }
+
+  .signature-line {
+    width: 260px;
+    height: 1px;
+    background: #d1d5db;
+    margin-bottom: 6px;
+  }
+
+  span {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  
+  .action-btn {
+    flex: 1;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    height: 48px;
+  }
+}
+
+@media print {
+  ion-header, .sheet-actions {
+    display: none !important;
+  }
+  .report-wrapper {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+  .pdf-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  body, html, ion-app, ion-content {
+    background: #ffffff !important;
+    --background: #ffffff !important;
+  }
+}

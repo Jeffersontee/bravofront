@@ -1,4 +1,4 @@
-﻿import { Strings } from 'src/app/enum/strings';
+import { Strings } from 'src/app/enum/strings';
 import { OAuthProvider } from './oauth-token.model';
 
 export interface IUserOAuthProvider {
@@ -14,7 +14,7 @@ export class User {
     public _id?: string,
     public phone?: string,
     public name?: string,
-    public type?: Strings.USER_TYPE | Strings.ADMIN_TYPE | Strings.SUPER_TYPE | Strings.STAFF_TYPE | Strings.SUPER_STAFF_TYPE | Strings.COLLABORATOR_TYPE,
+    public type?: Strings.USER_TYPE | Strings.ADMIN_TYPE | Strings.SUPER_TYPE | Strings.STAFF_TYPE | Strings.SUPER_STAFF_TYPE | Strings.COLLABORATOR_TYPE | Strings.COMPANY_OWNER_TYPE,
     public status?: string,
     public email_verified?: boolean,
     public photo?: string,

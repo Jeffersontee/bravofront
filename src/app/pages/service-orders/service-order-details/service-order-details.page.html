@@ -42,7 +42,9 @@
             <div>
               <small>Localização</small>
               <span>{{ $any(os.unit_id)?.name || 'Unidade Base' }}</span>
-              <span class="sub-text">{{ $any(os.unit_id)?.address }}</span>
+              <span class="sub-text">
+                {{ $any(os.unit_id)?.address?.street }}, {{ $any(os.unit_id)?.address?.number }} - {{ $any(os.unit_id)?.address?.city }}/{{ $any(os.unit_id)?.address?.state }}
+              </span>
             </div>
           </div>
           <div class="info-item">
@@ -59,8 +61,55 @@
               <span>{{ (os.scheduled_date | date:'dd/MM/yyyy HH:mm') || 'A definir' }}</span>
             </div>
           </div>
+
+          <!-- Preço comercial visível apenas para Lojista, User e Super Admin -->
+          @if((isSuperAdmin() || isCompanyOwner() || isNormalUser()) && (os.client_price || 0) > 0) {
+            <div class="info-item">
+              <ion-icon name="cash-outline"></ion-icon>
+              <div>
+                <small>Valor do Serviço</small>
+                <span>R$ {{ os.client_price | number:'1.2-2' }}</span>
+                @if((os.client_price_addition || 0) > 0) {
+                  <span class="sub-text" style="color: var(--ion-color-success); font-weight: 500;">
+                    + Aditivo: R$ {{ os.client_price_addition | number:'1.2-2' }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
         </div>
       </div>
+
+      <!-- Card de Designação de Técnico (Apenas Super Admin e status iniciais) -->
+      @if (isSuperAdmin() && (os.current_status === 'SOLICITADO' || os.current_status === 'DATA_SUGERIDA' || os.current_status === 'PROPOSTO')) {
+        <ion-card class="admin-action-card ion-margin-top" style="margin-bottom: 24px; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          <ion-card-header style="background: #1a1a1a; color: #ffc409; padding: 16px 20px;">
+            <ion-card-title style="font-size: 1.1rem; font-weight: 700; font-family: 'Outfit', sans-serif;">Designar Técnico e Confirmar Agenda</ion-card-title>
+          </ion-card-header>
+          <ion-card-content style="padding: 20px; background: white;">
+            <ion-list lines="none" class="ion-no-padding">
+              <ion-item class="ion-no-padding ion-margin-bottom" style="--background: transparent; margin-bottom: 16px;">
+                <ion-label position="stacked" style="font-weight: 600; color: #1a1a1a; font-family: 'Outfit', sans-serif; margin-bottom: 8px;">Técnico Responsável</ion-label>
+                <ion-select placeholder="Selecione o Técnico" [value]="selectedCollaboratorId()" (ionChange)="selectedCollaboratorId.set($event.detail.value)" style="width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; font-family: 'Outfit', sans-serif;">
+                  @for (col of collaborators(); track col._id) {
+                    <ion-select-option [value]="col._id">{{ col.name }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              
+              <ion-item class="ion-no-padding" style="--background: transparent; margin-bottom: 16px;">
+                <ion-label position="stacked" style="font-weight: 600; color: #1a1a1a; font-family: 'Outfit', sans-serif; margin-bottom: 8px;">Data e Horário do Agendamento</ion-label>
+                <ion-input type="datetime-local" [value]="selectedScheduleDate()" (ionInput)="selectedScheduleDate.set($any($event.target).value)" style="width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; font-family: 'Outfit', sans-serif;"></ion-input>
+              </ion-item>
+            </ion-list>
+            
+            <ion-button expand="block" shape="round" color="success" style="margin-top: 20px; font-weight: 700; font-family: 'Outfit', sans-serif;" (click)="confirmAndSchedule()">
+              <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+              Confirmar Agendamento da OS
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      }
 
       <!-- Timeline Vertical -->
       <div class="timeline-section">
@@ -68,18 +117,29 @@
         
         <div class="timeline-container">
           
-          <!-- Passo 1: Agendado -->
+          <!-- Passo 1: Solicitado -->
+          <div class="timeline-item" [class.active]="isPastStatus('SOLICITADO')">
+            <div class="timeline-icon">
+              <ion-icon name="ellipsis-horizontal-circle"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Solicitado / Pendente</h3>
+              <p>Chamado enviado e aguardando aprovação ou agendamento de data.</p>
+            </div>
+          </div>
+
+          <!-- Passo 2: Agendado -->
           <div class="timeline-item" [class.active]="isPastStatus('AGENDADO')">
             <div class="timeline-icon">
               <ion-icon name="document-text-outline"></ion-icon>
             </div>
             <div class="timeline-content">
               <h3>Agendado</h3>
-              <p>Ordem criada e aguardando execução.</p>
+              <p>Ordem agendada e pronta para execução técnica.</p>
             </div>
           </div>
 
-          <!-- Passo 2: Deslocamento -->
+          <!-- Passo 3: Deslocamento -->
           <div class="timeline-item" [class.active]="isPastStatus('EM_DESLOCAMENTO')">
             <div class="timeline-icon">
               <ion-icon name="car-outline"></ion-icon>
@@ -90,7 +150,7 @@
             </div>
           </div>
 
-          <!-- Passo 3: Check-in -->
+          <!-- Passo 4: Check-in -->
           <div class="timeline-item" [class.active]="isPastStatus('CHECK_IN')">
             <div class="timeline-icon">
               <ion-icon name="map-outline"></ion-icon>
@@ -101,7 +161,7 @@
             </div>
           </div>
 
-          <!-- Passo 4: Execução -->
+          <!-- Passo 5: Execução -->
           <div class="timeline-item" [class.active]="isPastStatus('EM_EXECUCAO')">
             <div class="timeline-icon">
               <ion-icon name="build-outline"></ion-icon>
@@ -112,7 +172,29 @@
             </div>
           </div>
 
-          <!-- Passo 5: Concluído -->
+          <!-- Passo 6: Check-out e Relatório -->
+          <div class="timeline-item" [class.active]="os.report_pdf_url">
+            <div class="timeline-icon">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Relatório Técnico & Check-out</h3>
+              <p>{{ os.report_pdf_url ? 'Relatório técnico emitido pelo profissional.' : 'Aguardando encerramento técnico e emissão do relatório.' }}</p>
+            </div>
+          </div>
+
+          <!-- Passo 7: Assinatura e Aprovação -->
+          <div class="timeline-item" [class.active]="os.follower_signature">
+            <div class="timeline-icon">
+              <ion-icon name="ribbon-outline"></ion-icon>
+            </div>
+            <div class="timeline-content">
+              <h3>Aprovação & Assinatura</h3>
+              <p>{{ os.follower_signature ? 'Serviço aprovado e assinado pelo responsável.' : 'Aguardando assinatura de aprovação do cliente.' }}</p>
+            </div>
+          </div>
+
+          <!-- Passo 8: Concluído -->
           <div class="timeline-item" [class.active]="isPastStatus('CONCLUIDO')">
             <div class="timeline-icon">
               <ion-icon name="checkmark-circle"></ion-icon>
@@ -130,43 +212,110 @@
   }
 </ion-content>
 
-<!-- Actions Footer (Fixed at Bottom for Collaborators) -->
+<!-- Actions Footer (Dinâmico para negociações comerciais e técnico) -->
 @if(order(); as os) {
   <ion-footer class="ion-no-border action-footer">
-    <ion-toolbar class="transparent-toolbar">
+    <ion-toolbar class="transparent-toolbar" style="padding: 10px;">
       
-      @if(canStartDisplacement()) {
-        <ion-button expand="block" shape="round" color="tertiary" class="action-btn" (click)="updateStatus('EM_DESLOCAMENTO')">
-          <ion-icon slot="start" name="car-outline"></ion-icon>
-          Iniciar Deslocamento
-        </ion-button>
-      }
-      
-      @if(canCheckIn()) {
-        <ion-button expand="block" shape="round" color="warning" class="action-btn" (click)="updateStatus('CHECK_IN')">
-          <ion-icon slot="start" name="map-outline"></ion-icon>
-          Fazer Check-in no Local
-        </ion-button>
-      }
-
-      @if(canStartExecution()) {
-        <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="updateStatus('EM_EXECUCAO')">
-          <ion-icon slot="start" name="build-outline"></ion-icon>
-          Iniciar Execução
-        </ion-button>
-      }
-
-      @if(canFinish()) {
-        <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="updateStatus('CONCLUIDO')">
-          <ion-icon slot="start" name="checkmark-circle"></ion-icon>
-          Finalizar Serviço
-        </ion-button>
+      <!-- BOTÕES DO SUPER ADMIN -->
+      @if(isSuperAdmin()) {
+        @if(os.current_status === 'SOLICITADO') {
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <ion-button expand="block" shape="round" color="primary" style="flex: 1;" (click)="proposePriceAndDate()">
+              <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+              Enviar Proposta de Valor
+            </ion-button>
+            <ion-button expand="block" shape="round" color="warning" style="flex: 1;" (click)="suggestNewDateSuper()">
+              <ion-icon slot="start" name="calendar-outline"></ion-icon>
+              Sugerir Data
+            </ion-button>
+            <ion-button expand="block" shape="round" color="danger" style="width: 100%;" (click)="rejectProposal()">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              Recusar / Rejeitar Chamado
+            </ion-button>
+          </div>
+        }
+        @if(os.current_status === 'DATA_SUGERIDA') {
+          <ion-button expand="block" shape="round" color="danger" class="action-btn" (click)="rejectProposal()">
+            <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+            Recusar Chamado
+          </ion-button>
+        }
       }
 
-      @if(isCompanyOwner() && os.current_status === 'CONCLUIDO') {
-        <ion-button expand="block" shape="round" fill="outline" color="dark" class="action-btn">
+      <!-- BOTÕES DO LOJISTA OU CLIENTE FINAL (USER) OU SUPER ADMIN -->
+      @if(isCompanyOwner() || isNormalUser() || isSuperAdmin()) {
+        @if(os.current_status === 'SOLICITADO') {
+          <ion-button expand="block" shape="round" color="danger" class="action-btn" (click)="cancelOrder()">
+            <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+            Cancelar Solicitação
+          </ion-button>
+        }
+        @if(os.current_status === 'DATA_SUGERIDA') {
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="approvePriceAndDate()">
+              <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+              Aceitar Data Sugerida
+            </ion-button>
+            <ion-button expand="block" shape="round" color="warning" style="flex: 1;" (click)="proposeNewDateClient()">
+              <ion-icon slot="start" name="calendar-outline"></ion-icon>
+              Sugerir Outra Data
+            </ion-button>
+            <ion-button expand="block" shape="round" color="danger" style="width: 100%;" (click)="cancelOrder()">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              Cancelar Solicitação
+            </ion-button>
+          </div>
+        }
+        @if(os.current_status === 'PROPOSTO') {
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="approvePriceAndDate()">
+              <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+              Aprovar Proposta comercial
+            </ion-button>
+            <ion-button expand="block" shape="round" color="danger" style="flex: 1;" (click)="rejectProposal()">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              Recusar Proposta
+            </ion-button>
+          </div>
+        }
+      }
+
+      <!-- BOTÕES DO COLABORADOR TÉCNICO -->
+      @if(isCollaborator()) {
+        @if(canStartDisplacement()) {
+          <ion-button expand="block" shape="round" color="tertiary" class="action-btn" (click)="updateStatus('EM_DESLOCAMENTO')">
+            <ion-icon slot="start" name="car-outline"></ion-icon>
+            Iniciar Deslocamento
+          </ion-button>
+        }
+        
+        @if(canCheckIn()) {
+          <ion-button expand="block" shape="round" color="warning" class="action-btn" (click)="updateStatus('CHECK_IN')">
+            <ion-icon slot="start" name="map-outline"></ion-icon>
+            Fazer Check-in no Local
+          </ion-button>
+        }
+
+        @if(canStartExecution()) {
+          <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="updateStatus('EM_EXECUCAO')">
+            <ion-icon slot="start" name="build-outline"></ion-icon>
+            Iniciar Execução
+          </ion-button>
+        }
+
+        @if(canFinish()) {
+          <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="openFinishModal()">
+            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+            Finalizar Serviço
+          </ion-button>
+        }
+      }
+
+      @if(os.current_status === 'CONCLUIDO') {
+        <ion-button expand="block" shape="round" fill="outline" color="dark" class="action-btn" (click)="openReportModal()">
           <ion-icon slot="start" name="document-text-outline"></ion-icon>
-          Ver Relatório em PDF
+          Ver Relatório Técnico
         </ion-button>
       }
 

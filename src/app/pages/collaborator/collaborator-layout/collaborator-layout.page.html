@@ -10,7 +10,7 @@
             </ion-button>
           </ion-buttons>
           @if (!isCollapsed) {
-            <ion-title class="bravo-menu-title">Painel Administrativo</ion-title>
+            <ion-title class="bravo-menu-title">Técnico Bravo</ion-title>
           }
           <div class="stripe-border"></div>
         </ion-toolbar>
@@ -36,7 +36,7 @@
                   <ion-icon slot="end" [name]="item.open ? 'chevron-down' : 'chevron-forward'"></ion-icon>
                 }
               </ion-item>
- 
+
               @if (item.open && !isCollapsed) {
                 @for (child of item.children; track child.title) {
                   <ion-menu-toggle auto-hide="false">

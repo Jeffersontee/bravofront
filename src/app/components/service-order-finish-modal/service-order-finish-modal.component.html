@@ -1,0 +1,170 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="high-contrast-header">
+    <ion-title>Relatório de Encerramento</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light">
+  <div class="modal-wrapper">
+    
+    <!-- STEPS HEADER INDICATOR -->
+    <div class="steps-indicator">
+      <div class="step-dot" [class.active]="currentStep() >= 1">1</div>
+      <div class="step-line" [class.active]="currentStep() >= 2"></div>
+      <div class="step-dot" [class.active]="currentStep() >= 2">2</div>
+      <div class="step-line" [class.active]="currentStep() >= 3"></div>
+      <div class="step-dot" [class.active]="currentStep() >= 3">3</div>
+    </div>
+
+    <!-- STEP 1: PHOTOS -->
+    @if (currentStep() === 1) {
+      <div class="step-content">
+        <h2>Fotos do Serviço</h2>
+        <p>Tire ou selecione fotos do local antes e depois do serviço técnico ser executado.</p>
+
+        <!-- ANTES -->
+        <div class="photo-section">
+          <h3>Fotos de ANTES</h3>
+          <div class="photo-grid">
+            @for (img of imagesBefore(); track img; let idx = $index) {
+              <div class="photo-thumbnail">
+                <img [src]="img" />
+                <button class="remove-btn" (click)="removePhoto(idx, 'before')">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            }
+            <label class="add-photo-btn">
+              <ion-icon name="camera-outline"></ion-icon>
+              <span>Adicionar</span>
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'before')" style="display: none;" />
+            </label>
+          </div>
+        </div>
+
+        <!-- DEPOIS -->
+        <div class="photo-section ion-margin-top">
+          <h3>Fotos de DEPOIS</h3>
+          <div class="photo-grid">
+            @for (img of imagesAfter(); track img; let idx = $index) {
+              <div class="photo-thumbnail">
+                <img [src]="img" />
+                <button class="remove-btn" (click)="removePhoto(idx, 'after')">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </div>
+            }
+            <label class="add-photo-btn">
+              <ion-icon name="camera-outline"></ion-icon>
+              <span>Adicionar</span>
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'after')" style="display: none;" />
+            </label>
+          </div>
+        </div>
+
+        @if (isUploading()) {
+          <div class="upload-loader">
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+            <span>Enviando foto para o Cloudinary...</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- STEP 2: DETAILS -->
+    @if (currentStep() === 2) {
+      <div class="step-content" [formGroup]="finishForm">
+        <h2>Serviço Executado</h2>
+        <p>Descreva detalhadamente o serviço técnico executado e os recursos utilizados.</p>
+
+        <ion-list lines="none" class="transparent-list">
+          <ion-item class="form-item-input">
+            <ion-label position="stacked">Descrição do Serviço Executado</ion-label>
+            <ion-textarea formControlName="observations" placeholder="Ex: Substituição da luminária, reaperto dos conectores, revisão do circuito..."></ion-textarea>
+          </ion-item>
+
+          <ion-grid class="ion-no-padding ion-margin-top">
+            <ion-row>
+              <ion-col size="6" style="padding-right: 8px;">
+                <ion-item class="form-item-input">
+                  <ion-label position="stacked">Tempo de Execução</ion-label>
+                  <ion-input type="text" formControlName="time_spent" placeholder="Ex: 1h 30m"></ion-input>
+                </ion-item>
+              </ion-col>
+              <ion-col size="6" style="padding-left: 8px;">
+                <ion-item class="form-item-input">
+                  <ion-label position="stacked">KM Rodado</ion-label>
+                  <ion-input type="text" formControlName="km_driven" placeholder="Ex: 15 km"></ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          <ion-item class="form-item-input ion-margin-top">
+            <ion-label position="stacked">Custo de Combustível (R$)</ion-label>
+            <ion-input type="text" formControlName="fuel_cost" placeholder="Ex: 45.00"></ion-input>
+          </ion-item>
+        </ion-list>
+      </div>
+    }
+
+    <!-- STEP 3: SIGNATURE -->
+    @if (currentStep() === 3) {
+      <div class="step-content">
+        <h2>Assinatura do Cliente</h2>
+        <p>Peça para o cliente assinar na tela para confirmar a execução do chamado técnico.</p>
+
+        <div class="canvas-container">
+          <canvas #signatureCanvas
+            (mousedown)="startDrawing($event)"
+            (mousemove)="draw($event)"
+            (mouseup)="stopDrawing()"
+            (mouseleave)="stopDrawing()"
+            (touchstart)="startDrawing($event)"
+            (touchmove)="draw($event)"
+            (touchend)="stopDrawing()">
+          </canvas>
+        </div>
+
+        <div class="canvas-actions">
+          <ion-button fill="outline" color="dark" shape="round" size="small" (click)="clearCanvas()">
+            Limpar Desenho
+          </ion-button>
+        </div>
+      </div>
+    }
+
+    <!-- ACTIONS BUTTONS -->
+    <div class="navigation-buttons">
+      @if (currentStep() > 1) {
+        <ion-button fill="outline" color="dark" shape="round" class="nav-btn" (click)="prevStep()">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Voltar
+        </ion-button>
+      }
+
+      @if (currentStep() < 3) {
+        <ion-button expand="block" color="primary" shape="round" class="nav-btn next-btn" [disabled]="currentStep() === 2 && finishForm.invalid" (click)="nextStep()">
+          Avançar
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      } @else {
+        <ion-button expand="block" color="success" shape="round" class="nav-btn submit-btn" [disabled]="isSubmitting()" (click)="submitReport()">
+          @if (isSubmitting()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            Finalizando...
+          } @else {
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Concluir Visita
+          }
+        </ion-button>
+      }
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,143 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="high-contrast-header">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Painel Gerencial</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light">
+  <div class="dashboard-wrapper">
+    
+    <!-- Welcome section -->
+    <div class="welcome-banner">
+      <h1>Painel de Desempenho</h1>
+      <p>Acompanhe suas metas de atendimento, rotas e relatórios técnicos enviados em tempo real.</p>
+    </div>
+
+    <!-- KPIs Grid -->
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="12" size-sm="6" size-md="3">
+          <ion-card class="kpi-card total">
+            <ion-card-content>
+              <div class="kpi-header">
+                <ion-icon name="receipt-outline"></ion-icon>
+                <span>Total de Visitas</span>
+              </div>
+              <div class="kpi-value">{{ totalVisits() }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-sm="6" size-md="3">
+          <ion-card class="kpi-card success">
+            <ion-card-content>
+              <div class="kpi-header">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <span>Visitas Concluídas</span>
+              </div>
+              <div class="kpi-value">{{ completedVisits() }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-sm="6" size-md="3">
+          <ion-card class="kpi-card info">
+            <ion-card-content>
+              <div class="kpi-header">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <span>Relatórios Enviados</span>
+              </div>
+              <div class="kpi-value">{{ reportsSent() }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12" size-sm="6" size-md="3">
+          <ion-card class="kpi-card warning">
+            <ion-card-content>
+              <div class="kpi-header">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>Visitas Pendentes</span>
+              </div>
+              <div class="kpi-value">{{ pendingVisits() }}</div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid class="ion-no-padding ion-margin-top">
+      <ion-row>
+        <!-- Unidades com mais chamados -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="section-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="business-outline" class="title-icon"></ion-icon>
+                Unidades com mais Chamados
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              @if (isLoading()) {
+                <div class="ion-padding ion-text-center">
+                  <ion-label>Carregando unidades...</ion-label>
+                </div>
+              } @else if (topUnits().length === 0) {
+                <div class="empty-state">
+                  <p>Nenhuma unidade com chamados registrados no momento.</p>
+                </div>
+              } @else {
+                <ion-list lines="none">
+                  @for (unit of topUnits(); track unit.name) {
+                    <ion-item class="list-item">
+                      <ion-label>
+                        <h2>{{ unit.name }}</h2>
+                        <p>Total de ordens executadas nesta unidade</p>
+                      </ion-label>
+                      <ion-badge slot="end" color="primary">{{ unit.count }} OS</ion-badge>
+                    </ion-item>
+                  }
+                </ion-list>
+              }
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+        <!-- Rotas fixas -->
+        <ion-col size="12" size-md="6">
+          <ion-card class="section-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="map-outline" class="title-icon"></ion-icon>
+                Minha Agenda de Rotas Fixas
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list lines="none">
+                @for (route of fixedRoutes(); track route.day) {
+                  <ion-item class="list-item">
+                    <ion-label>
+                      <h2 class="route-day">{{ route.day }}</h2>
+                      <p class="route-desc">{{ route.destination }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <div class="action-footer-container ion-padding">
+      <ion-button expand="block" shape="round" color="primary" class="primary-btn-lg" (click)="navigateToOrders()">
+        <ion-icon slot="start" name="receipt-outline"></ion-icon>
+        Ver Minhas Ordens de Serviço
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

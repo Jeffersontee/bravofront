@@ -41,6 +41,16 @@ export enum Strings {
   USER_TYPE = 'user',
   COLLABORATOR_TYPE = 'collaborator',
 
+  // Admin
+  ADMIN_SALES_TARGET = '',
+  ADMIN_PAYMENT_GATEWAY = '',
+  ADMIN_GATEWAY_KEYS = '',
+  ADMIN_PAYMENT_METHODS = '',
+  ADMIN_APPEARANCE = '',
+  ADMIN_ACCOUNT = '',
+  ADMIN_HELP = '',
+
+
 
 
   // Rotas Frontend

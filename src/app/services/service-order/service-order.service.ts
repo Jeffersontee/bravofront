@@ -7,7 +7,7 @@ import { Unit } from '../unit/unit.service';
 import { ServiceItem } from '../service/service.service';
 
 export interface TimelineEvent {
-  status: 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO';
+  status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
   timestamp: string | Date;
   location?: { lat: number; lng: number };
   notes?: string;
@@ -20,7 +20,7 @@ export interface ServiceOrder {
   service_id: string | ServiceItem;
   collaborator_id?: string | any;
   scheduled_date?: string | Date;
-  current_status: 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO';
+  current_status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
   timeline?: TimelineEvent[];
   checkin_location?: { lat: number; lng: number };
   checkin_time?: string | Date;
@@ -37,6 +37,13 @@ export interface ServiceOrder {
   address_override?: string;
   observations?: string;
 
+  // Novos campos comerciais e de acompanhante
+  client_price?: number;
+  client_price_addition?: number;
+  technician_price?: number;
+  requested_by?: string;
+  contract_type?: 'subscription' | 'avulso';
+
   createdAt?: string;
   updatedAt?: string;
 }
@@ -48,8 +55,14 @@ export class ServiceOrderService {
   private http = inject(HttpClient);
   private url = `${environment.serverUrl}${Strings.API_SERVICE_ORDERS}`;
 
-  getServiceOrders(companyId?: string): Observable<{ success: boolean; data: ServiceOrder[] }> {
-    const query = companyId ? `?company_id=${companyId}` : '';
+  getServiceOrders(filters?: { company_id?: string; collaborator_id?: string }): Observable<{ success: boolean; data: ServiceOrder[] }> {
+    let query = '';
+    if (filters) {
+      const params = new URLSearchParams();
+      if (filters.company_id) params.append('company_id', filters.company_id);
+      if (filters.collaborator_id) params.append('collaborator_id', filters.collaborator_id);
+      query = `?${params.toString()}`;
+    }
     return this.http.get<{ success: boolean; data: ServiceOrder[] }>(`${this.url}${query}`);
   }
 

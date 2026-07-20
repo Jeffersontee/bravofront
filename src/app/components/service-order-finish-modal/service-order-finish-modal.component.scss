@@ -1,0 +1,235 @@
+.modal-wrapper {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.steps-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.3s ease;
+
+    &.active {
+      background: #ffc409;
+      color: #1a1a1a;
+    }
+  }
+
+  .step-line {
+    height: 2px;
+    flex: 1;
+    max-width: 60px;
+    background: #e5e7eb;
+    margin: 0 8px;
+    transition: all 0.3s ease;
+
+    &.active {
+      background: #ffc409;
+    }
+  }
+}
+
+.step-content {
+  flex: 1;
+  
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #1a1a1a;
+    margin: 0 0 6px 0;
+  }
+
+  p {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+  }
+}
+
+.photo-section {
+  h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #4b5563;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.photo-thumbnail {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .remove-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.9);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    ion-icon {
+      font-size: 14px;
+    }
+  }
+}
+
+.add-photo-btn {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
+
+  span {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  &:hover {
+    border-color: #ffc409;
+    color: #ffc409;
+    background: rgba(255, 196, 9, 0.03);
+  }
+}
+
+.upload-loader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: rgba(255, 196, 9, 0.08);
+  border-radius: 8px;
+  color: #c49500;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.transparent-list {
+  background: transparent;
+  padding: 0;
+}
+
+.form-item-input {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 12px;
+
+  ion-label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+
+  ion-textarea, ion-input {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+}
+
+.canvas-container {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  canvas {
+    display: block;
+    cursor: crosshair;
+  }
+}
+
+.canvas-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+
+  .nav-btn {
+    flex: 1;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    height: 46px;
+  }
+
+  .next-btn, .submit-btn {
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+}
