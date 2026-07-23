@@ -4,180 +4,20 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Minhas Ordens de Serviço</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="loadOrders()">
-        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-  
-  <ion-toolbar color="secondary">
-    <ion-segment [value]="selectedSegment()" (ionChange)="segmentChanged($event)" mode="md" class="bravo-segment">
-      <ion-segment-button value="all">
-        <ion-label>Todas</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="pending">
-        <ion-label>Agendadas</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="in_progress">
-        <ion-label>Em Andamento</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="completed">
-        <ion-label>Concluídas</ion-label>
-      </ion-segment-button>
-    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding bg-light">
-  <ion-refresher slot="fixed" (ionRefresh)="loadOrders($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
-  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-    <div>
-      <h2 class="page-title">Listagem de Ordens</h2>
-      <p class="page-subtitle">Acompanhe suas solicitações e visitas técnicas em tempo real.</p>
-    </div>
-    @if (isLojista()) {
-      <ion-button (click)="openCreateVisitModal()" color="success" size="small" class="mt-2 mt-sm-0">
-        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        Solicitar Serviço
-      </ion-button>
-    }
-  </div>
-
-  <!-- Barra de Busca -->
-  <div class="ion-margin-bottom">
-    <ion-searchbar 
-      [value]="searchQuery()" 
-      (ionInput)="onSearchInput($event)" 
-      placeholder="Buscar por serviço, empresa ou unidade..." 
-      class="custom-searchbar">
-    </ion-searchbar>
-  </div>
-
-  <!-- Painel Informativo / Cards de Resumo no topo -->
-  <ion-grid class="ion-no-padding mb-4">
-    <ion-row>
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-primary-light text-primary">
-              <ion-icon name="receipt-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Total</span>
-              <h3 class="kpi-value">{{ totalCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-tertiary-light text-tertiary">
-              <ion-icon name="calendar-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Agendadas</span>
-              <h3 class="kpi-value">{{ scheduledCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-warning-light text-warning">
-              <ion-icon name="flash-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Em Execução</span>
-              <h3 class="kpi-value">{{ inProgressCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-success-light text-success">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Concluídas</span>
-              <h3 class="kpi-value">{{ completedCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Lista de Ordens -->
-  @if (isLoading()) {
-    <ion-list class="bg-transparent">
-      @for (i of [1,2,3]; track i) {
-        <ion-card class="order-card skeleton-card">
-          <ion-card-content>
-            <ion-skeleton-text animated style="width: 60%; height: 20px; margin-bottom: 8px;"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 40%; height: 16px; margin-bottom: 16px;"></ion-skeleton-text>
-            <div class="skeleton-footer">
-              <ion-skeleton-text animated style="width: 30%; height: 24px; border-radius: 12px;"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 25%; height: 16px;"></ion-skeleton-text>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      }
-    </ion-list>
-  } @else {
-    @if (filteredOrders().length === 0) {
-      <div class="empty-state">
-        <ion-icon name="document-text-outline"></ion-icon>
-        <h3>Nenhuma Ordem Delegada</h3>
-        <p>Não há solicitações ou visitas operacionais ativas para exibir.</p>
-      </div>
-    } @else {
-      <ion-grid class="ion-no-padding">
-        <ion-row class="orders-grid-row">
-          @for (order of filteredOrders(); track order._id) {
-            <ion-col size="12" size-md="6" size-lg="4">
-              <ion-card class="order-card tactile-card" [routerLink]="['/service-orders/details', order._id]">
-                <ion-card-content>
-                  
-                  <div class="card-header-flex">
-                    <div class="service-title">
-                      <h2>{{ $any(order.service_id)?.name || 'Serviço Padrão' }}</h2>
-                      <p class="unit-name">
-                        <ion-icon name="location-outline"></ion-icon>
-                        {{ $any(order.unit_id)?.name || 'Unidade não informada' }}
-                      </p>
-                    </div>
-                    <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
-                      {{ getStatusLabel(order.current_status) }}
-                    </ion-badge>
-                  </div>
-
-                  <div class="card-footer-flex">
-                    <div class="date-info">
-                      <ion-icon name="time-outline"></ion-icon>
-                      <span>{{ (order.scheduled_date | date:'dd/MM/yyyy HH:mm') || 'A definir' }}</span>
-                    </div>
-                    <div class="action-arrow">
-                      <ion-icon name="chevron-forward-outline" color="primary"></ion-icon>
-                    </div>
-                  </div>
-
-                </ion-card-content>
-              </ion-card>
-            </ion-col>
-          }
-        </ion-row>
-      </ion-grid>
-    }
-  }
+  <app-service-order-list
+    [orders]="orders()"
+    [isLoading]="isLoading()"
+    [role]="isLojista() ? 'company' : 'collaborator'"
+    [showCreateButton]="isLojista()"
+    createButtonText="Solicitar Serviço"
+    pageTitle="Listagem de Ordens"
+    pageSubtitle="Acompanhe suas solicitações e visitas técnicas em tempo real."
+    (onRefresh)="loadOrders($event)"
+    (onCreate)="openCreateVisitModal()"
+    (onDetails)="goToDetails($event)">
+  </app-service-order-list>
 </ion-content>
