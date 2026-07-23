@@ -1,3 +1,8 @@
+---
+name: angular-ionic-modern
+description: Diretrizes atualizadas para angular-ionic-modern.
+---
+
 # Skill: Modernização e Melhores Práticas (Angular & Ionic)
 
 Esta skill define as diretrizes para modernização de código legado nos ecossistemas Angular e Ionic, garantindo performance e legibilidade técnica com base nos padrões estáveis vigentes.
