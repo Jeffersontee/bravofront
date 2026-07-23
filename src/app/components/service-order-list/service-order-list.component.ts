@@ -6,14 +6,14 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton,
   IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton,
   IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton,
-  IonSearchbar
+  IonSearchbar, IonSelect, IonSelectOption
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   buildOutline, locationOutline, timeOutline, alertCircleOutline,
   checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
   receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, 
-  addCircleOutline, refreshOutline, pencilOutline
+  addCircleOutline, refreshOutline, pencilOutline, funnelOutline
 } from 'ionicons/icons';
 import { ServiceOrder } from 'src/app/services/service-order/service-order.service';
 
@@ -26,7 +26,8 @@ import { ServiceOrder } from 'src/app/services/service-order/service-order.servi
     CommonModule, FormsModule, RouterModule,
     IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton,
     IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton,
-    IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, IonSearchbar
+    IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, IonSearchbar,
+    IonSelect, IonSelectOption
   ]
 })
 export class ServiceOrderListComponent {
@@ -49,6 +50,11 @@ export class ServiceOrderListComponent {
   selectedSegment = signal<'all' | 'pending' | 'in_progress' | 'completed'>('all');
   searchQuery = signal<string>('');
 
+  // Novos filtros avançados
+  selectedStatusFilter = signal<string>('');
+  selectedCategoryFilter = signal<string>('');
+  selectedUnitFilter = signal<string>('');
+
   // Métricas computadas locais baseadas nos inputs reativos
   totalCount = computed(() => this.orders().length);
   scheduledCount = computed(() => this.orders().filter(o => o.current_status === 'AGENDADO').length);
@@ -57,12 +63,39 @@ export class ServiceOrderListComponent {
   ).length);
   completedCount = computed(() => this.orders().filter(o => o.current_status === 'CONCLUIDO').length);
 
+  // Unidades disponíveis na listagem atual para popular o filtro
+  availableUnits = computed(() => {
+    const unitsMap = new Map();
+    this.orders().forEach(o => {
+      const u = o.unit_id as any;
+      if (u && u._id) {
+        unitsMap.set(u._id, u.name);
+      }
+    });
+    return Array.from(unitsMap.entries()).map(([id, name]) => ({ id, name }));
+  });
+
+  // Categorias disponíveis na listagem atual para popular o filtro
+  availableCategories = computed(() => {
+    const categoriesSet = new Set<string>();
+    this.orders().forEach(o => {
+      const cat = (o.service_id as any)?.category;
+      if (cat) categoriesSet.add(cat);
+    });
+    return Array.from(categoriesSet);
+  });
+
   // Lista filtrada internamente para manter sincronia reativa de combos/filtros
   filteredOrders = computed(() => {
     const segment = this.selectedSegment();
     const query = this.searchQuery().toLowerCase().trim();
+    const statusF = this.selectedStatusFilter();
+    const categoryF = this.selectedCategoryFilter();
+    const unitF = this.selectedUnitFilter();
+    
     let list = this.orders();
 
+    // Segmentos básicos
     if (segment === 'pending') {
       list = list.filter(o => o.current_status === 'AGENDADO');
     } else if (segment === 'in_progress') {
@@ -73,6 +106,21 @@ export class ServiceOrderListComponent {
       list = list.filter(o => o.current_status === 'CONCLUIDO');
     }
 
+    // Filtros avançados
+    if (statusF) {
+      list = list.filter(o => o.current_status === statusF);
+    }
+    if (categoryF) {
+      list = list.filter(o => (o.service_id as any)?.category === categoryF);
+    }
+    if (unitF) {
+      list = list.filter(o => {
+        const uId = typeof o.unit_id === 'object' ? (o.unit_id as any)._id : o.unit_id;
+        return uId === unitF;
+      });
+    }
+
+    // Busca textual
     if (query) {
       list = list.filter(o => {
         const serviceName = (o.service_id as any)?.name || '';
@@ -95,7 +143,7 @@ export class ServiceOrderListComponent {
       buildOutline, locationOutline, timeOutline, alertCircleOutline,
       checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
       receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, 
-      addCircleOutline, refreshOutline, pencilOutline
+      addCircleOutline, refreshOutline, pencilOutline, funnelOutline
     });
   }
 

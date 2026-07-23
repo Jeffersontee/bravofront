@@ -193,6 +193,37 @@
         }
       }
     }
+
+    // Color states for the timeline dots
+    &.green {
+      .timeline-icon {
+        background: var(--ion-color-success, #2dd36f);
+        border-color: var(--ion-color-success, #2dd36f);
+        box-shadow: 0 4px 12px rgba(45, 211, 111, 0.3);
+        ion-icon { color: #ffffff !important; }
+      }
+      .timeline-content h3 { color: var(--ion-color-success, #2dd36f) !important; }
+    }
+
+    &.yellow {
+      .timeline-icon {
+        background: var(--ion-color-warning, #ffc409);
+        border-color: var(--ion-color-warning, #ffc409);
+        box-shadow: 0 4px 12px rgba(255, 196, 9, 0.3);
+        ion-icon { color: #1a1a1a !important; }
+      }
+      .timeline-content h3 { color: #e0a800 !important; }
+    }
+
+    &.red {
+      .timeline-icon {
+        background: var(--ion-color-danger, #eb445a);
+        border-color: var(--ion-color-danger, #eb445a);
+        box-shadow: 0 4px 12px rgba(235, 68, 90, 0.3);
+        ion-icon { color: #ffffff !important; }
+      }
+      .timeline-content h3 { color: var(--ion-color-danger, #eb445a) !important; }
+    }
   }
 }
 

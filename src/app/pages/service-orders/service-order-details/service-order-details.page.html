@@ -111,14 +111,117 @@
         </ion-card>
       }
 
-      <!-- Timeline Vertical -->
+      <!-- Matriz GUT e Score (Visível para Lojista/Admin e Super Admin) -->
+      @if (isSuperAdmin() || isCompanyOwner()) {
+        <div class="gut-card ion-margin-horizontal" style="margin-top: 10px; margin-bottom: 10px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.04);">
+          <h3 style="margin: 0 0 12px 0; font-size: 1.05rem; font-weight: 700; color: #1a1a1a; font-family: 'Outfit', sans-serif;">Prioridade de Atendimento (Matriz GUT)</h3>
+          <div style="display: flex; justify-content: space-between; gap: 10px;">
+            <div style="text-align: center; flex: 1; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+              <small style="display: block; color: #777; font-weight: 600; font-size: 0.75rem;">Gravidade</small>
+              <span style="font-size: 1.15rem; font-weight: 700; color: #1a1a1a;">{{ os.gut_gravity || 1 }}</span>
+            </div>
+            <div style="text-align: center; flex: 1; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+              <small style="display: block; color: #777; font-weight: 600; font-size: 0.75rem;">Urgência</small>
+              <span style="font-size: 1.15rem; font-weight: 700; color: #1a1a1a;">{{ os.gut_urgency || 1 }}</span>
+            </div>
+            <div style="text-align: center; flex: 1; background: #f8f9fa; padding: 10px; border-radius: 8px;">
+              <small style="display: block; color: #777; font-weight: 600; font-size: 0.75rem;">Tendência</small>
+              <span style="font-size: 1.15rem; font-weight: 700; color: #1a1a1a;">{{ os.gut_trend || 1 }}</span>
+            </div>
+          </div>
+          <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px dashed #e0e0e0;">
+            <span style="font-weight: 600; color: #666; font-size: 0.9rem;">Pontuação de Prioridade:</span>
+            <ion-badge [color]="(os.gut_score || 1) >= 60 ? 'danger' : (os.gut_score || 1) >= 20 ? 'warning' : 'success'" style="padding: 6px 12px; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
+              GUT Score: {{ os.gut_score || 1 }}
+            </ion-badge>
+          </div>
+        </div>
+      }
+
+      <!-- Cronômetro de Timeout de 10 Minutos (Checkout) -->
+      @if (os.current_status === 'RELATORIO_CHECKOUT') {
+        <div class="checkout-timer-card ion-margin-horizontal" style="margin-top: 10px; margin-bottom: 10px; background: #ffebeb; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #ffcccc; box-shadow: 0 4px 12px rgba(255, 0, 0, 0.05);">
+          <ion-icon name="time" style="font-size: 2.2rem; color: var(--ion-color-danger); margin-bottom: 6px;"></ion-icon>
+          <h3 style="margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 700; color: #c0392b; font-family: 'Outfit', sans-serif;">Aprovação de Relatório Técnico</h3>
+          <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: #7f8c8d; line-height: 1.4;">Aguardando assinatura física presencial na unidade. O tempo limite para assinatura é de 10 minutos.</p>
+          <div style="font-size: 2.2rem; font-weight: 800; color: var(--ion-color-danger); font-family: monospace; letter-spacing: 2px; margin-bottom: 4px;">
+            {{ countdownText() }}
+          </div>
+        </div>
+      }
+
+      <!-- Visualização de Impedimentos / Avisos de Trajeto -->
+      @if (os.is_transit_impeded) {
+        <div class="transit-impediment-banner ion-margin-horizontal" style="background: #ffebeb; border: 1px solid #ffb3b3; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; margin-top: 10px; margin-bottom: 10px;">
+          <ion-icon name="warning" style="color: var(--ion-color-danger); font-size: 1.5rem; flex-shrink: 0;"></ion-icon>
+          <div>
+            <h4 style="margin: 0 0 4px 0; color: #c0392b; font-weight: 700; font-size: 0.95rem;">Atraso no Trajeto Relatado</h4>
+            <p style="margin: 0 0 8px 0; color: #666; font-size: 0.85rem; line-height: 1.4;">O profissional relatou imprevisto no trajeto: "{{ os.transit_issue_reason }}"</p>
+            @if (isCompanyOwner() || isNormalUser()) {
+              <div style="display: flex; gap: 8px;">
+                <ion-button size="small" shape="round" color="danger" (click)="cancelOrder()">Cancelar Chamado</ion-button>
+                <ion-button size="small" shape="round" fill="outline" color="dark">Continuar Aguardando</ion-button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (os.is_execution_impeded) {
+        <div class="transit-impediment-banner ion-margin-horizontal" style="background: #ffebeb; border: 1px solid #ffb3b3; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 12px; margin-top: 10px; margin-bottom: 10px;">
+          <ion-icon name="alert-circle-outline" style="color: var(--ion-color-danger); font-size: 1.5rem; flex-shrink: 0;"></ion-icon>
+          <div>
+            <h4 style="margin: 0 0 4px 0; color: #c0392b; font-weight: 700; font-size: 0.95rem;">Execução Técnica Impedida</h4>
+            <p style="margin: 0; color: #666; font-size: 0.85rem; line-height: 1.4;">Serviço pausado. Impedimento no local: "{{ os.impediment_reason }}"</p>
+          </div>
+        </div>
+      }
+
+      <!-- Exibição dos Serviços Aditivos Cadastrados -->
+      @if (os.aditives && os.aditives.length > 0) {
+        <div class="aditives-card ion-margin-horizontal" style="margin-top: 10px; margin-bottom: 10px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.04);">
+          <h3 style="margin: 0 0 12px 0; font-size: 1.05rem; font-weight: 700; color: #1a1a1a; font-family: 'Outfit', sans-serif;">Serviços Aditivos Realizados</h3>
+          <ion-list lines="none" style="background: transparent; padding: 0;">
+            @for (ad of os.aditives; track $index) {
+              <div style="background: #f8f9fa; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.9rem; font-weight: 600; color: #2c3e50;">{{ ad.description }}</span>
+                <ion-badge color="success" style="font-size: 0.75rem; padding: 4px 8px; border-radius: 4px;">Adicionado</ion-badge>
+              </div>
+            }
+          </ion-list>
+        </div>
+      }
+
+      <!-- Avaliação do Lojista (Exibe após conclusão da OS para Lojista/User) -->
+      @if (os.current_status === 'CONCLUIDO' && (isCompanyOwner() || isNormalUser()) && !hasRated()) {
+        <div class="evaluation-card ion-margin-horizontal" style="margin-top: 10px; margin-bottom: 24px; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); border: 1px solid #ffd43f;">
+          <h3 style="margin: 0 0 8px 0; font-size: 1.15rem; font-weight: 700; color: #1a1a1a; font-family: 'Outfit', sans-serif; text-align: center;">Como foi seu atendimento? ⭐</h3>
+          <p style="margin: 0 0 16px 0; font-size: 0.85rem; color: #7f8c8d; text-align: center; line-height: 1.4;">Avalie de forma anônima a qualidade do atendimento do profissional técnico.</p>
+          
+          <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <ion-icon [name]="ratingStars() >= star ? 'star' : 'star-outline'" style="font-size: 2.2rem; color: #ffc409; cursor: pointer;" (click)="ratingStars.set(star)"></ion-icon>
+            }
+          </div>
+
+          <ion-textarea placeholder="Deixe um comentário sobre o atendimento (opcional)..." rows="3" [value]="ratingComment()" (ionInput)="ratingComment.set($any($event.target).value)" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; font-size: 0.9rem; margin-bottom: 16px; background: #fafafa;"></ion-textarea>
+          
+          <ion-button expand="block" shape="round" color="warning" [disabled]="ratingStars() === 0" (click)="submitEvaluation()" style="font-weight: 700;">
+            Enviar Avaliação do Serviço
+          </ion-button>
+        </div>
+      }
+
+      <!-- Timeline Vertical Colorida -->
       <div class="timeline-section">
-        <h2>Linha do Tempo</h2>
+        <h2>Acompanhamento da Solicitação</h2>
         
         <div class="timeline-container">
           
-          <!-- Passo 1: Solicitado -->
-          <div class="timeline-item" [class.active]="isPastStatus('SOLICITADO')">
+          <!-- Passo 1: Solicitado (Verde se aprovado/agendado, Vermelho se pendente de técnico/agenda ou em negociação) -->
+          <div class="timeline-item active" 
+               [class.green]="isPastStatus('APROVADO') || isPastStatus('AGENDADO')" 
+               [class.red]="os.current_status === 'SOLICITADO' || os.current_status === 'DATA_SUGERIDA' || os.current_status === 'PROPOSTO' || os.current_status === 'RECUSADO'">
             <div class="timeline-icon">
               <ion-icon name="ellipsis-horizontal-circle"></ion-icon>
             </div>
@@ -127,31 +230,41 @@
               <p>Chamado enviado e aguardando aprovação ou agendamento de data.</p>
             </div>
           </div>
-
-          <!-- Passo 2: Agendado -->
-          <div class="timeline-item" [class.active]="isPastStatus('AGENDADO')">
+ 
+          <!-- Passo 2: Agendado (Verde se em deslocamento/futuro, Amarelo se apenas agendado/aprovado) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('APROVADO') || isPastStatus('AGENDADO')" 
+               [class.green]="isPastStatus('EM_DESLOCAMENTO')" 
+               [class.yellow]="os.current_status === 'AGENDADO' || os.current_status === 'APROVADO'">
             <div class="timeline-icon">
-              <ion-icon name="document-text-outline"></ion-icon>
+              <ion-icon name="calendar-outline"></ion-icon>
             </div>
             <div class="timeline-content">
               <h3>Agendado</h3>
               <p>Ordem agendada e pronta para execução técnica.</p>
             </div>
           </div>
-
-          <!-- Passo 3: Deslocamento -->
-          <div class="timeline-item" [class.active]="isPastStatus('EM_DESLOCAMENTO')">
+ 
+          <!-- Passo 3: Deslocamento (Verde se check-in/futuro, Vermelho se imprevisto, Amarelo se deslocando) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('EM_DESLOCAMENTO')" 
+               [class.green]="isPastStatus('CHECK_IN')" 
+               [class.red]="os.is_transit_impeded" 
+               [class.yellow]="os.current_status === 'EM_DESLOCAMENTO' && !os.is_transit_impeded">
             <div class="timeline-icon">
               <ion-icon name="car-outline"></ion-icon>
             </div>
             <div class="timeline-content">
               <h3>Técnico em Deslocamento</h3>
-              <p>O técnico iniciou a rota para o local.</p>
+              <p>{{ os.is_transit_impeded ? 'Problema relatado no percurso.' : 'Técnico a caminho da unidade.' }}</p>
             </div>
           </div>
-
-          <!-- Passo 4: Check-in -->
-          <div class="timeline-item" [class.active]="isPastStatus('CHECK_IN')">
+ 
+          <!-- Passo 4: Check-in (Verde se em execução/futuro, Amarelo se técnico chegou) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('CHECK_IN')" 
+               [class.green]="isPastStatus('EM_EXECUCAO')" 
+               [class.yellow]="os.current_status === 'CHECK_IN'">
             <div class="timeline-icon">
               <ion-icon name="map-outline"></ion-icon>
             </div>
@@ -160,42 +273,55 @@
               <p>O técnico chegou na unidade.</p>
             </div>
           </div>
-
-          <!-- Passo 5: Execução -->
-          <div class="timeline-item" [class.active]="isPastStatus('EM_EXECUCAO')">
+ 
+          <!-- Passo 5: Execução (Verde se checkout/futuro, Vermelho se impedido, Amarelo se executando) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('EM_EXECUCAO')" 
+               [class.green]="isPastStatus('RELATORIO_CHECKOUT')" 
+               [class.red]="os.is_execution_impeded" 
+               [class.yellow]="os.current_status === 'EM_EXECUCAO' && !os.is_execution_impeded">
             <div class="timeline-icon">
               <ion-icon name="build-outline"></ion-icon>
             </div>
             <div class="timeline-content">
               <h3>Em Execução</h3>
-              <p>O serviço está sendo realizado.</p>
+              <p>{{ os.is_execution_impeded ? 'Execução pausada por impedimento.' : 'O serviço está sendo realizado.' }}</p>
             </div>
           </div>
-
-          <!-- Passo 6: Check-out e Relatório -->
-          <div class="timeline-item" [class.active]="os.report_pdf_url">
+ 
+          <!-- Passo 6: Check-out e Relatório (Verde se avaliacao/concluido, Vermelho durante contagem, Amarelo após) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('RELATORIO_CHECKOUT')" 
+               [class.green]="isPastStatus('AVALIACAO') || isPastStatus('CONCLUIDO')" 
+               [class.red]="os.current_status === 'RELATORIO_CHECKOUT'"
+               [class.yellow]="os.current_status === 'AVALIACAO'">
             <div class="timeline-icon">
               <ion-icon name="document-text-outline"></ion-icon>
             </div>
             <div class="timeline-content">
               <h3>Relatório Técnico & Check-out</h3>
-              <p>{{ os.report_pdf_url ? 'Relatório técnico emitido pelo profissional.' : 'Aguardando encerramento técnico e emissão do relatório.' }}</p>
+              <p>Checkout realizado pelo profissional e emissão do relatório.</p>
             </div>
           </div>
-
-          <!-- Passo 7: Assinatura e Aprovação -->
-          <div class="timeline-item" [class.active]="os.follower_signature">
+ 
+          <!-- Passo 7: Assinatura e Avaliação (Verde se concluído, Amarelo aguardando avaliação) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('AVALIACAO') || isPastStatus('CONCLUIDO')" 
+               [class.green]="isPastStatus('CONCLUIDO')" 
+               [class.yellow]="os.current_status === 'AVALIACAO' || os.current_status === 'RELATORIO_CHECKOUT'">
             <div class="timeline-icon">
               <ion-icon name="ribbon-outline"></ion-icon>
             </div>
             <div class="timeline-content">
-              <h3>Aprovação & Assinatura</h3>
-              <p>{{ os.follower_signature ? 'Serviço aprovado e assinado pelo responsável.' : 'Aguardando assinatura de aprovação do cliente.' }}</p>
+              <h3>Assinatura & Avaliação</h3>
+              <p>Validação final do lojista e comentário avaliativo.</p>
             </div>
           </div>
-
-          <!-- Passo 8: Concluído -->
-          <div class="timeline-item" [class.active]="isPastStatus('CONCLUIDO')">
+ 
+          <!-- Passo 8: Concluído (Verde se concluído) -->
+          <div class="timeline-item" 
+               [class.active]="isPastStatus('CONCLUIDO')" 
+               [class.green]="isPastStatus('CONCLUIDO')">
             <div class="timeline-icon">
               <ion-icon name="checkmark-circle"></ion-icon>
             </div>
@@ -204,14 +330,14 @@
               <p>O serviço foi concluído com sucesso.</p>
             </div>
           </div>
-
+ 
         </div>
       </div>
-
+ 
     }
   }
 </ion-content>
-
+ 
 <!-- Actions Footer (Dinâmico para negociações comerciais e técnico) -->
 @if(order(); as os) {
   <ion-footer class="ion-no-border action-footer">
@@ -242,7 +368,7 @@
           </ion-button>
         }
       }
-
+ 
       <!-- BOTÕES DO LOJISTA OU CLIENTE FINAL (USER) OU SUPER ADMIN -->
       @if(isCompanyOwner() || isNormalUser() || isSuperAdmin()) {
         @if(os.current_status === 'SOLICITADO') {
@@ -253,11 +379,11 @@
         }
         @if(os.current_status === 'DATA_SUGERIDA') {
           <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="approvePriceAndDate()">
+            <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="acceptScheduleProposal()">
               <ion-icon slot="start" name="checkmark-circle"></ion-icon>
               Aceitar Data Sugerida
             </ion-button>
-            <ion-button expand="block" shape="round" color="warning" style="flex: 1;" (click)="proposeNewDateClient()">
+            <ion-button expand="block" shape="round" color="warning" style="flex: 1;" (click)="proposeNewScheduleClient()">
               <ion-icon slot="start" name="calendar-outline"></ion-icon>
               Sugerir Outra Data
             </ion-button>
@@ -280,7 +406,7 @@
           </div>
         }
       }
-
+ 
       <!-- BOTÕES DO COLABORADOR TÉCNICO -->
       @if(isCollaborator()) {
         @if(canStartDisplacement()) {
@@ -291,34 +417,59 @@
         }
         
         @if(canCheckIn()) {
-          <ion-button expand="block" shape="round" color="warning" class="action-btn" (click)="updateStatus('CHECK_IN')">
-            <ion-icon slot="start" name="map-outline"></ion-icon>
-            Fazer Check-in no Local
-          </ion-button>
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <ion-button expand="block" shape="round" color="warning" style="flex: 2;" (click)="updateStatus('CHECK_IN')">
+              <ion-icon slot="start" name="map-outline"></ion-icon>
+              Fazer Check-in (Cheguei)
+            </ion-button>
+            @if (!os.is_transit_impeded) {
+              <ion-button expand="block" shape="round" color="danger" style="flex: 1;" (click)="reportTransitIssue()">
+                Problema Rota
+              </ion-button>
+            } @else {
+              <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="resolveTransitIssue()">
+                Resolvido
+              </ion-button>
+            }
+          </div>
         }
-
+ 
         @if(canStartExecution()) {
           <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="updateStatus('EM_EXECUCAO')">
             <ion-icon slot="start" name="build-outline"></ion-icon>
             Iniciar Execução
           </ion-button>
         }
-
+ 
         @if(canFinish()) {
-          <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="openFinishModal()">
-            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
-            Finalizar Serviço
-          </ion-button>
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <ion-button expand="block" shape="round" color="success" style="flex: 2;" (click)="openFinishModal()">
+              <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+              Finalizar Serviço
+            </ion-button>
+            <ion-button expand="block" shape="round" color="warning" style="flex: 1;" (click)="addAditive()">
+              + Aditivo
+            </ion-button>
+            @if (!os.is_execution_impeded) {
+              <ion-button expand="block" shape="round" color="danger" style="flex: 1;" (click)="reportExecutionImpediment()">
+                Pausar OS
+              </ion-button>
+            } @else {
+              <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="updateStatus('EM_EXECUCAO')">
+                Retomar
+              </ion-button>
+            }
+          </div>
         }
       }
-
-      @if(os.current_status === 'CONCLUIDO') {
+ 
+      @if(os.current_status === 'CONCLUIDO' || os.current_status === 'RELATORIO_CHECKOUT') {
         <ion-button expand="block" shape="round" fill="outline" color="dark" class="action-btn" (click)="openReportModal()">
           <ion-icon slot="start" name="document-text-outline"></ion-icon>
           Ver Relatório Técnico
         </ion-button>
       }
-
+ 
     </ion-toolbar>
   </ion-footer>
 }
