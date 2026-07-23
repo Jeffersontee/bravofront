@@ -74,7 +74,11 @@ export class ServiceOrderDetailsPage implements OnInit {
   isNormalUser = computed(() => this.userType() === 'user');
 
   // Status computation for actions
-  canStartDisplacement = computed(() => this.isCollaborator() && this.order()?.current_status === 'AGENDADO');
+  canStartDisplacement = computed(() => {
+    const os = this.order();
+    if (!os) return false;
+    return this.isCollaborator() && (os.current_status === 'AGENDADO' || os.current_status === 'APROVADO');
+  });
   canCheckIn = computed(() => this.isCollaborator() && this.order()?.current_status === 'EM_DESLOCAMENTO');
   canStartExecution = computed(() => this.isCollaborator() && this.order()?.current_status === 'CHECK_IN');
   canFinish = computed(() => this.isCollaborator() && this.order()?.current_status === 'EM_EXECUCAO');
@@ -122,7 +126,12 @@ export class ServiceOrderDetailsPage implements OnInit {
           if (os.collaborator_id) {
             this.selectedCollaboratorId.set(typeof os.collaborator_id === 'object' ? os.collaborator_id._id : os.collaborator_id);
           }
-          if (os.scheduled_date) {
+          if (os.proposed_date) {
+            const date = new Date(os.proposed_date);
+            const offset = date.getTimezoneOffset();
+            const localDate = new Date(date.getTime() - (offset*60*1000));
+            this.selectedScheduleDate.set(localDate.toISOString().slice(0, 16));
+          } else if (os.scheduled_date) {
             const date = new Date(os.scheduled_date);
             const offset = date.getTimezoneOffset();
             const localDate = new Date(date.getTime() - (offset*60*1000));
@@ -431,7 +440,7 @@ export class ServiceOrderDetailsPage implements OnInit {
           text: 'Confirmar Agendamento',
           handler: () => {
             this.isLoading.set(true);
-            this.serviceOrderService.assignTechnician(this.orderId(), collId).subscribe({
+            this.serviceOrderService.assignTechnician(this.orderId(), collId, new Date(dateStr).toISOString()).subscribe({
               next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
@@ -505,15 +514,26 @@ export class ServiceOrderDetailsPage implements OnInit {
   // Cancelar Chamado pelo Lojista/User
   async cancelOrder() {
     const alert = await this.alertCtrl.create({
-      header: 'Cancelar Chamado',
-      message: 'Tem certeza que deseja cancelar esta ordem de serviço?',
-      buttons: [
-        { text: 'Não', role: 'cancel' },
+      header: 'Cancelar Chamado ❌',
+      message: 'Por favor, informe a justificativa para o cancelamento deste chamado:',
+      inputs: [
         {
-          text: 'Sim, Cancelar',
-          handler: () => {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Motivo do cancelamento'
+        }
+      ],
+      buttons: [
+        { text: 'Voltar', role: 'cancel' },
+        {
+          text: 'Confirmar Cancelamento',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Você precisa informar o motivo do cancelamento.');
+              return false;
+            }
             this.isLoading.set(true);
-            this.serviceOrderService.cancelOrder(this.orderId()).subscribe({
+            this.serviceOrderService.cancelOrder(this.orderId(), data.reason).subscribe({
               next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
@@ -523,6 +543,7 @@ export class ServiceOrderDetailsPage implements OnInit {
               },
               error: () => this.isLoading.set(false)
             });
+            return true;
           }
         }
       ]

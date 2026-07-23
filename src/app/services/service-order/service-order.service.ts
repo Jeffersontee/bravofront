@@ -20,6 +20,7 @@ export interface ServiceOrder {
   service_id: string | ServiceItem;
   collaborator_id?: string | any;
   scheduled_date?: string | Date;
+  proposed_date?: string | Date;
   current_status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'RELATORIO_CHECKOUT' | 'AVALIACAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
   timeline?: TimelineEvent[];
   checkin_location?: { lat: number; lng: number };
@@ -99,8 +100,8 @@ export class ServiceOrderService {
     return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/status`, { status, location });
   }
 
-  assignTechnician(id: string, collaborator_id: string): Observable<{ success: boolean; data: ServiceOrder }> {
-    return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/assign-technician`, { collaborator_id });
+  assignTechnician(id: string, collaborator_id: string, scheduled_date?: string): Observable<{ success: boolean; data: ServiceOrder }> {
+    return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/assign-technician`, { collaborator_id, scheduled_date });
   }
 
   acceptSchedule(id: string): Observable<{ success: boolean; data: ServiceOrder }> {
@@ -111,8 +112,8 @@ export class ServiceOrderService {
     return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/propose-schedule`, { new_date });
   }
 
-  cancelOrder(id: string): Observable<{ success: boolean; data: ServiceOrder }> {
-    return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/cancel`, {});
+  cancelOrder(id: string, reason?: string): Observable<{ success: boolean; data: ServiceOrder }> {
+    return this.http.patch<{ success: boolean; data: ServiceOrder }>(`${this.url}/${id}/cancel`, { reason });
   }
 
   reportTransitIssue(id: string, reason: string): Observable<{ success: boolean; data: ServiceOrder }> {
