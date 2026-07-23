@@ -119,7 +119,10 @@ export class ServiceOrderFormComponent implements OnInit {
       collaborator_id: [''],
       scheduled_date: [new Date().toISOString().substring(0, 16), Validators.required],
       observations: [''],
-      address_override: ['']
+      address_override: [''],
+      gut_gravity: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+      gut_urgency: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+      gut_trend: [1, [Validators.required, Validators.min(1), Validators.max(5)]]
     });
     this.formReady.set(true);
   }
@@ -198,7 +201,10 @@ export class ServiceOrderFormComponent implements OnInit {
       collaborator_id: order.collaborator_id?._id || order.collaborator_id || '',
       scheduled_date: dateStr,
       observations: order.observations || '',
-      address_override: order.address_override || ''
+      address_override: order.address_override || '',
+      gut_gravity: order.gut_gravity || 1,
+      gut_urgency: order.gut_urgency || 1,
+      gut_trend: order.gut_trend || 1
     });
 
     this.form.markAsPristine();

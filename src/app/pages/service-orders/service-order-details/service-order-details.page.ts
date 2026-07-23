@@ -11,12 +11,21 @@ import {
   checkmarkDoneOutline, calendarOutline,
   carOutline,
   documentTextOutline,
-  ribbonOutline
+  ribbonOutline,
+  star,
+  starOutline,
+  warning,
+  alertCircleOutline,
+  addOutline,
+  trashOutline,
+  cashOutline,
+  time
 } from 'ionicons/icons';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
 import { CollaboratorService } from 'src/app/services/collaborator/collaborator.service';
 import { Strings } from 'src/app/enum/strings';
+import { ServiceService } from 'src/app/services/service/service.service';
 
 @Component({
   selector: 'app-service-order-details',
@@ -34,10 +43,23 @@ export class ServiceOrderDetailsPage implements OnInit {
   private toastCtrl = inject(ToastController);
   private modalCtrl = inject(ModalController);
   private collaboratorService = inject(CollaboratorService);
+  private serviceService = inject(ServiceService);
 
   orderId = signal<string>('');
-  order = signal<ServiceOrder | null>(null);
+  order = signal<any | null>(null);
   isLoading = signal<boolean>(true);
+
+  // Cronômetro de Checkout (10 min)
+  countdownText = signal<string>('');
+  private timerIntervalId: any = null;
+
+  // Catálogo de Serviços para Aditivos do Técnico
+  catalogServices = signal<any[]>([]);
+
+  // Avaliação do Lojista
+  ratingStars = signal<number>(0);
+  ratingComment = signal<string>('');
+  hasRated = signal<boolean>(false);
 
   // Campos para designação do técnico e data/hora
   collaborators = signal<any[]>([]);
@@ -63,7 +85,8 @@ export class ServiceOrderDetailsPage implements OnInit {
       ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
       personOutline, buildOutline, businessOutline, closeCircleOutline,
       checkmarkDoneOutline, calendarOutline, carOutline, documentTextOutline,
-      ribbonOutline
+      ribbonOutline, star, starOutline, warning, alertCircleOutline, addOutline,
+      trashOutline, cashOutline, time
     });
   }
 
@@ -75,8 +98,21 @@ export class ServiceOrderDetailsPage implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.clearTimer();
+  }
+
+  private clearTimer() {
+    if (this.timerIntervalId) {
+      clearInterval(this.timerIntervalId);
+      this.timerIntervalId = null;
+    }
+  }
+
   loadOrder(id: string) {
     this.isLoading.set(true);
+    this.clearTimer();
+
     this.serviceOrderService.getServiceOrderById(id).subscribe({
       next: (res) => {
         if (res.success) {
@@ -93,12 +129,28 @@ export class ServiceOrderDetailsPage implements OnInit {
             this.selectedScheduleDate.set(localDate.toISOString().slice(0, 16));
           }
 
+          // Se estiver em RELATORIO_CHECKOUT, iniciar contagem regressiva de 10 min
+          if (os.current_status === 'RELATORIO_CHECKOUT' && os.checkout_time) {
+            this.startCountdown(os.checkout_time);
+          }
+
           // Carrega colaboradores se for Super Admin
           if (this.isSuperAdmin()) {
             this.collaboratorService.getCollaborators().subscribe({
               next: (colRes) => {
                 if (colRes.success) {
                   this.collaborators.set(colRes.data || []);
+                }
+              }
+            });
+          }
+
+          // Carrega catálogo de serviços se for colaborador técnico
+          if (this.isCollaborator()) {
+            this.serviceService.getServices().subscribe({
+              next: (servRes) => {
+                if (servRes.success) {
+                  this.catalogServices.set(servRes.data || []);
                 }
               }
             });
@@ -111,6 +163,56 @@ export class ServiceOrderDetailsPage implements OnInit {
         this.order.set(this.getMockOrder(id));
         this.isLoading.set(false);
       }
+    });
+  }
+
+  private startCountdown(checkoutTimeStr: string | Date) {
+    const checkoutTime = new Date(checkoutTimeStr).getTime();
+    
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const difference = checkoutTime + (10 * 60 * 1000) - now; // 10 min
+
+      if (difference <= 0) {
+        this.countdownText.set('Tempo esgotado! Aprovação automática.');
+        this.clearTimer();
+        
+        // Auto aprovar se o tempo acabar
+        if (this.order()?.current_status === 'RELATORIO_CHECKOUT') {
+          this.autoApproveAfterTimeout();
+        }
+        return;
+      }
+
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      
+      const minStr = minutes < 10 ? '0' + minutes : minutes;
+      const secStr = seconds < 10 ? '0' + seconds : seconds;
+      
+      this.countdownText.set(`${minStr}:${secStr}`);
+    };
+
+    updateTimer();
+    this.timerIntervalId = setInterval(updateTimer, 1000);
+  }
+
+  private autoApproveAfterTimeout() {
+    this.isLoading.set(true);
+    // Envia assinatura em branco
+    this.serviceOrderService.evaluateOrder(this.orderId(), {
+      follower_signature: '[Aprovação Automática - Timeout 10 min]',
+      stars: 3, // Nota neutra automática
+      comment: 'Finalização automática por timeout de assinatura presencial.'
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.order.set(res.data);
+          this.showToast('OS finalizada automaticamente por timeout!');
+        }
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
     });
   }
 
@@ -205,7 +307,7 @@ export class ServiceOrderDetailsPage implements OnInit {
               current_status: 'PROPOSTO'
             };
             this.serviceOrderService.updateServiceOrder(this.orderId(), payload).subscribe({
-              next: (res) => {
+              next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
                   this.showToast('Proposta comercial enviada com sucesso!');
@@ -244,7 +346,7 @@ export class ServiceOrderDetailsPage implements OnInit {
               scheduled_date: new Date(data.scheduled_date).toISOString(),
               current_status: 'DATA_SUGERIDA'
             }).subscribe({
-              next: (res) => {
+              next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
                   this.showToast('Nova data sugerida ao cliente.');
@@ -288,7 +390,7 @@ export class ServiceOrderDetailsPage implements OnInit {
               scheduled_date: new Date(data.scheduled_date).toISOString(),
               current_status: 'SOLICITADO'
             }).subscribe({
-              next: (res) => {
+              next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
                   this.showToast('Sugestão de agenda enviada para a Central.');
@@ -306,7 +408,7 @@ export class ServiceOrderDetailsPage implements OnInit {
   }
 
   // Super Admin: Confirmar designação do técnico e data de agendamento (move status para AGENDADO)
-  confirmAndSchedule() {
+  async confirmAndSchedule() {
     const collId = this.selectedCollaboratorId();
     const dateStr = this.selectedScheduleDate();
 
@@ -319,18 +421,45 @@ export class ServiceOrderDetailsPage implements OnInit {
       return;
     }
 
-    this.isLoading.set(true);
-    const payload = {
-      collaborator_id: collId,
-      scheduled_date: new Date(dateStr).toISOString(),
-      current_status: 'AGENDADO' as const
-    };
+    // Help informativo sobre prazo de 8h antes do agendamento
+    const alert = await this.alertCtrl.create({
+      header: 'Aviso Importante (Prazo de Troca) ⚠️',
+      message: 'Atenção: A troca deste técnico só será permitida pelo sistema até 8 horas antes do horário agendado de início do atendimento. Lojistas e profissionais serão notificados por push.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Confirmar Agendamento',
+          handler: () => {
+            this.isLoading.set(true);
+            this.serviceOrderService.assignTechnician(this.orderId(), collId).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Ordem de serviço agendada e técnico designado!');
+                }
+                this.isLoading.set(false);
+              },
+              error: (err: any) => {
+                const errMsg = err?.error?.message || 'Erro ao designar técnico.';
+                this.showToast(errMsg);
+                this.isLoading.set(false);
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
-    this.serviceOrderService.updateServiceOrder(this.orderId(), payload).subscribe({
-      next: (res) => {
+  // Lojista / User / Super: Aceitar sugestão de horário do super
+  acceptScheduleProposal() {
+    this.isLoading.set(true);
+    this.serviceOrderService.acceptSchedule(this.orderId()).subscribe({
+      next: (res: any) => {
         if (res.success) {
           this.order.set(res.data);
-          this.showToast('Ordem de serviço agendada com sucesso!');
+          this.showToast('Agendamento aceito com sucesso!');
         }
         this.isLoading.set(false);
       },
@@ -338,36 +467,28 @@ export class ServiceOrderDetailsPage implements OnInit {
     });
   }
 
-  // Cancelar Chamado
-  async cancelOrder() {
+  // Lojista / User: Recusar e propor nova data
+  async proposeNewScheduleClient() {
     const alert = await this.alertCtrl.create({
-      header: 'Cancelar Solicitação',
-      message: 'Por favor, insira o motivo do cancelamento:',
+      header: 'Propor Nova Data/Horário',
       inputs: [
         {
-          name: 'reason',
-          type: 'text',
-          placeholder: 'Motivo do cancelamento'
+          name: 'new_date',
+          type: 'datetime-local'
         }
       ],
       buttons: [
         { text: 'Voltar', role: 'cancel' },
         {
-          text: 'Confirmar Cancelamento',
+          text: 'Enviar Proposta',
           handler: (data) => {
-            if (!data.reason) {
-              this.showToast('Por favor, informe o motivo do cancelamento.');
-              return false;
-            }
+            if (!data.new_date) return false;
             this.isLoading.set(true);
-            this.serviceOrderService.updateServiceOrder(this.orderId(), {
-              current_status: 'CANCELADO',
-              observations: `[Cancelado] Motivo: ${data.reason}`
-            }).subscribe({
-              next: (res) => {
+            this.serviceOrderService.proposeSchedule(this.orderId(), new Date(data.new_date).toISOString()).subscribe({
+              next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
-                  this.showToast('Solicitação cancelada com sucesso!');
+                  this.showToast('Nova proposta de data enviada para a Central.');
                 }
                 this.isLoading.set(false);
               },
@@ -381,7 +502,235 @@ export class ServiceOrderDetailsPage implements OnInit {
     await alert.present();
   }
 
-  // Recusar Chamado
+  // Cancelar Chamado pelo Lojista/User
+  async cancelOrder() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cancelar Chamado',
+      message: 'Tem certeza que deseja cancelar esta ordem de serviço?',
+      buttons: [
+        { text: 'Não', role: 'cancel' },
+        {
+          text: 'Sim, Cancelar',
+          handler: () => {
+            this.isLoading.set(true);
+            this.serviceOrderService.cancelOrder(this.orderId()).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Chamado cancelado com sucesso.');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Técnico: Relatar Problema no Trajeto (Linha do tempo fica vermelha temporariamente)
+  async reportTransitIssue() {
+    const alert = await this.alertCtrl.create({
+      header: 'Relatar Problema no Trajeto ⚠️',
+      message: 'Explique o motivo do atraso/imprevisto no trajeto (ex: Trânsito intenso, pneu furado):',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Descreva o problema'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Relatar Problema',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Descreva o problema ocorrido.');
+              return false;
+            }
+            this.isLoading.set(true);
+            this.serviceOrderService.reportTransitIssue(this.orderId(), data.reason).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Problema no trajeto registrado com sucesso.');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Técnico: Resolver Problema no Trajeto (Volta a amarelo e continua)
+  resolveTransitIssue() {
+    this.isLoading.set(true);
+    this.serviceOrderService.resolveTransitIssue(this.orderId()).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.order.set(res.data);
+          this.showToast('Trajeto normalizado com sucesso.');
+        }
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  // Técnico: Relatar Impedimento na Execução (Física)
+  async reportExecutionImpediment() {
+    const alert = await this.alertCtrl.create({
+      header: 'Relatar Impedimento Técnico ⚠️',
+      message: 'Descreva o que está impedindo a realização do serviço no local:',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Ex: Falta de energia, local trancado'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Relatar Impedimento',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Por favor, informe a justificativa.');
+              return false;
+            }
+            this.isLoading.set(true);
+            this.serviceOrderService.reportExecutionImpediment(this.orderId(), data.reason).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Impedimento físico relatado à Central.');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Técnico: Adicionar Aditivo (Serviço extra manual ou catálogo)
+  async addAditive() {
+    const inputs: any[] = this.catalogServices().map(serv => ({
+      name: 'service_id',
+      type: 'radio',
+      label: serv.name,
+      value: serv._id
+    }));
+
+    inputs.push({
+      name: 'service_id',
+      type: 'radio',
+      label: 'Outro (Inserir manualmente)',
+      value: 'manual'
+    });
+
+    const alert = await this.alertCtrl.create({
+      header: 'Adicionar Serviço Aditivo',
+      message: 'Selecione um serviço cadastrado no catálogo ou insira manualmente:',
+      inputs: inputs,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Avançar',
+          handler: async (selectedVal) => {
+            if (!selectedVal) return;
+
+            if (selectedVal === 'manual') {
+              // Abre prompt manual
+              const manualAlert = await this.alertCtrl.create({
+                header: 'Descrição do Aditivo',
+                inputs: [
+                  {
+                    name: 'description',
+                    type: 'text',
+                    placeholder: 'Descreva o serviço realizado'
+                  }
+                ],
+                buttons: [
+                  { text: 'Cancelar', role: 'cancel' },
+                  {
+                    text: 'Adicionar',
+                    handler: (data) => {
+                      if (!data.description) return false;
+                      this.saveAditive({ description: data.description });
+                      return true;
+                    }
+                  }
+                ]
+              });
+              await manualAlert.present();
+            } else {
+              const selectedService = this.catalogServices().find(s => s._id === selectedVal);
+              if (selectedService) {
+                this.saveAditive({
+                  description: selectedService.name,
+                  service_id: selectedService._id
+                });
+              }
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private saveAditive(aditive: { description: string, service_id?: string }) {
+    this.isLoading.set(true);
+    this.serviceOrderService.addAditive(this.orderId(), aditive).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.order.set(res.data);
+          this.showToast('Serviço aditivo adicionado com sucesso!');
+        }
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  // Lojista: Enviar assinatura e avaliação e finalizar OS
+  submitEvaluation() {
+    const signature = `Assinatura de ${this.order()?.company_id?.name || 'Cliente'}`;
+    const stars = this.ratingStars();
+    const comment = this.ratingComment();
+
+    this.isLoading.set(true);
+    this.serviceOrderService.evaluateOrder(this.orderId(), {
+      follower_signature: signature,
+      stars: stars > 0 ? stars : undefined,
+      comment: comment || undefined
+    }).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.order.set(res.data);
+          this.hasRated.set(true);
+          this.showToast('Atendimento avaliado e concluído com sucesso!');
+        }
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false)
+    });
+  }
+
+  // Recusar Proposta pelo Lojista/User
   async rejectProposal() {
     const alert = await this.alertCtrl.create({
       header: 'Recusar Chamado / Proposta',
@@ -410,7 +759,7 @@ export class ServiceOrderDetailsPage implements OnInit {
               next: (res) => {
                 if (res.success) {
                   this.order.set(res.data);
-                  this.showToast('Chamado recusado com sucesso!');
+                  this.showToast('Proposta recusada com sucesso!');
                 }
                 this.isLoading.set(false);
               },
@@ -470,12 +819,24 @@ export class ServiceOrderDetailsPage implements OnInit {
   }
 
   isPastStatus(status: string): boolean {
-    const sequence = ['SOLICITADO', 'APROVADO', 'AGENDADO', 'EM_DESLOCAMENTO', 'CHECK_IN', 'EM_EXECUCAO', 'CONCLUIDO'];
+    const sequence = [
+      'SOLICITADO', 
+      'APROVADO', 
+      'AGENDADO', 
+      'EM_DESLOCAMENTO', 
+      'CHECK_IN', 
+      'EM_EXECUCAO', 
+      'RELATORIO_CHECKOUT', 
+      'AVALIACAO', 
+      'CONCLUIDO'
+    ];
     const currentStatus = this.order()?.current_status;
     if (!currentStatus || currentStatus === 'CANCELADO' || currentStatus === 'RECUSADO') return false;
     
     const currentIndex = sequence.indexOf(currentStatus);
     const checkIndex = sequence.indexOf(status);
+    
+    if (currentIndex === -1 || checkIndex === -1) return false;
     
     return checkIndex <= currentIndex;
   }

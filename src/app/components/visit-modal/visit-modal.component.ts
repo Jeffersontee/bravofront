@@ -55,6 +55,9 @@ export class VisitModalComponent implements OnInit {
       zone: [''],
       address_override: [''],
       observations: [''],
+      gut_gravity: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+      gut_urgency: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
+      gut_trend: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
       current_status: ['SOLICITADO']
     });
 

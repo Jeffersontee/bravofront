@@ -25,6 +25,40 @@
   </ion-searchbar>
 </div>
 
+<!-- Filtros Avançados -->
+<div class="filters-row mb-3">
+  <div class="filter-item">
+    <ion-select label="Filtrar por Status" labelPlacement="stacked" [value]="selectedStatusFilter()" (ionChange)="selectedStatusFilter.set($event.detail.value)" class="custom-select-filter">
+      <ion-select-option value="">Todos os Status</ion-select-option>
+      <ion-select-option value="SOLICITADO">Solicitado</ion-select-option>
+      <ion-select-option value="AGENDADO">Agendado</ion-select-option>
+      <ion-select-option value="EM_DESLOCAMENTO">Em Deslocamento</ion-select-option>
+      <ion-select-option value="CHECK_IN">Check-in</ion-select-option>
+      <ion-select-option value="EM_EXECUCAO">Em Execução</ion-select-option>
+      <ion-select-option value="CONCLUIDO">Concluído</ion-select-option>
+      <ion-select-option value="CANCELADO">Cancelado</ion-select-option>
+    </ion-select>
+  </div>
+
+  <div class="filter-item">
+    <ion-select label="Filtrar por Categoria" labelPlacement="stacked" [value]="selectedCategoryFilter()" (ionChange)="selectedCategoryFilter.set($event.detail.value)" class="custom-select-filter">
+      <ion-select-option value="">Todas as Categorias</ion-select-option>
+      @for (cat of availableCategories(); track cat) {
+        <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+      }
+    </ion-select>
+  </div>
+
+  <div class="filter-item">
+    <ion-select label="Filtrar por Unidade" labelPlacement="stacked" [value]="selectedUnitFilter()" (ionChange)="selectedUnitFilter.set($event.detail.value)" class="custom-select-filter">
+      <ion-select-option value="">Todas as Unidades</ion-select-option>
+      @for (u of availableUnits(); track u.id) {
+        <ion-select-option [value]="u.id">{{ u.name }}</ion-select-option>
+      }
+    </ion-select>
+  </div>
+</div>
+
 <!-- Painel Informativo / Cards de Resumo no topo -->
 <ion-grid class="ion-no-padding mb-4">
   <ion-row>

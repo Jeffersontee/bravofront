@@ -68,6 +68,40 @@
       <ion-textarea label="Observações / Instruções" labelPlacement="floating" formControlName="observations" placeholder="Instruções para o técnico ou observações do cliente..." rows="3"></ion-textarea>
     </ion-item>
 
+    <ion-item-divider class="section-divider">
+      <ion-label>Matriz de Urgência (Prioridade GUT)</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-select label="Gravidade *" labelPlacement="floating" formControlName="gut_gravity">
+        <ion-select-option [value]="1">1 - Sem gravidade</ion-select-option>
+        <ion-select-option [value]="2">2 - Pouco grave</ion-select-option>
+        <ion-select-option [value]="3">3 - Grave</ion-select-option>
+        <ion-select-option [value]="4">4 - Muito grave</ion-select-option>
+        <ion-select-option [value]="5">5 - Extremamente grave</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select label="Urgência *" labelPlacement="floating" formControlName="gut_urgency">
+        <ion-select-option [value]="1">1 - Pode esperar</ion-select-option>
+        <ion-select-option [value]="2">2 - Pouco urgente</ion-select-option>
+        <ion-select-option [value]="3">3 - Urgente</ion-select-option>
+        <ion-select-option [value]="4">4 - Muito urgente</ion-select-option>
+        <ion-select-option [value]="5">5 - Imediata</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select label="Tendência *" labelPlacement="floating" formControlName="gut_trend">
+        <ion-select-option [value]="1">1 - Não vai piorar</ion-select-option>
+        <ion-select-option [value]="2">2 - Piorar a longo prazo</ion-select-option>
+        <ion-select-option [value]="3">3 - Piorar a médio prazo</ion-select-option>
+        <ion-select-option [value]="4">4 - Piorar rapidamente</ion-select-option>
+        <ion-select-option [value]="5">5 - Piorar imediatamente</ion-select-option>
+      </ion-select>
+    </ion-item>
+
     <ion-item>
       <ion-icon name="location-outline" slot="start"></ion-icon>
       <ion-input label="Endereço de Execução (Opcional)" labelPlacement="floating" formControlName="address_override" placeholder="Preencha apenas se for diferente do endereço da filial"></ion-input>
