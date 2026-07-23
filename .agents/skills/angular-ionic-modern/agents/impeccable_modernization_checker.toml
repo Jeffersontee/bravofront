@@ -1,0 +1,35 @@
+[agent]
+name = "angular_ionic_modernization_checker"
+version = "1.0.0"
+description = "Agente especializado em varrer, analisar e prescrever refatorações modernas para código legado Angular e Ionic."
+provider = "openai" # Aponta para as credenciais configuradas no seu openai.yaml
+
+[execution]
+mode = "validation_loop" # Define que o agente roda em modo de verificação de conformidade
+trigger_on = ["git_commit", "manual_invocation"] # Roda antes de commitar ou por comando
+
+[context]
+# Define a árvore de conhecimento que este agente DEVE carregar na memória ao ser ativado
+base_skill = "../SKILL.md"
+reference_dir = "../references/"
+
+# Restringe a atuação do agente para economizar tokens e evitar varreduras desnecessárias
+[scope]
+include_extensions = [".ts", ".html", ".scss"]
+exclude_paths = [
+    "node_modules/**",
+    "www/**",
+    ".angular/**",
+    "**/*.spec.ts" # Ignora arquivos de teste na busca por modernização de layout
+]
+
+[rules]
+# Transforma as diretrizes de texto em flags lógicas de validação para o motor do Impeccable
+check_control_flow = true    # Valida a substituição de *ngIf/*ngFor por @if/@for
+check_reactivity = true      # Valida a substituição de constructor por inject() e Signals
+check_ionic_shadow_dom = true # Valida o uso correto de CSS Custom Properties
+
+[output]
+format = "markdown"
+destination = "stdout" # Exibe o relatório diretamente no terminal ou console da sua ferramenta de IA
+generate_diff = true   # Solicita que o agente monte o bloco de código "Antes e Depois"

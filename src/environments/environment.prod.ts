@@ -3,8 +3,8 @@ import { Environment } from './environment.model';
 export const environment: Environment = {
   production: true,
   deliveryRadiusKm: 120,
-  serverUrl: 'https://hub-production-app-6b0cc4b85f62.herokuapp.com/api/', // URL da API de Produção
-  imageUrl: 'https://hub-production-app-6b0cc4b85f62.herokuapp.com/uploads/', // URL de Uploads de Produção
+  serverUrl: 'https://bravo-production-app-94ee98927401.herokuapp.com/api/', // URL da API de Produção
+  imageUrl: 'https://bravo-production-app-94ee98927401.herokuapp.com/uploads/', // URL de Uploads de Produção
   googleMapsApiKey: 'AIzaSyAFe1BrhL_Wi4S28qkEz2X55ByJZOoVobo',
   firebaseAPIKey: 'AIzaSyB2izmqvdJHMQB4L9Fg9WpfHwMQDe4G_uA',
   razorpay: {
