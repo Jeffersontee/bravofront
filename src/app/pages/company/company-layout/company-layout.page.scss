@@ -37,8 +37,62 @@ ion-menu {
   transition: width 0.3s ease;
 }
 
-ion-split-pane.collapsed ion-menu {
-  --width: 70px;
+@media (min-width: 992px) {
+  ion-split-pane.collapsed {
+    --side-width: 70px !important;
+    --side-min-width: 70px !important;
+    --side-max-width: 70px !important;
+
+    .bravo-menu-header {
+      ion-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .toggle-btn {
+        margin: 0 !important;
+      }
+    }
+
+    .menu-item, .logout-item {
+      margin: 4px 0 !important;
+      width: 100% !important;
+      --padding-start: 0px !important;
+      --padding-end: 0px !important;
+      --inner-padding-end: 0px !important;
+      --min-height: 48px;
+      
+      &::part(native) {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+        position: relative !important;
+      }
+
+      &::part(inner) {
+        padding-right: 0px !important;
+        margin-right: 0px !important;
+      }
+      
+      ion-icon {
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        font-size: 1.6rem;
+      }
+    }
+
+    .logout-item {
+      margin: 16px 0 !important;
+    }
+  }
+
+  ion-split-pane.collapsed ion-menu {
+    --width: 70px;
+  }
 }
 
 .menu-item {

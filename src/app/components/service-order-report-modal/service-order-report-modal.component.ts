@@ -64,25 +64,7 @@ export class ServiceOrderReportModalComponent implements OnInit {
   }
 
   async generatePdf() {
-    if (this.order?.report_pdf_url) {
-      const link = document.createElement('a');
-      link.href = this.order.report_pdf_url;
-      link.download = `Relatorio_OS_${this.order._id?.substring(18) || 'OS'}.pdf`;
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      const toast = await this.toastCtrl.create({
-        message: 'PDF do Relatório baixado com sucesso!',
-        duration: 3000,
-        color: 'success',
-        position: 'bottom'
-      });
-      await toast.present();
-    } else {
-      window.print();
-    }
+    window.print();
   }
 
   async shareWhatsApp() {

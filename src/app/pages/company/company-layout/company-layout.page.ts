@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
-import { RouterModule, RouterLink, RouterOutlet, Router } from '@angular/router';
+import { RouterModule, RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
   IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
@@ -175,6 +176,14 @@ export class CompanyLayoutPage implements OnInit {
         // Reconstrói o menu dinâmico com o company_id do lojista
         this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId);
         
+        this.router.events.pipe(
+          filter(event => event instanceof NavigationEnd)
+        ).subscribe((event: any) => {
+          this.checkRouteForMenuCollapse(event.urlAfterRedirects || event.url);
+        });
+
+        this.checkRouteForMenuCollapse(this.router.url);
+
         // Redirecionamento preventivo se o lojista cair nas rotas raiz ou genéricas de dashboard global
         if (this.router.url === '/company' || this.router.url === '/company/dashboard') {
           this.router.navigate([`/company/companies/${companyId}/dashboard`], { replaceUrl: true });
@@ -183,6 +192,20 @@ export class CompanyLayoutPage implements OnInit {
     } catch (err) {
       console.error('Erro ao inicializar menu do lojista:', err);
     }
+  }
+
+  private checkRouteForMenuCollapse(url: string) {
+    const isDesktop = window.innerWidth >= 992;
+    if (isDesktop && url.includes('/companies/') && url.includes('/dashboard')) {
+      this.isCollapsed = true;
+    } else {
+      this.isCollapsed = false;
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkRouteForMenuCollapse(this.router.url);
   }
 
   private buildMenuWithCompany(configList: any[], companyId: string): MenuItem[] {
