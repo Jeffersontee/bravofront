@@ -5,6 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceOrderService } from 'src/app/services/service-order/service-order.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { ServiceOrderFormComponent } from 'src/app/components/service-order-form/service-order-form.component';
+import { addIcons } from 'ionicons';
+import {
+  helpCircleOutline,
+  personCircleOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-service-order-form-page',
@@ -25,6 +30,12 @@ export class ServiceOrderFormPageComponent implements OnInit {
   isEditMode = signal<boolean>(false);
   isLoading = signal<boolean>(false);
   orderId = signal<string | null>(null);
+
+  constructor() {
+    addIcons({
+      helpCircleOutline, personCircleOutline
+    });
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');

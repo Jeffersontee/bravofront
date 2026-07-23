@@ -1,25 +1,17 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton, 
-  IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton, 
-  IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, ModalController,
-  IonSearchbar
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, ModalController
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { 
-  buildOutline, locationOutline, timeOutline, alertCircleOutline, 
-  checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
-  receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, addCircleOutline, refreshOutline
-} from 'ionicons/icons';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { UnitService } from 'src/app/services/unit/unit.service';
 import { ServiceService } from 'src/app/services/service/service.service';
 import { Strings } from 'src/app/enum/strings';
+import { ServiceOrderListComponent } from 'src/app/components/service-order-list/service-order-list.component';
 
 @Component({
   selector: 'app-service-orders',
@@ -28,9 +20,8 @@ import { Strings } from 'src/app/enum/strings';
   standalone: true,
   imports: [
     CommonModule, FormsModule, RouterModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonMenuButton, 
-    IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonSegment, IonSegmentButton, 
-    IonLabel, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, IonSearchbar
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
+    ServiceOrderListComponent
   ]
 })
 export class ServiceOrdersPage implements OnInit {
@@ -40,6 +31,7 @@ export class ServiceOrdersPage implements OnInit {
   private companyService = inject(CompanyService);
   private unitService = inject(UnitService);
   private serviceService = inject(ServiceService);
+  private router = inject(Router);
 
   orders = signal<ServiceOrder[]>([]);
   isLoading = signal<boolean>(true);
@@ -52,53 +44,7 @@ export class ServiceOrdersPage implements OnInit {
   services = signal<any[]>([]);
 
   Strings = Strings; // para uso no template
-
-  // Métricas para os cards de resumo no topo
-  totalCount = computed(() => this.orders().length);
-  scheduledCount = computed(() => this.orders().filter(o => o.current_status === 'AGENDADO').length);
-  inProgressCount = computed(() => this.orders().filter(o => 
-    o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO'
-  ).length);
-  completedCount = computed(() => this.orders().filter(o => o.current_status === 'CONCLUIDO').length);
-
-  filteredOrders = computed(() => {
-    const segment = this.selectedSegment();
-    const query = this.searchQuery().toLowerCase().trim();
-    let list = this.orders();
-    
-    if (segment === 'pending') {
-      list = list.filter(o => o.current_status === 'AGENDADO');
-    } else if (segment === 'in_progress') {
-      list = list.filter(o => o.current_status === 'EM_DESLOCAMENTO' || o.current_status === 'CHECK_IN' || o.current_status === 'EM_EXECUCAO');
-    } else if (segment === 'completed') {
-      list = list.filter(o => o.current_status === 'CONCLUIDO');
-    }
-
-    if (query) {
-      list = list.filter(o => {
-        const serviceName = (o.service_id as any)?.name || '';
-        const companyName = (o.company_id as any)?.name || '';
-        const unitName = (o.unit_id as any)?.name || '';
-        const statusLabel = this.getStatusLabel(o.current_status) || '';
-
-        return serviceName.toLowerCase().includes(query) ||
-               companyName.toLowerCase().includes(query) ||
-               unitName.toLowerCase().includes(query) ||
-               statusLabel.toLowerCase().includes(query);
-      });
-    }
-
-    return list;
-  });
-
-  constructor() {
-    addIcons({
-      buildOutline, locationOutline, timeOutline, alertCircleOutline, 
-      checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
-      receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, addCircleOutline, refreshOutline
-    });
-  }
-
+ 
   ngOnInit() {
     this.loadOrders();
   }
@@ -185,35 +131,9 @@ export class ServiceOrdersPage implements OnInit {
     }
   }
 
-  segmentChanged(event: any) {
-    this.selectedSegment.set(event.detail.value);
-  }
-
-  onSearchInput(event: any) {
-    this.searchQuery.set(event.target.value || '');
-  }
-
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'AGENDADO': return 'medium';
-      case 'EM_DESLOCAMENTO': return 'tertiary';
-      case 'CHECK_IN': return 'warning';
-      case 'EM_EXECUCAO': return 'warning';
-      case 'CONCLUIDO': return 'success';
-      case 'CANCELADO': return 'danger';
-      default: return 'medium';
-    }
-  }
-
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'AGENDADO': return 'Agendado';
-      case 'EM_DESLOCAMENTO': return 'Em Deslocamento';
-      case 'CHECK_IN': return 'Check-in Efetuado';
-      case 'EM_EXECUCAO': return 'Em Execução';
-      case 'CONCLUIDO': return 'Concluído';
-      case 'CANCELADO': return 'Cancelado';
-      default: return status;
+  goToDetails(order: ServiceOrder) {
+    if (order._id) {
+      this.router.navigateByUrl(`/service-orders/details/${order._id}`);
     }
   }
 
