@@ -234,6 +234,16 @@
       }
       .timeline-content h3 { color: #e0a800 !important; }
     }
+
+    &.pending-assinatura {
+      .timeline-icon {
+        background: var(--ion-color-success, #2dd36f) !important;
+        border-color: var(--ion-color-success, #2dd36f) !important;
+        box-shadow: 0 4px 12px rgba(45, 211, 111, 0.3) !important;
+        ion-icon { color: #ffffff !important; }
+      }
+      .timeline-content h3 { color: #e0a800 !important; }
+    }
   }
 }
 

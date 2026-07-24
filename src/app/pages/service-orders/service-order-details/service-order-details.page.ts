@@ -53,6 +53,19 @@ export class ServiceOrderDetailsPage implements OnInit {
   countdownText = signal<string>('');
   private timerIntervalId: any = null;
 
+  // Intervalo de reatividade de 30 min da OS
+  currentTime = signal<number>(Date.now());
+  private timeUpdateInterval: any = null;
+
+  isCheckoutTimeOver30Min = computed(() => {
+    const os = this.order();
+    this.currentTime();
+    if (!os || !os.checkout_time) return true;
+    const checkoutTime = new Date(os.checkout_time).getTime();
+    const difference = Date.now() - checkoutTime;
+    return difference > (30 * 60 * 1000); // 30 minutos
+  });
+
   // Catálogo de Serviços para Aditivos do Técnico
   catalogServices = signal<any[]>([]);
 
@@ -100,10 +113,17 @@ export class ServiceOrderDetailsPage implements OnInit {
       this.orderId.set(id);
       this.loadOrder(id);
     }
+    this.timeUpdateInterval = setInterval(() => {
+      this.currentTime.set(Date.now());
+    }, 10000);
   }
 
   ngOnDestroy() {
     this.clearTimer();
+    if (this.timeUpdateInterval) {
+      clearInterval(this.timeUpdateInterval);
+      this.timeUpdateInterval = null;
+    }
   }
 
   private clearTimer() {
@@ -275,6 +295,13 @@ export class ServiceOrderDetailsPage implements OnInit {
       },
       cssClass: 'custom-report-modal'
     });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.refresh) {
+        this.loadOrder(this.orderId());
+      }
+    });
+
     return await modal.present();
   }
 
@@ -781,6 +808,49 @@ export class ServiceOrderDetailsPage implements OnInit {
                 if (res.success) {
                   this.order.set(res.data);
                   this.showToast('Proposta recusada com sucesso!');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Lojista: Reclamar / Contestar Serviço dentro de 30 minutos pós checkout
+  async complainAboutService() {
+    const alert = await this.alertCtrl.create({
+      header: 'Reclamar do Serviço ⚠️',
+      message: 'Por favor, descreva qual problema ou insatisfação ocorreu com o serviço realizado:',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Descreva o problema/motivo da contestação'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Enviar Contestação',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Por favor, descreva o problema.');
+              return false;
+            }
+            this.isLoading.set(true);
+            this.serviceOrderService.updateServiceOrder(this.orderId(), {
+              current_status: 'RECUSADO',
+              observations: `[Contestação do Lojista] Motivo: ${data.reason}`
+            }).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Contestação enviada com sucesso. A OS retornará sob análise.');
                 }
                 this.isLoading.set(false);
               },

@@ -29,6 +29,7 @@ export interface ServiceOrder {
   images_url?: string[];
   report_pdf_url?: string;
   follower_signature?: string;
+  technician_signature?: string;
   
   // Custom fields
   notes?: string;

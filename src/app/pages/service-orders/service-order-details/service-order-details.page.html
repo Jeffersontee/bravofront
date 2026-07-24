@@ -351,7 +351,8 @@
           <!-- Passo 8: Concluído -->
           <div class="timeline-item" 
                [class.active]="isPastStatus('CONCLUIDO')" 
-               [class.green]="os.current_status === 'CONCLUIDO'"
+               [class.green]="os.current_status === 'CONCLUIDO' && isCheckoutTimeOver30Min()"
+               [class.pending-assinatura]="os.current_status === 'CONCLUIDO' && !isCheckoutTimeOver30Min()"
                [class.red]="os.current_status === 'CANCELADO'">
             <div class="timeline-icon">
               <ion-icon name="checkmark-circle"></ion-icon>
@@ -451,6 +452,12 @@
               Recusar Proposta
             </ion-button>
           </div>
+        }
+        @if(os.current_status === 'CONCLUIDO' && !isCheckoutTimeOver30Min() && (isCompanyOwner() || isNormalUser())) {
+          <ion-button expand="block" shape="round" color="danger" class="action-btn" (click)="complainAboutService()">
+            <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+            Reclamar do Serviço (Ativo 30 min)
+          </ion-button>
         }
       }
  
