@@ -53,11 +53,11 @@ jobs:
           projectId: test-72d86d13
 
       # --- COMPILAÇÃO DO APP ANDROID (STAGING E PRODUÇÃO) ---
-      - name: Setup Java JDK 17
+      - name: Setup Java JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       # --- ANDROID STAGING ---
       - name: Sync Capacitor Android (Staging)
