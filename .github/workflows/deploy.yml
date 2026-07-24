@@ -83,16 +83,19 @@ jobs:
         if: github.ref_name == 'main'
         run: npx cap sync android
 
-      - name: Build Android Release APK (Produção)
+      - name: Build Android Release APK & AAB (Produção)
         if: github.ref_name == 'main'
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease
+          ./gradlew bundleRelease
 
-      - name: Upload Android Production APK Artifact
+      - name: Upload Android Production APK & AAB Artifacts
         if: github.ref_name == 'main'
         uses: actions/upload-artifact@v4
         with:
           name: bravo-instalacoes-prod-unsigned
-          path: android/app/build/outputs/apk/release/*.apk
+          path: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
