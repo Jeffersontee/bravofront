@@ -10,7 +10,8 @@ import {
 import { addIcons } from 'ionicons';
 import { 
   closeOutline, downloadOutline, logoWhatsapp, documentTextOutline, 
-  businessOutline, timeOutline, carOutline, cashOutline, checkmarkCircleOutline
+  businessOutline, timeOutline, carOutline, cashOutline, checkmarkCircleOutline,
+  star, starOutline
 } from 'ionicons/icons';
 import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-order/service-order.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
@@ -39,6 +40,7 @@ export class ServiceOrderReportModalComponent implements OnInit {
 
   // Lojista Sign & Comment
   public lojistaComment = signal<string>('');
+  public lojistaStars = signal<number>(5);
   public isSubmitting = signal<boolean>(false);
 
   // Canvas
@@ -52,7 +54,8 @@ export class ServiceOrderReportModalComponent implements OnInit {
   constructor() {
     addIcons({
       closeOutline, downloadOutline, logoWhatsapp, documentTextOutline, 
-      businessOutline, timeOutline, carOutline, cashOutline, checkmarkCircleOutline
+      businessOutline, timeOutline, carOutline, cashOutline, checkmarkCircleOutline,
+      star, starOutline
     });
   }
 
@@ -127,7 +130,7 @@ export class ServiceOrderReportModalComponent implements OnInit {
 
     this.serviceOrderService.evaluateOrder(this.order._id, {
       follower_signature: signatureBase64,
-      stars: 5,
+      stars: this.lojistaStars(),
       comment: this.lojistaComment() || 'Serviço aprovado pelo lojista.'
     }).subscribe({
       next: (res: any) => {

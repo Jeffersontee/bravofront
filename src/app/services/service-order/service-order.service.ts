@@ -62,6 +62,9 @@ export interface ServiceOrder {
     description: string;
     service_id?: string;
   }[];
+  client_comment?: string;
+  client_stars?: number;
+  show_to_technician?: boolean;
 
   createdAt?: string;
   updatedAt?: string;

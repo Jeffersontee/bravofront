@@ -76,6 +76,22 @@
           <small>DESCRIÇÃO DOS TRABALHOS EFETUADOS</small>
           <p class="description-text">{{ order.observations || 'Nenhuma observação técnica fornecida.' }}</p>
         </div>
+
+        @if (order.aditives && order.aditives.length > 0) {
+          <div class="info-block full-width ion-margin-top">
+            <small>SERVIÇOS ADITIVOS ADICIONAIS</small>
+            <div class="aditives-list" style="margin-top: 5px;">
+              @for (aditive of order.aditives; track aditive; let i = $index) {
+                <div class="aditive-item" style="background: #f4f6f9; border-left: 4px solid var(--ion-color-warning, #ffc409); padding: 8px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;">
+                  <span style="font-weight: 600; color: #1a1a1a; display: block; font-size: 0.9rem;">
+                    Aditivo #{{ i + 1 }}
+                  </span>
+                  <span style="color: #666666; font-size: 0.85rem;">{{ aditive.description }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Recursos e KM -->
@@ -154,6 +170,23 @@
           }
         </div>
 
+        <!-- Avaliação / Comentário do Cliente -->
+        @if (order.client_comment && (userType() !== 'collaborator' || order.show_to_technician)) {
+          <div class="info-block full-width ion-margin-top" style="background: #fff9e6; border: 1px solid #ffe599; border-radius: 8px; padding: 12px; margin-top: 15px;">
+            <small style="color: #856404; font-weight: 700;">AVALIAÇÃO E COMENTÁRIOS DO CLIENTE</small>
+            @if (order.client_stars) {
+              <div style="display: flex; gap: 2px; color: #ffc409; margin: 4px 0;">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <ion-icon [name]="star <= (order.client_stars || 0) ? 'star' : 'star-outline'"></ion-icon>
+                }
+              </div>
+            }
+            <p class="description-text" style="margin: 4px 0 0 0; font-style: italic; color: #333333;">
+              "{{ order.client_comment }}"
+            </p>
+          </div>
+        }
+
         <!-- Se estiver pendente de assinatura do lojista, exibe o painel de desenho e comentário dentro do relatório -->
         @if (order.current_status === 'RELATORIO_CHECKOUT' && isLojista()) {
           <div class="lojista-signing-panel ion-margin-top" style="border: 1px dashed #cccccc; padding: 15px; border-radius: 8px; background: #fafafa;">
@@ -164,6 +197,17 @@
               rows="3" 
               style="--background: #ffffff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px;">
             </ion-textarea>
+
+            <h4 style="margin: 15px 0 10px 0; color: #1a1a1a; font-weight: 600;">Avaliação (Estrelas)</h4>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <ion-icon 
+                  [name]="lojistaStars() >= star ? 'star' : 'star-outline'" 
+                  style="font-size: 2rem; color: #ffc409; cursor: pointer;" 
+                  (click)="lojistaStars.set(star)">
+                </ion-icon>
+              }
+            </div>
 
             <h4 style="margin: 15px 0 10px 0; color: #1a1a1a; font-weight: 600;">Assinatura do Cliente</h4>
             <div class="canvas-container" style="border: 1px solid #e0e0e0; border-radius: 6px; background: #ffffff; overflow: hidden; position: relative;">
