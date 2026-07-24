@@ -53,6 +53,19 @@ export class ServiceOrderDetailsPage implements OnInit {
   countdownText = signal<string>('');
   private timerIntervalId: any = null;
 
+  // Intervalo de reatividade de 30 min da OS
+  currentTime = signal<number>(Date.now());
+  private timeUpdateInterval: any = null;
+
+  isCheckoutTimeOver30Min = computed(() => {
+    const os = this.order();
+    this.currentTime();
+    if (!os || !os.checkout_time) return true;
+    const checkoutTime = new Date(os.checkout_time).getTime();
+    const difference = Date.now() - checkoutTime;
+    return difference > (30 * 60 * 1000); // 30 minutos
+  });
+
   // Catálogo de Serviços para Aditivos do Técnico
   catalogServices = signal<any[]>([]);
 
@@ -74,7 +87,11 @@ export class ServiceOrderDetailsPage implements OnInit {
   isNormalUser = computed(() => this.userType() === 'user');
 
   // Status computation for actions
-  canStartDisplacement = computed(() => this.isCollaborator() && this.order()?.current_status === 'AGENDADO');
+  canStartDisplacement = computed(() => {
+    const os = this.order();
+    if (!os) return false;
+    return this.isCollaborator() && (os.current_status === 'AGENDADO' || os.current_status === 'APROVADO');
+  });
   canCheckIn = computed(() => this.isCollaborator() && this.order()?.current_status === 'EM_DESLOCAMENTO');
   canStartExecution = computed(() => this.isCollaborator() && this.order()?.current_status === 'CHECK_IN');
   canFinish = computed(() => this.isCollaborator() && this.order()?.current_status === 'EM_EXECUCAO');
@@ -96,10 +113,17 @@ export class ServiceOrderDetailsPage implements OnInit {
       this.orderId.set(id);
       this.loadOrder(id);
     }
+    this.timeUpdateInterval = setInterval(() => {
+      this.currentTime.set(Date.now());
+    }, 10000);
   }
 
   ngOnDestroy() {
     this.clearTimer();
+    if (this.timeUpdateInterval) {
+      clearInterval(this.timeUpdateInterval);
+      this.timeUpdateInterval = null;
+    }
   }
 
   private clearTimer() {
@@ -122,7 +146,12 @@ export class ServiceOrderDetailsPage implements OnInit {
           if (os.collaborator_id) {
             this.selectedCollaboratorId.set(typeof os.collaborator_id === 'object' ? os.collaborator_id._id : os.collaborator_id);
           }
-          if (os.scheduled_date) {
+          if (os.proposed_date) {
+            const date = new Date(os.proposed_date);
+            const offset = date.getTimezoneOffset();
+            const localDate = new Date(date.getTime() - (offset*60*1000));
+            this.selectedScheduleDate.set(localDate.toISOString().slice(0, 16));
+          } else if (os.scheduled_date) {
             const date = new Date(os.scheduled_date);
             const offset = date.getTimezoneOffset();
             const localDate = new Date(date.getTime() - (offset*60*1000));
@@ -266,6 +295,13 @@ export class ServiceOrderDetailsPage implements OnInit {
       },
       cssClass: 'custom-report-modal'
     });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.refresh) {
+        this.loadOrder(this.orderId());
+      }
+    });
+
     return await modal.present();
   }
 
@@ -431,7 +467,7 @@ export class ServiceOrderDetailsPage implements OnInit {
           text: 'Confirmar Agendamento',
           handler: () => {
             this.isLoading.set(true);
-            this.serviceOrderService.assignTechnician(this.orderId(), collId).subscribe({
+            this.serviceOrderService.assignTechnician(this.orderId(), collId, new Date(dateStr).toISOString()).subscribe({
               next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
@@ -505,15 +541,26 @@ export class ServiceOrderDetailsPage implements OnInit {
   // Cancelar Chamado pelo Lojista/User
   async cancelOrder() {
     const alert = await this.alertCtrl.create({
-      header: 'Cancelar Chamado',
-      message: 'Tem certeza que deseja cancelar esta ordem de serviço?',
-      buttons: [
-        { text: 'Não', role: 'cancel' },
+      header: 'Cancelar Chamado ❌',
+      message: 'Por favor, informe a justificativa para o cancelamento deste chamado:',
+      inputs: [
         {
-          text: 'Sim, Cancelar',
-          handler: () => {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Motivo do cancelamento'
+        }
+      ],
+      buttons: [
+        { text: 'Voltar', role: 'cancel' },
+        {
+          text: 'Confirmar Cancelamento',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Você precisa informar o motivo do cancelamento.');
+              return false;
+            }
             this.isLoading.set(true);
-            this.serviceOrderService.cancelOrder(this.orderId()).subscribe({
+            this.serviceOrderService.cancelOrder(this.orderId(), data.reason).subscribe({
               next: (res: any) => {
                 if (res.success) {
                   this.order.set(res.data);
@@ -523,6 +570,7 @@ export class ServiceOrderDetailsPage implements OnInit {
               },
               error: () => this.isLoading.set(false)
             });
+            return true;
           }
         }
       ]
@@ -760,6 +808,49 @@ export class ServiceOrderDetailsPage implements OnInit {
                 if (res.success) {
                   this.order.set(res.data);
                   this.showToast('Proposta recusada com sucesso!');
+                }
+                this.isLoading.set(false);
+              },
+              error: () => this.isLoading.set(false)
+            });
+            return true;
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  // Lojista: Reclamar / Contestar Serviço dentro de 30 minutos pós checkout
+  async complainAboutService() {
+    const alert = await this.alertCtrl.create({
+      header: 'Reclamar do Serviço ⚠️',
+      message: 'Por favor, descreva qual problema ou insatisfação ocorreu com o serviço realizado:',
+      inputs: [
+        {
+          name: 'reason',
+          type: 'text',
+          placeholder: 'Descreva o problema/motivo da contestação'
+        }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Enviar Contestação',
+          handler: (data) => {
+            if (!data.reason) {
+              this.showToast('Por favor, descreva o problema.');
+              return false;
+            }
+            this.isLoading.set(true);
+            this.serviceOrderService.updateServiceOrder(this.orderId(), {
+              current_status: 'RECUSADO',
+              observations: `[Contestação do Lojista] Motivo: ${data.reason}`
+            }).subscribe({
+              next: (res: any) => {
+                if (res.success) {
+                  this.order.set(res.data);
+                  this.showToast('Contestação enviada com sucesso. A OS retornará sob análise.');
                 }
                 this.isLoading.set(false);
               },

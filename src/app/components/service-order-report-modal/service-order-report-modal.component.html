@@ -130,31 +130,87 @@
         </div>
       }
 
-      <!-- Assinatura do Cliente -->
-      @if (order.follower_signature) {
-        <div class="sheet-section ion-margin-top">
-          <h3>5. Assinatura e Encerramento</h3>
-          <div class="signature-block">
-            <img [src]="order.follower_signature" />
-            <div class="signature-line"></div>
-            <span>Assinatura do Cliente / Responsável da Unidade</span>
-          </div>
+      <!-- Assinaturas e Encerramento -->
+      <div class="sheet-section ion-margin-top">
+        <h3>5. Assinaturas e Encerramento</h3>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+          
+          <!-- Assinatura do Técnico (Sempre salva no checkout) -->
+          @if (order.technician_signature) {
+            <div class="signature-block" style="flex: 1; min-width: 180px;">
+              <img [src]="order.technician_signature" style="max-height: 80px;" />
+              <div class="signature-line"></div>
+              <span>Assinatura do Técnico</span>
+            </div>
+          }
+
+          <!-- Assinatura do Lojista (Caso já tenha assinado) -->
+          @if (order.follower_signature) {
+            <div class="signature-block" style="flex: 1; min-width: 180px;">
+              <img [src]="order.follower_signature" style="max-height: 80px;" />
+              <div class="signature-line"></div>
+              <span>Assinatura do Cliente / Lojista</span>
+            </div>
+          }
         </div>
-      }
+
+        <!-- Se estiver pendente de assinatura do lojista, exibe o painel de desenho e comentário dentro do relatório -->
+        @if (order.current_status === 'RELATORIO_CHECKOUT' && isLojista()) {
+          <div class="lojista-signing-panel ion-margin-top" style="border: 1px dashed #cccccc; padding: 15px; border-radius: 8px; background: #fafafa;">
+            <h4 style="margin: 0 0 10px 0; color: #1a1a1a; font-weight: 600;">Comentários sobre o Atendimento</h4>
+            <ion-textarea 
+              [(ngModel)]="lojistaComment" 
+              placeholder="Digite aqui observações ou comentários sobre o serviço executado (opcional)..." 
+              rows="3" 
+              style="--background: #ffffff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px;">
+            </ion-textarea>
+
+            <h4 style="margin: 15px 0 10px 0; color: #1a1a1a; font-weight: 600;">Assinatura do Cliente</h4>
+            <div class="canvas-container" style="border: 1px solid #e0e0e0; border-radius: 6px; background: #ffffff; overflow: hidden; position: relative;">
+              <canvas #lojistaCanvas
+                (mousedown)="startDrawing($event)"
+                (mousemove)="draw($event)"
+                (mouseup)="stopDrawing()"
+                (mouseleave)="stopDrawing()"
+                (touchstart)="startDrawing($event)"
+                (touchmove)="draw($event)"
+                (touchend)="stopDrawing()"
+                style="display: block; width: 100%; height: 150px; cursor: crosshair;">
+              </canvas>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+              <ion-button fill="clear" color="danger" size="small" (click)="clearCanvas()">
+                Limpar Desenho
+              </ion-button>
+              <ion-button expand="block" color="success" shape="round" (click)="submitLojistaSignature()" [disabled]="isSubmitting()">
+                @if (isSubmitting()) {
+                  <ion-spinner name="crescent" slot="start"></ion-spinner>
+                } @else {
+                  <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                }
+                Concluir Visita & Aprovado
+              </ion-button>
+            </div>
+          </div>
+        }
+      </div>
 
     </div>
 
     <!-- SHARE ACTIONS -->
-    <div class="sheet-actions">
-      <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="generatePdf()">
-        <ion-icon name="download-outline" slot="start"></ion-icon>
-        Gerar PDF
-      </ion-button>
-      <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="shareWhatsApp()">
-        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-        Enviar WhatsApp
-      </ion-button>
-    </div>
+    @if (order.current_status === 'CONCLUIDO') {
+      <div class="sheet-actions">
+        <ion-button expand="block" shape="round" color="primary" class="action-btn" (click)="generatePdf()">
+          <ion-icon name="download-outline" slot="start"></ion-icon>
+          Gerar PDF
+        </ion-button>
+        <ion-button expand="block" shape="round" color="success" class="action-btn" (click)="shareWhatsApp()">
+          <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+          Enviar WhatsApp
+        </ion-button>
+      </div>
+    }
 
   </div>
 </ion-content>

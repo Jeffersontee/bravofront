@@ -190,15 +190,19 @@ export class ServiceOrderFinishModalComponent implements OnInit {
       km_driven: formValues.km_driven,
       fuel_cost: formValues.fuel_cost,
       images_url: [...this.imagesBefore(), ...this.imagesAfter()],
-      follower_signature: signatureBase64,
+      technician_signature: signatureBase64,
       report_pdf_url: `https://bravo-reports.s3.amazonaws.com/report-${this.orderId}.pdf` // Mock PDF URL
     };
 
     // First update the service order attributes
     this.serviceOrderService.updateServiceOrder(this.orderId, updatePayload).subscribe({
       next: (res) => {
-        // Then transition status to CONCLUIDO
-        this.serviceOrderService.updateStatus(this.orderId, 'CONCLUIDO').subscribe({
+        // Transition status to RELATORIO_CHECKOUT instead of CONCLUIDO so the client must approve/evaluate it first
+        this.serviceOrderService.checkoutOrder(this.orderId, {
+          notes: formValues.observations,
+          observations: formValues.observations,
+          images_url: updatePayload.images_url
+        }).subscribe({
           next: (statusRes) => {
             this.isSubmitting.set(false);
             this.dismiss({ refresh: true });
