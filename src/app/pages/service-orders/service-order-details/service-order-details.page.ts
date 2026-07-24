@@ -142,6 +142,7 @@ export class ServiceOrderDetailsPage implements OnInit {
         if (res.success) {
           const os = res.data;
           this.order.set(os);
+          this.hasRated.set(!!os.client_comment || !!os.client_stars);
           
           if (os.collaborator_id) {
             this.selectedCollaboratorId.set(typeof os.collaborator_id === 'object' ? os.collaborator_id._id : os.collaborator_id);
@@ -756,7 +757,10 @@ export class ServiceOrderDetailsPage implements OnInit {
 
   // Lojista: Enviar assinatura e avaliação e finalizar OS
   submitEvaluation() {
-    const signature = `Assinatura de ${this.order()?.company_id?.name || 'Cliente'}`;
+    const existingSignature = this.order()?.follower_signature;
+    const signature = (existingSignature && existingSignature.startsWith('data:image'))
+      ? existingSignature
+      : `Assinatura de ${this.order()?.company_id?.name || 'Cliente'}`;
     const stars = this.ratingStars();
     const comment = this.ratingComment();
 
