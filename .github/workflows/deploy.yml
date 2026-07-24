@@ -22,10 +22,12 @@ jobs:
       - name: Instalar Dependências
         run: npm ci
 
-      - name: Build do Projeto Angular/Ionic
-        run: npx ionic build --prod
+      # --- ETAPA DE BUILD DO SITE PARA STAGING (Homologação) ---
+      - name: Build do Projeto Angular/Ionic (Staging)
+        if: github.ref_name == 'staging'
+        run: npx ng build --configuration staging
 
-      # DEPLOY EM STAGING (Homologação)
+      # --- DEPLOY EM STAGING (Homologação) ---
       - name: Deploy para Firebase Hosting (Staging)
         if: github.ref_name == 'staging'
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -35,7 +37,12 @@ jobs:
           channelId: staging
           projectId: test-72d86d13
 
-      # DEPLOY EM PRODUÇÃO (Live)
+      # --- ETAPA DE BUILD DO SITE PARA PRODUÇÃO (Live) ---
+      - name: Build do Projeto Angular/Ionic (Produção)
+        if: github.ref_name == 'main'
+        run: npx ionic build --prod
+
+      # --- DEPLOY EM PRODUÇÃO (Live) ---
       - name: Deploy para Firebase Hosting (Produção)
         if: github.ref_name == 'main'
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -44,3 +51,48 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEST_72D86D13 }}
           channelId: live
           projectId: test-72d86d13
+
+      # --- COMPILAÇÃO DO APP ANDROID (STAGING E PRODUÇÃO) ---
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # --- ANDROID STAGING ---
+      - name: Sync Capacitor Android (Staging)
+        if: github.ref_name == 'staging'
+        run: npx cap sync android
+
+      - name: Build Android Debug APK (Staging)
+        if: github.ref_name == 'staging'
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload Android Staging APK Artifact
+        if: github.ref_name == 'staging'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bravo-instalacoes-staging
+          path: android/app/build/outputs/apk/debug/*.apk
+
+      # --- ANDROID PRODUÇÃO ---
+      - name: Sync Capacitor Android (Produção)
+        if: github.ref_name == 'main'
+        run: npx cap sync android
+
+      - name: Build Android Release APK (Produção)
+        if: github.ref_name == 'main'
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Upload Android Production APK Artifact
+        if: github.ref_name == 'main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bravo-instalacoes-prod-unsigned
+          path: android/app/build/outputs/apk/release/*.apk
