@@ -26,6 +26,7 @@ import { ServiceOrder, ServiceOrderService } from 'src/app/services/service-orde
 import { CollaboratorService } from 'src/app/services/collaborator/collaborator.service';
 import { Strings } from 'src/app/enum/strings';
 import { ServiceService } from 'src/app/services/service/service.service';
+import { StatusUtil } from 'src/app/utils/status.util';
 
 @Component({
   selector: 'app-service-order-details',
@@ -880,37 +881,11 @@ export class ServiceOrderDetailsPage implements OnInit {
 
   // --- HELPERS ---
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'SOLICITADO': return 'medium';
-      case 'DATA_SUGERIDA': return 'warning';
-      case 'PROPOSTO': return 'primary';
-      case 'APROVADO': return 'success';
-      case 'AGENDADO': return 'secondary';
-      case 'EM_DESLOCAMENTO': return 'tertiary';
-      case 'CHECK_IN': return 'warning';
-      case 'EM_EXECUCAO': return 'warning';
-      case 'CONCLUIDO': return 'success';
-      case 'CANCELADO': return 'danger';
-      case 'RECUSADO': return 'danger';
-      default: return 'medium';
-    }
+    return StatusUtil.getStatusColor(status);
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'SOLICITADO': return 'Solicitado / Pendente';
-      case 'DATA_SUGERIDA': return 'Nova Data Sugerida';
-      case 'PROPOSTO': return 'Proposta de Valor';
-      case 'APROVADO': return 'Aprovado Lojista';
-      case 'AGENDADO': return 'Agendado';
-      case 'EM_DESLOCAMENTO': return 'Técnico a caminho';
-      case 'CHECK_IN': return 'Técnico no local';
-      case 'EM_EXECUCAO': return 'Em Execução';
-      case 'CONCLUIDO': return 'Concluído';
-      case 'CANCELADO': return 'Cancelado';
-      case 'RECUSADO': return 'Recusado';
-      default: return status;
-    }
+    return StatusUtil.getStatusLabel(status);
   }
 
   isPastStatus(status: string): boolean {

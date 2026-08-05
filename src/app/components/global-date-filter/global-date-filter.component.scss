@@ -1,0 +1,144 @@
+.date-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: var(--ion-font-family, inherit);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 1.2rem;
+    color: var(--brand-color, #f59e0b);
+  }
+
+  &:hover {
+    background: #f8fafc;
+    border-color: var(--brand-color, #f59e0b);
+  }
+}
+
+.date-modal {
+  --border-radius: 16px;
+  --background: #ffffff;
+  --height: 90vh;
+  --width: 95vw;
+  
+  @media (min-width: 768px) {
+    --width: 780px;
+    --height: 540px;
+  }
+}
+
+.date-modal-toolbar {
+  --background: #f8fafc;
+  --color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+
+  ion-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
+
+.date-content {
+  --background: #ffffff;
+}
+
+.calendar-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px;
+    gap: 32px;
+  }
+}
+
+.calendar-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+
+  .column-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      
+      &.start-dot {
+        background-color: #3b82f6;
+      }
+      
+      &.end-dot {
+        background-color: #f59e0b;
+      }
+    }
+    
+    .column-title {
+      color: #475569;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+  }
+
+  ion-datetime {
+    --background: transparent;
+    --background-rgb: transparent;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 350px;
+    min-height: 340px;
+  }
+}
+
+.calendar-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  padding-top: 180px;
+  
+  @media (max-width: 767px) {
+    padding-top: 0;
+  }
+  
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+.date-modal-footer {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+
+  .brv-btn-primary {
+    --background: #f59e0b;
+    --background-hover: #d97706;
+    --color: #000;
+    --border-radius: 8px;
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
+  }
+}

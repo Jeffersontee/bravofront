@@ -1,0 +1,62 @@
+<button class="date-filter-btn" (click)="openModal()">
+  <ion-icon name="calendar-outline"></ion-icon>
+  <span>{{ currentLabel }}</span>
+</button>
+
+<ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()" class="date-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="date-modal-toolbar">
+        <ion-title>Período de Análise</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding date-content">
+      <div class="calendar-layout">
+        <div class="calendar-column">
+          <div class="column-header">
+            <span class="dot start-dot"></span>
+            <span class="column-title">Data Inicial</span>
+          </div>
+          <ion-datetime 
+            presentation="date" 
+            [ngModel]="tempStartDate()" 
+            (ngModelChange)="tempStartDate.set($event)"
+            locale="pt-BR">
+          </ion-datetime>
+        </div>
+        
+        <div class="calendar-separator">
+          <ion-icon name="arrow-forward-outline" class="ion-hide-md-down"></ion-icon>
+          <ion-icon name="arrow-down-outline" class="ion-hide-md-up"></ion-icon>
+        </div>
+        
+        <div class="calendar-column">
+          <div class="column-header">
+            <span class="dot end-dot"></span>
+            <span class="column-title">Data Final</span>
+          </div>
+          <ion-datetime 
+            presentation="date" 
+            [ngModel]="tempEndDate()" 
+            (ngModelChange)="tempEndDate.set($event)"
+            locale="pt-BR">
+          </ion-datetime>
+        </div>
+      </div>
+    </ion-content>
+    
+    <ion-footer class="ion-no-border">
+      <div class="date-modal-footer">
+        <ion-button expand="block" class="brv-btn-primary" (click)="applyFilter()">
+          Aplicar Filtro
+        </ion-button>
+      </div>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

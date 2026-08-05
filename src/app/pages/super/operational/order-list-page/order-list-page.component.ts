@@ -60,7 +60,7 @@ export class OrderListPageComponent implements OnInit {
 
   goToDetails(order: ServiceOrder) {
     if (order._id) {
-      this.router.navigateByUrl(`/service-orders/details/${order._id}`);
+      this.router.navigateByUrl(`/super-admin/operational/orders/details/${order._id}`);
     }
   }
 

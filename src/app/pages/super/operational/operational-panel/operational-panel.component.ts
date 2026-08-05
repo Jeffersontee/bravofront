@@ -6,6 +6,8 @@ import {
 } from '@ionic/angular/standalone';
 import { ServiceOrderService, ServiceOrder } from 'src/app/services/service-order/service-order.service';
 import { GlobalService } from 'src/app/services/global/global.service';
+import { Strings } from 'src/app/enum/strings';
+import { StatusUtil } from 'src/app/utils/status.util';
 import { addIcons } from 'ionicons';
 import {
   receiptOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline,
@@ -82,7 +84,7 @@ export class OperationalPanelComponent implements OnInit {
 
   goToDetails(order: ServiceOrder) {
     if (order._id) {
-      this.router.navigateByUrl(`/service-orders/details/${order._id}`);
+      this.router.navigateByUrl(`${Strings.SUPER_OPERATIONAL_ORDERS_DETAILS}/${order._id}`);
     }
   }
 
@@ -94,26 +96,10 @@ export class OperationalPanelComponent implements OnInit {
   }
 
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'AGENDADO': return 'medium';
-      case 'EM_DESLOCAMENTO': return 'tertiary';
-      case 'CHECK_IN': return 'warning';
-      case 'EM_EXECUCAO': return 'warning';
-      case 'CONCLUIDO': return 'success';
-      case 'CANCELADO': return 'danger';
-      default: return 'medium';
-    }
+    return StatusUtil.getStatusColor(status);
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'AGENDADO': return 'Agendado';
-      case 'EM_DESLOCAMENTO': return 'Em Deslocamento';
-      case 'CHECK_IN': return 'Check-in';
-      case 'EM_EXECUCAO': return 'Em Execução';
-      case 'CONCLUIDO': return 'Concluído';
-      case 'CANCELADO': return 'Cancelado';
-      default: return status;
-    }
+    return StatusUtil.getStatusLabel(status);
   }
 }

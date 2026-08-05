@@ -258,11 +258,11 @@
             </div>
           </div>
  
-          <!-- Passo 2: Agendado (Verde se em deslocamento concluido/futuro, Amarelo se apenas agendado/aprovado/aguardando deslocalmente do técnico, Vermelho se cancelado pelo lojista / user) -->
+          <!-- Passo 2: Agendado -->
           <div class="timeline-item" 
                [class.active]="isPastStatus('APROVADO') || isPastStatus('AGENDADO')" 
-               [class.green]="isPastStatus('EM_DESLOCAMENTO') || os.current_status === 'APROVADO' || (os.current_status === 'AGENDADO' && os.collaborator_id)" 
-               [class.yellow]="os.current_status === 'DATA_SUGERIDA' || (os.current_status === 'AGENDADO' && !os.collaborator_id)"
+               [class.green]="isPastStatus('EM_DESLOCAMENTO')" 
+               [class.yellow]="os.current_status === 'DATA_SUGERIDA' || os.current_status === 'APROVADO' || os.current_status === 'AGENDADO'"
                [class.red]="os.current_status === 'CANCELADO' || (os.current_status === 'SOLICITADO' && os.proposed_date) || os.current_status === 'RECUSADO'">
             <div class="timeline-icon">
               <ion-icon name="calendar-outline"></ion-icon>
@@ -273,12 +273,12 @@
             </div>
           </div>
  
-          <!-- Passo 3: Deslocamento (Verde se check-in/futuro, Vermelho se imprevisto, Amarelo se em deslocamente até técnico técnico clickar em fazer check-in (cheguei)) -->
+          <!-- Passo 3: Deslocamento (Verde se check-in/futuro, Vermelho se imprevisto, Amarelo se em deslocamento) -->
           <div class="timeline-item" 
-               [class.active]="isPastStatus('EM_DESLOCAMENTO') || os.current_status === 'APROVADO' || os.current_status === 'AGENDADO'" 
+               [class.active]="isPastStatus('EM_DESLOCAMENTO')" 
                [class.green]="isPastStatus('CHECK_IN')" 
                [class.red]="os.is_transit_impeded || os.current_status === 'CANCELADO'" 
-               [class.yellow]="(os.current_status === 'AGENDADO' && os.collaborator_id) || (os.current_status === 'EM_DESLOCAMENTO' && !os.is_transit_impeded)">
+               [class.yellow]="os.current_status === 'EM_DESLOCAMENTO' && !os.is_transit_impeded">
             <div class="timeline-icon">
               <ion-icon name="car-outline"></ion-icon>
             </div>

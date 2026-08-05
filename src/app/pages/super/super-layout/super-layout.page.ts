@@ -14,7 +14,7 @@ import {
   peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
   menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
   businessOutline, receiptOutline, gridOutline, settingsOutline,
-  colorPaletteOutline, 
+  colorPaletteOutline, calendarOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Strings } from 'src/app/enum/strings';
@@ -61,6 +61,7 @@ export class SuperLayoutPage implements OnInit {
       icon: 'receipt-outline',
       children: [
         { title: 'Painel', stringKey: 'SUPER_OPERATIONAL_PANEL', icon: 'grid-outline' },
+        { title: 'Agenda Anual', stringKey: 'SUPER_OPERATIONAL_AGENDA', icon: 'calendar-outline' },
         { title: 'Lista', stringKey: 'SUPER_OPERATIONAL_ORDERS', icon: 'list-outline' },
         { title: 'Cadastrar Ordem', stringKey: 'SUPER_OPERATIONAL_ORDERS_CREATE', icon: 'add-circle-outline' },
       ]
@@ -146,7 +147,7 @@ export class SuperLayoutPage implements OnInit {
       homeOutline, logOutOutline, speedometerOutline, trendingUpOutline,
       peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown,
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
-      businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline
+      businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline, calendarOutline
     });
   }
 

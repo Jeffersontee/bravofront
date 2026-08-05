@@ -133,7 +133,20 @@ export class ServiceOrdersPage implements OnInit {
 
   goToDetails(order: ServiceOrder) {
     if (order._id) {
-      this.router.navigateByUrl(`/service-orders/details/${order._id}`);
+      const type = (this.profileService.profile() as any)?.type;
+      let baseUrl = '';
+
+      if (type === Strings.COMPANY_OWNER_TYPE) {
+        baseUrl = Strings.COMPANY_ORDER_DETAILS;
+      } else if (type === Strings.COLLABORATOR_TYPE) {
+        baseUrl = Strings.COLLABORATOR_ORDER_DETAILS;
+      } else if (type === Strings.USER_TYPE) {
+        baseUrl = Strings.CUSTOMER_ORDER_DETAILS;
+      } else {
+        baseUrl = Strings.SUPER_OPERATIONAL_ORDERS_DETAILS;
+      }
+
+      this.router.navigateByUrl(`/${baseUrl}/${order._id}`);
     }
   }
 

@@ -1,0 +1,37 @@
+.custom-light-toolbar {
+  --background: #ffffff;
+  --border-width: 0;
+  border-bottom: 1px solid #e2e8f0;
+
+  ion-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+  }
+
+  .year-select {
+    margin-right: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.9rem;
+    
+    &::part(icon) {
+      color: var(--brand-color, #f59e0b);
+    }
+  }
+}
+
+.custom-light-content {
+  --background: #f8fafc;
+}
+
+.agenda-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  height: 100%;
+}

@@ -1,0 +1,92 @@
+<div class="agenda-container">
+  
+  @if (isLoading()) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Carregando agenda...</p>
+    </div>
+  } @else {
+    <ion-accordion-group expand="inset" class="agenda-accordion-group">
+      
+      @for (month of months(); track month.index) {
+        <ion-accordion [value]="month.index.toString()">
+          <ion-item slot="header" class="month-header">
+            <ion-label>
+              <h2>{{ month.name }}</h2>
+              <p>{{ month.hasOrdersCount }} dias com serviço(s)</p>
+            </ion-label>
+            <div class="month-stats" slot="end">
+              <span class="stat-badge" [class.has-orders]="month.hasOrdersCount > 0">
+                {{ month.hasOrdersCount }} / {{ month.days.length }}
+              </span>
+            </div>
+          </ion-item>
+          
+          <div class="month-content ion-padding" slot="content">
+            <div class="days-list">
+              @for (day of month.days; track day.date.toISOString()) {
+                
+                <!-- Dia SEM ordens de serviço -->
+                @if (day.orders.length === 0) {
+                  <div class="day-row empty" [class.is-today]="day.isToday">
+                    <div class="date-col">
+                      <span class="date-num">{{ formatDateDay(day.date) }}</span>
+                      <span class="date-day">{{ formatWeekday(day.date) }}</span>
+                    </div>
+                    <div class="info-col">
+                      <span class="empty-text">Sem visita programada</span>
+                    </div>
+                  </div>
+                } 
+                
+                <!-- Dia COM ordens de serviço -->
+                @else {
+                  @for (order of day.orders; track order._id) {
+                    <div class="day-row filled" [class.is-today]="day.isToday" (click)="goToOrder(order._id)">
+                      <div class="date-col">
+                        <span class="date-num">{{ formatDateDay(day.date) }}</span>
+                        <span class="date-day">{{ formatWeekday(day.date) }}</span>
+                      </div>
+                      
+                      <div class="divider"></div>
+                      
+                      <div class="info-col">
+                        <div class="order-details">
+                          
+                          <!-- Informações de Tempo / Serviço -->
+                          <div class="detail-group primary-detail">
+                            <ion-icon name="construct-outline"></ion-icon>
+                            <span class="service-name">{{ getServiceName(order) }}</span>
+                          </div>
+                          
+                          <!-- Informações de Local/Cliente dependendo do modo -->
+                          <div class="detail-group secondary-detail">
+                            @if (mode() === 'super_admin') {
+                              <ion-icon name="business-outline"></ion-icon>
+                              <span class="location-name">{{ getCompanyName(order) }} - {{ getUnitName(order) }}</span>
+                            } @else {
+                              <ion-icon name="map-outline"></ion-icon>
+                              <span class="location-name">{{ getUnitName(order) }}</span>
+                            }
+                          </div>
+
+                        </div>
+                      </div>
+                      
+                      <div class="status-col">
+                        <ion-badge [color]="getStatusColor(order.current_status)">
+                          {{ getStatusLabel(order.current_status) | uppercase }}
+                        </ion-badge>
+                      </div>
+                    </div>
+                  }
+                }
+              }
+            </div>
+          </div>
+        </ion-accordion>
+      }
+      
+    </ion-accordion-group>
+  }
+</div>
