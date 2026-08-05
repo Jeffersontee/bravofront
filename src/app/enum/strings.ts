@@ -15,9 +15,11 @@ export enum Strings {
   SUPER_STAFF = '/super-admin/staff',
   SUPER_STAFF_CREATE = '/super-admin/staff/create',
   SUPER_OPERATIONAL_PANEL = '/super-admin/operational/panel',
+  SUPER_OPERATIONAL_AGENDA = '/super-admin/operational/agenda',
   SUPER_OPERATIONAL_ORDERS = '/super-admin/operational/orders',
   SUPER_OPERATIONAL_ORDERS_CREATE = '/super-admin/operational/orders/create',
   SUPER_OPERATIONAL_ORDERS_EDIT = '/super-admin/operational/orders/edit',
+  SUPER_OPERATIONAL_ORDERS_DETAILS = '/super-admin/operational/orders/details',
   SUPER_STAFF_EDIT = '/super-admin/staff/edit',
   SUPER_STAFF_PANEL = '/super-admin/staff/panel',
   SUPER_SERVICES = '/super-admin/services',
@@ -59,6 +61,7 @@ export enum Strings {
   COMPANY_CUSTOMERS = 'company/customers',
   COMPANY_KPI = 'company/kpis',
   COMPANY_ORDER = 'company/orders',
+  COMPANY_ORDER_DETAILS = 'company/orders/details',
   COMPANY_MENU = 'company/menu',
   COMPANY_BANNERS = 'company/banners',
   COMPANY_STOCK = 'company/stock',
@@ -86,6 +89,8 @@ export enum Strings {
   // Service Orders Global
   SERVICE_ORDERS = 'service-orders',
   SERVICE_ORDERS_DETAILS = 'service-orders/details',
+  COLLABORATOR_ORDER_DETAILS = 'collaborator/orders/details',
+  CUSTOMER_ORDER_DETAILS = 'customer/orders/details',
 
   // Strings de Conexão Backend APIs
   API_COMPANIES = 'companies',

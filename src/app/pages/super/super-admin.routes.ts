@@ -88,8 +88,16 @@ export const superAdminRoutes: Routes = [
     loadComponent: () => import('./operational/operational-panel/operational-panel.component').then(m => m.OperationalPanelComponent)
   },
   {
+    path: 'operational/agenda',
+    loadComponent: () => import('../agenda/agenda.page').then(m => m.AgendaPage)
+  },
+  {
     path: 'operational/orders',
     loadComponent: () => import('./operational/order-list-page/order-list-page.component').then(m => m.OrderListPageComponent)
+  },
+  {
+    path: 'operational/orders/details/:id',
+    loadComponent: () => import('../service-orders/service-order-details/service-order-details.page').then(m => m.ServiceOrderDetailsPage)
   },
   {
     path: 'operational/orders/create',

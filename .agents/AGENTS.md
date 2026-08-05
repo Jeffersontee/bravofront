@@ -65,6 +65,13 @@
 - Submenus em menus laterais devem usar o estado `open` para controlar a visibilidade dos filhos.
 - **Comportamento de Seletores do Ionic:** Componentes `<ion-select>` podem reter dados em cache visual de renderização passiva se as coleções mudarem de tamanho abruptamente. Nesses cenários, indexe as coleções de suporte por linha no TypeScript (ex: `filteredSizesByRow[index]`) para forçar o Angular a renderizar novas referências de memória.
 - **Estilização:** Evitar estritamente o uso de estilos inline (`style="..."`) nos templates HTML. Toda a lógica visual deve ser consolidada no arquivo SCSS do componente, utilizando classes semânticas para garantir a separação de responsabilidades e facilitar a manutenção.
+- **Padrão Visual "Impeccable" (Light Theme):** Por padrão, toda nova UI construída deve seguir o tema claro moderno:
+  - Fundos de página/painéis em `#f8fafc` ou `#ffffff`.
+  - Tipografia de títulos forte, utilizando as fontes `Outfit` ou `Inter` com cores grafite (`#1e293b`). Subtítulos e textos auxiliares em `#64748b`.
+  - Bordas de componentes e divisórias sutis em `#e2e8f0`.
+  - Componentes interativos devem possuir bordas arredondadas (6px a 12px) e estados de `hover` premium (mudança sutil de background, leves sombras ou `transform: translateY(-1px)`).
+  - Evitar cores sólidas pesadas sem necessidade; usar variações tintadas (fundo claro + texto escuro da mesma matiz) para badges e KPIs.
+  - O design deve respirar com espaços abundantes (uso de `padding` de 16px, 24px, 32px), sem poluição visual.
 
 ## 8. Notas de Debug Recentes
 - **Erro de reatividade no FormArray:** Resolvido ao mapear as listas de tamanhos de forma indexada (`filteredSizesByRow`) no TypeScript, disparando as atualizações através do hook de eventos `(ionChange)` do Tipo.

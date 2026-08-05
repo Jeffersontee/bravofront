@@ -28,6 +28,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/service-orders/service-orders.page').then(m => m.ServiceOrdersPage)
       },
       {
+        path: 'orders/details/:id',
+        loadComponent: () => import('./pages/service-orders/service-order-details/service-order-details.page').then(m => m.ServiceOrderDetailsPage)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./pages/customer/profile/profile.page').then(m => m.ProfilePage)
       },
@@ -71,6 +75,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/service-orders/service-orders.page').then(m => m.ServiceOrdersPage)
       },
       {
+        path: 'orders/details/:id',
+        loadComponent: () => import('./pages/service-orders/service-order-details/service-order-details.page').then(m => m.ServiceOrderDetailsPage)
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
@@ -80,16 +88,6 @@ export const routes: Routes = [
   {
     path: 'signup',
     loadComponent: () => import('./pages/login/signup/signup.page').then( m => m.SignupPage)
-  },
-  {
-    path: 'service-orders',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/service-orders/service-orders.page').then( m => m.ServiceOrdersPage)
-  },
-  {
-    path: 'service-orders/details/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/service-orders/service-order-details/service-order-details.page').then( m => m.ServiceOrderDetailsPage)
   }
 ];
 

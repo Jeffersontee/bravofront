@@ -1,13 +1,17 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, ModalController, IonMenuButton } from '@ionic/angular/standalone';
+import { IonContent, ModalController, IonMenuButton, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { addCircleOutline } from 'ionicons/icons';
 import { VisitModalComponent } from 'src/app/components/visit-modal/visit-modal.component';
+import { GlobalDateFilterComponent } from 'src/app/components/global-date-filter/global-date-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { UnitService, Unit } from 'src/app/services/unit/unit.service';
 import { ServiceOrderService, ServiceOrder } from 'src/app/services/service-order/service-order.service';
+import { DateFilterService } from 'src/app/services/date-filter/date-filter.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -15,7 +19,7 @@ import { forkJoin } from 'rxjs';
   templateUrl: './company-dashboard.page.html',
   styleUrls: ['./company-dashboard.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, FormsModule, IonMenuButton]
+  imports: [IonIcon, IonContent, CommonModule, FormsModule, IonMenuButton, GlobalDateFilterComponent]
 })
 export class CompanyDashboardPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -25,6 +29,7 @@ export class CompanyDashboardPage implements OnInit {
   private serviceOrderService = inject(ServiceOrderService);
   private modalCtrl = inject(ModalController);
   private router = inject(Router);
+  public dateFilterService = inject(DateFilterService);
 
   public companyId = signal<string>('');
   public company = signal<Company | null>(null);
@@ -95,6 +100,19 @@ export class CompanyDashboardPage implements OnInit {
     return { total, concluidas, pendentes, percent, fuel, km };
   });
 
+  constructor() {
+    addIcons({ addCircleOutline });
+    effect(() => {
+      // Reagir às mudanças no DateFilterService
+      const start = this.dateFilterService.startDate();
+      const end = this.dateFilterService.endDate();
+      const id = this.companyId();
+      if (id) {
+        this.loadCompanyData(id);
+      }
+    }, { allowSignalWrites: true });
+  }
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -108,7 +126,11 @@ export class CompanyDashboardPage implements OnInit {
       company: this.companyService.getCompanyById(companyId),
       services: this.serviceService.getServices(),
       units: this.unitService.getUnits(companyId),
-      orders: this.serviceOrderService.getServiceOrders({ company_id: companyId })
+      orders: this.serviceOrderService.getServiceOrders({ 
+        company_id: companyId,
+        start_date: this.dateFilterService.startDate(),
+        end_date: this.dateFilterService.endDate()
+      })
     }).subscribe({
       next: (res) => {
         if (res.company.success) {
