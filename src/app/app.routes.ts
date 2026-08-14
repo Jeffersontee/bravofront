@@ -79,6 +79,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/service-orders/service-order-details/service-order-details.page').then(m => m.ServiceOrderDetailsPage)
       },
       {
+        path: 'agenda',
+        loadComponent: () => import('./pages/agenda/agenda.page').then(m => m.AgendaPage)
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

@@ -18,230 +18,99 @@
   }
 }
 
-.agenda-accordion-group {
-  margin: 0;
-
-  ion-accordion {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    overflow: hidden;
-
-    &::part(content) {
-      background: #ffffff;
-    }
-
-    .month-header {
-      --background: #ffffff;
-      --background-hover: #f8fafc;
-      --padding-start: 20px;
-      --padding-end: 20px;
-      --padding-top: 16px;
-      --padding-bottom: 16px;
-      border-bottom: 1px solid transparent;
-
-      h2 {
-        font-family: 'Outfit', sans-serif;
-        font-size: 1.15rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        margin: 0 0 4px 0;
-        color: #1e293b;
-      }
-
-      p {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin: 0;
-      }
-    }
-
-    &.accordion-expanding, &.accordion-expanded {
-       .month-header {
-          border-bottom: 1px solid #e2e8f0;
-       }
-    }
-
-    .month-stats {
-      .stat-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background: #f1f5f9;
-        color: #64748b;
-
-        &.has-orders {
-          background: rgba(245, 158, 11, 0.1);
-          color: #d97706;
-        }
-      }
-    }
-
-    .month-content {
-      --background: transparent;
-      padding-top: 16px;
-      padding-bottom: 24px;
-    }
-  }
-}
-
-.days-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.day-row {
-  display: flex;
-  align-items: stretch;
-  padding: 16px;
-  border-radius: 12px;
+.calendar-wrapper {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 
-  &.is-today {
-    border-color: #f59e0b;
-    background: rgba(245, 158, 11, 0.02);
-  }
-
-  &.empty {
-    background: transparent;
-    border-color: #e2e8f0;
-    border-style: dashed;
-
-    .empty-text {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      height: 100%;
-    }
-  }
-
-  &.filled {
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    &:hover {
-      background: #f8fafc;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    }
-  }
-
-  .date-col {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    min-width: 65px;
-    padding-right: 16px;
-
-    .date-num {
+  ::ng-deep {
+    /* Tema Premium Pinguins */
+    .fc {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
+      --fc-border-color: #e2e8f0;
+      --fc-button-bg-color: #f1f5f9;
+      --fc-button-border-color: #e2e8f0;
+      --fc-button-text-color: #1e293b;
+      --fc-button-hover-bg-color: #e2e8f0;
+      --fc-button-hover-border-color: #cbd5e1;
+      --fc-button-active-bg-color: #1e293b;
+      --fc-button-active-border-color: #1e293b;
+      --fc-button-active-text-color: #ffffff;
+      --fc-event-bg-color: var(--ion-color-primary, #3880ff);
+      --fc-event-border-color: var(--ion-color-primary, #3880ff);
+      --fc-today-bg-color: rgba(245, 158, 11, 0.05);
+      --fc-page-bg-color: #ffffff;
+      --fc-neutral-bg-color: #f8fafc;
+      --fc-list-event-hover-bg-color: #f1f5f9;
+    }
+
+    .fc-toolbar-title {
       font-weight: 700;
+      font-size: 1.25rem !important;
       color: #1e293b;
-      line-height: 1;
-      margin-bottom: 4px;
+      text-transform: capitalize;
     }
 
-    .date-day {
-      font-size: 0.7rem;
-      font-weight: 600;
+    .fc-button {
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      text-transform: capitalize !important;
+      padding: 0.4rem 0.8rem !important;
+      box-shadow: none !important;
+      transition: all 0.2s ease;
+
+      &:focus {
+        box-shadow: none !important;
+      }
+    }
+    
+    .fc-button-primary:not(:disabled).fc-button-active, 
+    .fc-button-primary:not(:disabled):active {
+        background-color: var(--fc-button-active-bg-color);
+        border-color: var(--fc-button-active-border-color);
+        color: var(--fc-button-active-text-color);
+    }
+
+    .fc-col-header-cell-cushion {
       color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-  }
-
-  .divider {
-    width: 1px;
-    background: #e2e8f0;
-    margin-right: 16px;
-  }
-
-  .info-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
-
-    .order-details {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-
-      .detail-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        ion-icon {
-          font-size: 1rem;
-          color: #94a3b8;
-        }
-
-        &.primary-detail {
-          .service-name {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #1e293b;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-
-        &.secondary-detail {
-          .location-name {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #64748b;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-      }
-    }
-  }
-
-  .status-col {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 90px;
-
-    ion-badge {
       font-weight: 600;
-      font-size: 0.7rem;
-      padding: 6px 10px;
-      border-radius: 6px;
+      font-size: 0.85rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      padding: 8px !important;
     }
-  }
-}
 
-// Responsividade: em telas maiores, as informações podem ficar em linha
-@media (min-width: 768px) {
-  .day-row {
-    .info-col {
-      .order-details {
-        flex-direction: row;
-        align-items: center;
-        gap: 24px;
+    .fc-daygrid-day-number {
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    .fc-day-today .fc-daygrid-day-number {
+      color: #d97706; // Accent color for today
+    }
 
-        .detail-group {
-          flex: 1;
-        }
+    .fc-event {
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
       }
+    }
+    
+    .fc-timegrid-event {
+      padding: 4px;
+    }
+    
+    .fc-timegrid-slot-label-cushion {
+      font-weight: 500;
+      color: #64748b;
     }
   }
 }

@@ -16,4 +16,14 @@ export interface Environment {
     public_key: string;
     accessToken: string;
   };
+  firebaseConfig: {
+    apiKey: string;
+    authDomain: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    appId: string;
+    measurementId?: string;
+  };
+  vapidKey: string;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, input, inject, signal, effect } from '@angular/core';
+import { Component, OnInit, input, inject, signal, effect, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -8,45 +8,56 @@ import { ServiceItem } from '../../services/service/service.service';
 import { Router } from '@angular/router';
 import { Strings } from '../../enum/strings';
 import { StatusUtil } from '../../utils/status.util';
-import { addIcons } from 'ionicons';
-import { calendarOutline, mapOutline, timeOutline, personOutline, constructOutline, fileTrayOutline, businessOutline } from 'ionicons/icons';
-
-export interface AgendaDay {
-  date: Date;
-  orders: ServiceOrder[];
-  isToday: boolean;
-}
-
-export interface AgendaMonth {
-  index: number; // 0 to 11
-  name: string;
-  days: AgendaDay[];
-  hasOrdersCount: number; // number of days with orders
-}
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { CalendarOptions, EventInput, EventClickArg } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 @Component({
   selector: 'app-annual-agenda',
   templateUrl: './annual-agenda.component.html',
   styleUrls: ['./annual-agenda.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, FullCalendarModule]
 })
 export class AnnualAgendaComponent implements OnInit {
-  // Entradas (Signals)
   year = input.required<number>();
   mode = input<'company' | 'super_admin'>('company');
   companyId = input<string | null>(null);
 
   private serviceOrderService = inject(ServiceOrderService);
   private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
   
-  // Estado
   isLoading = signal<boolean>(false);
-  months = signal<AgendaMonth[]>([]);
+  
+  calendarOptions: CalendarOptions = {
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    buttonText: {
+      today: 'Hoje',
+      month: 'Mês',
+      week: 'Semana',
+      day: 'Dia'
+    },
+    locale: 'pt-br',
+    slotMinTime: '00:00:00',
+    slotMaxTime: '23:59:59',
+    allDaySlot: false,
+    navLinks: true, // can click day/week names to navigate views
+    editable: false,
+    selectable: true,
+    events: [],
+    eventClick: this.handleEventClick.bind(this)
+  };
 
   constructor() {
-    addIcons({ calendarOutline, mapOutline, timeOutline, personOutline, constructOutline, fileTrayOutline, businessOutline });
-
     effect(() => {
       const selectedYear = this.year();
       const cId = this.companyId();
@@ -58,47 +69,8 @@ export class AnnualAgendaComponent implements OnInit {
 
   ngOnInit() {}
 
-  private generateEmptyYear(year: number): AgendaMonth[] {
-    const monthNames = [
-      'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
-      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
-    ];
-    const months: AgendaMonth[] = [];
-    const today = new Date();
-
-    for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
-      const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-      const days: AgendaDay[] = [];
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, monthIndex, day);
-        const isToday = 
-          date.getDate() === today.getDate() && 
-          date.getMonth() === today.getMonth() && 
-          date.getFullYear() === today.getFullYear();
-          
-        days.push({
-          date,
-          orders: [],
-          isToday
-        });
-      }
-
-      months.push({
-        index: monthIndex,
-        name: monthNames[monthIndex],
-        days,
-        hasOrdersCount: 0
-      });
-    }
-
-    return months;
-  }
-
   private async loadAgenda(year: number, companyId: string | null) {
     this.isLoading.set(true);
-    
-    const emptyYear = this.generateEmptyYear(year);
 
     const startDate = `${year}-01-01T00:00:00.000Z`;
     const endDate = `${year}-12-31T23:59:59.999Z`;
@@ -111,31 +83,52 @@ export class AnnualAgendaComponent implements OnInit {
     this.serviceOrderService.getServiceOrders(filters).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          res.data.forEach(order => {
-            if (order.scheduled_date) {
-              const d = new Date(order.scheduled_date);
-              if (d.getFullYear() === year) {
-                const mIndex = d.getMonth();
-                const dIndex = d.getDate() - 1; 
-                if (emptyYear[mIndex] && emptyYear[mIndex].days[dIndex]) {
-                  emptyYear[mIndex].days[dIndex].orders.push(order);
-                }
-              }
-            }
-          });
+          const events: EventInput[] = res.data
+            .filter(order => order.scheduled_date)
+            .map(order => {
+              const serviceName = this.getServiceName(order);
+              const locationName = this.mode() === 'super_admin' 
+                  ? `${this.getCompanyName(order)} - ${this.getUnitName(order)}`
+                  : this.getUnitName(order);
 
-          emptyYear.forEach(month => {
-            month.hasOrdersCount = month.days.filter(d => d.orders.length > 0).length;
-          });
+              // Assume 1 hora de duração padrão para exibição na grade de horário se não houver end_date explícito
+              const startDate = new Date(order.scheduled_date as string);
+              const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hour
+              
+              const hexColor = this.getCssVariableColor(this.getStatusColor(order.current_status));
+
+              return {
+                id: order._id,
+                title: `${serviceName} | ${locationName}`,
+                start: startDate,
+                end: endDate,
+                backgroundColor: hexColor,
+                borderColor: hexColor,
+                extendedProps: {
+                  orderId: order._id
+                }
+              };
+            });
+            
+          this.calendarOptions = {
+            ...this.calendarOptions,
+            events: events
+          };
+          this.cd.detectChanges();
         }
-        this.months.set(emptyYear);
         this.isLoading.set(false);
       },
       error: () => {
-        this.months.set(emptyYear);
         this.isLoading.set(false);
       }
     });
+  }
+
+  handleEventClick(clickInfo: EventClickArg) {
+    const orderId = clickInfo.event.extendedProps['orderId'];
+    if (orderId) {
+      this.goToOrder(orderId);
+    }
   }
 
   getUnitName(order: ServiceOrder): string {
@@ -162,20 +155,13 @@ export class AnnualAgendaComponent implements OnInit {
   getStatusColor(status: string): string {
     return StatusUtil.getStatusColor(status);
   }
-
-  getStatusLabel(status: string): string {
-    return StatusUtil.getStatusLabel(status);
-  }
-
-  formatDateDay(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    return `${day}/${month}`;
-  }
-
-  formatWeekday(date: Date): string {
-    const weekdays = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
-    return weekdays[date.getDay()];
+  
+  // Converts ionic color names (e.g., 'primary', 'success') to hex values for FullCalendar
+  private getCssVariableColor(colorName: string): string {
+    const style = getComputedStyle(document.body);
+    const varName = `--ion-color-${colorName}`;
+    const colorValue = style.getPropertyValue(varName).trim();
+    return colorValue || '#3880ff'; // fallback to ionic primary
   }
 
   goToOrder(orderId: string | undefined) {
@@ -185,3 +171,4 @@ export class AnnualAgendaComponent implements OnInit {
     }
   }
 }
+

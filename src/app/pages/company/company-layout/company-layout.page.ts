@@ -25,7 +25,8 @@ import {
   addCircleOutline, layersOutline, chatbubbleOutline,
   megaphoneOutline, helpCircleOutline, shieldCheckmarkOutline,
   documentsOutline, pieChartOutline, serverOutline, keyOutline,
-  listOutline, personOutline, personAddOutline, briefcaseOutline, calendarOutline
+  listOutline, personOutline, personAddOutline, briefcaseOutline, calendarOutline,
+  calendarNumberOutline
 } from 'ionicons/icons';
 import { Strings } from 'src/app/enum/strings';
 
@@ -75,19 +76,21 @@ export class CompanyLayoutPage implements OnInit {
     },
     {
       title: 'Colaborador',
-      icon: 'people-outline',
+      icon: 'person-outline',
       children: [
         { title: 'Usuários', stringKey: 'ADMIN_STAFF', icon: 'people-outline' },
-        { title: 'Cadastro de Colaborador', stringKey: 'ADMIN_STAFF_CREATE', icon: ''},
+        { title: 'Cadastro de Colaborador', stringKey: 'ADMIN_STAFF_CREATE', icon: 'person-add-outline'},
       ]
     },
     {
       title: 'Operacional',
       icon: 'receipt-outline',
       children: [
-        { title: 'Agenda Anual', icon: 'calendar-outline', url: (companyId: string) => `/company/companies/${companyId}/agenda` },
         { title: 'Ordens de Serviço', icon: 'list-outline', url: (companyId: string) => `/company/orders` },
       ]
+    },
+    {
+      title: 'Agenda 365', icon: 'calendar-number-outline', url: (companyId: string) => `/company/companies/${companyId}/agenda`,      
     },
     {
       title: 'Financeiro',
@@ -155,7 +158,7 @@ export class CompanyLayoutPage implements OnInit {
   constructor() {
     addIcons({
       gridOutline, restaurantOutline, receiptOutline, barChartOutline,
-      settingsOutline, personCircleOutline, logOutOutline,
+      settingsOutline, personCircleOutline, logOutOutline, calendarNumberOutline,
       chevronForwardOutline, menuOutline, albumsOutline,
       storefrontOutline, documentTextOutline, chevronDown,
       chevronForward, cardOutline, colorPaletteOutline, pricetagOutline,
@@ -163,10 +166,10 @@ export class CompanyLayoutPage implements OnInit {
       cubeOutline, alertCircleOutline, repeatOutline, walletOutline,
       swapHorizontalOutline, homeOutline, businessOutline, analyticsOutline,
       starOutline, cashOutline, constructOutline, giftOutline,
-      addCircleOutline, layersOutline, chatbubbleOutline,
+      addCircleOutline, layersOutline, chatbubbleOutline, personAddOutline,
       megaphoneOutline, helpCircleOutline, shieldCheckmarkOutline,
       documentsOutline, pieChartOutline, serverOutline, keyOutline,
-      listOutline, personOutline, personAddOutline, briefcaseOutline, calendarOutline
+      listOutline, personOutline, briefcaseOutline, calendarOutline
     });
   }
 
