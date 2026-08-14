@@ -22,7 +22,9 @@ import {
   addCircleOutline, layersOutline, chatbubbleOutline,
   megaphoneOutline, helpCircleOutline, shieldCheckmarkOutline,
   documentsOutline, pieChartOutline, serverOutline, keyOutline,
-  listOutline, personOutline, personAddOutline, briefcaseOutline, statsChartOutline
+  listOutline, personOutline, personAddOutline, briefcaseOutline, statsChartOutline,
+  calendarOutline,
+  calendarNumberOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
@@ -61,67 +63,12 @@ export class CollaboratorLayoutPage implements OnInit {
       stringKey: 'COLLABORATOR_DASHBOARD',
     },
     {
-      title: 'Painel Gerencial',
-      icon: 'stats-chart-outline',
-      url: '/collaborator/dashboard',
-    },
-    {
       title: 'Minhas Visitas',
       icon: 'receipt-outline',
-      url: '/collaborator/orders',
-    },
-        {
-      title: 'Financeiro',
-      icon: 'cash-outline',
-      children: [
-        { title: 'Minhas Faturas', stringKey: 'ADMIN_INVOICES', icon: 'receipt-outline' }, // Aponta para a página unificada
-        { title: 'Contas', stringKey: 'ADMIN_FIADOS', icon: 'mail-outline' },
-        { title: 'Fiados (Conta Corrente)', stringKey: 'ADMIN_FIADOS', icon: 'folder-open-outline' },
-        { title: 'Pagamentos', stringKey: 'ADMIN_PAYMENTS', icon: 'wallet-outline'},
-        { title: 'Assinaturas', stringKey: 'ADMIN_SUBSCRIPTIONS', icon: 'repeat-outline' },
-      ]
-    },
-    { 
-      title: 'Inteligência', 
-      icon: 'analytics-outline',
-      children: [
-        { title: 'Relatórios Consolidados', stringKey: 'ADMIN_REPORTS', icon: 'pie-chart-outline' },
-        { title: 'Logs de Auditoria', stringKey: 'ADMIN_AUDIT', icon: 'shield-checkmark-outline' },
-      ]
+      stringKey: 'COLLABORATOR_ORDERS',
     },
     {
-      title: 'Relatórios',
-      icon: 'storefront-outline',
-      children: [
-        { title: 'Dados da Empresa', icon: 'document-text-outline', url: (companyId: string) => `/company/companies/edit/${companyId}` },
-        { title: 'Unidades / Filiais', icon: 'business-outline', url: (companyId: string) => `/company/companies/${companyId}/units` },
-        { title: 'Catálogo de Serviços', icon: 'layers-outline', url: (companyId: string) => `/company/companies/${companyId}/catalog` }
-      ]
-    },
-       {
-      title: 'Configurações',
-      icon: 'settings-outline',
-      children: [
-        { 
-          title: 'Gerais', 
-          //stringKey: 'ADMIN_PAYMENTS', 
-          icon: 'settings-outline',
-          children: [
-            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline' },
-          ] 
-        
-        },
-        { 
-          title: 'Plataforma de Pagamento', 
-          icon: 'construct-outline',
-          children: [
-            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline' },
-            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline' },
-            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline' }
-          ]
-        },
-        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline' },
-      ]
+      title: 'Agenda 365', stringKey: 'COLLABORATOR_AGENDA', icon: 'calendar-outline',
     },
     { 
       title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline' 
@@ -140,8 +87,8 @@ export class CollaboratorLayoutPage implements OnInit {
   constructor() {
     addIcons({ 
       gridOutline, restaurantOutline, receiptOutline, barChartOutline,
-      settingsOutline, personCircleOutline, logOutOutline,
-      chevronForwardOutline, menuOutline, albumsOutline,
+      settingsOutline, personCircleOutline, logOutOutline, calendarNumberOutline,
+      chevronForwardOutline, menuOutline, albumsOutline, calendarOutline,
       storefrontOutline, documentTextOutline, chevronDown,
       chevronForward, cardOutline, colorPaletteOutline, pricetagOutline,
       peopleOutline, speedometerOutline, trendingUpOutline, imagesOutline,

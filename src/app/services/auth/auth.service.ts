@@ -12,6 +12,7 @@ import { PushNotifications } from '@capacitor/push-notifications'; // Importe o 
 import { Geolocation } from '@capacitor/geolocation'; // Importe o Geolocation
 import { Address } from 'src/app/models/address.model';
 import { AddressService } from '../address/address.service';
+import { PushNotificationService } from '../push-notification/push-notification.service';
 import { App } from '@capacitor/app'; // Importe o App para fechar o sistema
 import { toObservable } from '@angular/core/rxjs-interop';
 import { AuthResponse } from 'src/app/interfaces/authResponse.interface';
@@ -47,7 +48,8 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     private api: ApiService,
     private profile: ProfileService,
     private global: GlobalService,
-    private platform: Platform // <--- Veja se aqui está escrito 'platform'
+    private platform: Platform,
+    private pushWeb: PushNotificationService
   ) {
     this.initializeBackButtonCustomHandler();
     this.checkAppUpdate(); // Verifica atualização assim que o serviço é iniciado
@@ -369,7 +371,11 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     this.updateRefreshToken(refreshToken);
 
     // ATIVAÇÃO DO PUSH: Inicializa apenas uma vez após login ou refresh bem-sucedido
-    this.initPush(); 
+    if (this.platform.is('capacitor')) {
+      this.initPush(); 
+    } else {
+      this.pushWeb.init();
+    }
   }
 
   updateProfileData(data: User) {

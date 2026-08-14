@@ -89,6 +89,9 @@ export enum Strings {
   // Service Orders Global
   SERVICE_ORDERS = 'service-orders',
   SERVICE_ORDERS_DETAILS = 'service-orders/details',
+  COLLABORATOR_DASHBOARD = '/collaborator/dashboard',
+  COLLABORATOR_ORDERS = '/collaborator/orders',
+  COLLABORATOR_AGENDA = '/collaborator/agenda',
   COLLABORATOR_ORDER_DETAILS = 'collaborator/orders/details',
   CUSTOMER_ORDER_DETAILS = 'customer/orders/details',
 

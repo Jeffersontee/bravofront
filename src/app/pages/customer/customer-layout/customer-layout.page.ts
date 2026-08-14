@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, receiptOutline, personOutline } from 'ionicons/icons';
+import { homeOutline, receiptOutline, personOutline, calendarOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-customer-layout',
@@ -12,6 +12,6 @@ import { homeOutline, receiptOutline, personOutline } from 'ionicons/icons';
 })
 export class CustomerLayoutPage {
   constructor() {
-    addIcons({ homeOutline, receiptOutline, personOutline });
+    addIcons({ homeOutline, receiptOutline, personOutline, calendarOutline });
   }
 }
