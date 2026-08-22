@@ -83,6 +83,14 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/agenda/agenda.page').then(m => m.AgendaPage)
       },
       {
+        path: 'help',
+        loadComponent: () => import('./pages/help/help.page').then(m => m.HelpPage)
+      },
+      {
+        path: 'my-profile',
+        loadComponent: () => import('./pages/account/account.page').then(m => m.AccountPage)
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'

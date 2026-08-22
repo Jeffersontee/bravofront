@@ -60,5 +60,13 @@ export const companyRoutes: Routes = [
   {
     path: 'companies/:id/units/edit/:unitId',
     loadComponent: () => import('./unit/unit.page').then( m => m.UnitPage)
+  },
+  {
+    path: 'help',
+    loadComponent: () => import('../help/help.page').then(m => m.HelpPage)
+  },
+  {
+    path: 'my-profile',
+    loadComponent: () => import('../account/account.page').then(m => m.AccountPage)
   }
 ];

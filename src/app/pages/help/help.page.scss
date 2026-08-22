@@ -1,0 +1,79 @@
+.help-header {
+  margin-top: 20px;
+  
+  .main-icon {
+    font-size: 64px;
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+
+  h2 {
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: var(--ion-color-dark);
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.help-section {
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 4px 6px;
+    border-bottom: 2px solid var(--ion-color-primary);
+    margin-bottom: 8px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+ion-accordion-group {
+  ion-accordion {
+    margin-bottom: 8px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+
+    ion-item[slot="header"] {
+      --background: transparent;
+      --border-color: transparent;
+      font-size: 15px;
+    }
+
+    .topic-paragraph {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ion-color-dark);
+      margin-top: 0;
+      margin-bottom: 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      // Estilos para as tags internas injetadas (strong, em)
+      ::ng-deep strong {
+        color: var(--ion-color-primary);
+      }
+      ::ng-deep em {
+        color: var(--ion-color-medium);
+        font-style: italic;
+      }
+    }
+  }
+}
+
