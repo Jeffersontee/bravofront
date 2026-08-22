@@ -109,6 +109,14 @@ export const superAdminRoutes: Routes = [
   },
 
   {
+    path: 'my-profile',
+    loadComponent: () => import('../account/account.page').then(m => m.AccountPage)
+  },
+  {
+    path: 'help',
+    loadComponent: () => import('../help/help.page').then(m => m.HelpPage)
+  },
+  {
     path: '',
     redirectTo: 'super-dashboard',
     pathMatch: 'full'

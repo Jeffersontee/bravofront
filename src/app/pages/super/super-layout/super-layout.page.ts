@@ -33,6 +33,7 @@ interface MenuConfig {
   title: string;
   stringKey?: keyof typeof Strings;
   icon: string;
+  url?: string;
   permissionKey?: string;
   children?: MenuConfig[];
 }
@@ -133,12 +134,13 @@ export class SuperLayoutPage implements OnInit {
       ]
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', permissionKey: 'ADMIN_ACCOUNT'
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: '/super-admin/my-profile', permissionKey: 'ADMIN_ACCOUNT'
     },
     { 
       title: 'Ajuda', 
       stringKey: 'ADMIN_HELP',
       icon: 'help-circle-outline',
+      url: '/super-admin/help',
       permissionKey: 'ADMIN_HELP'
     },
   ];
@@ -199,7 +201,7 @@ export class SuperLayoutPage implements OnInit {
       const item: MenuItem = {
         title: config.title,
         icon: config.icon,
-        url: config.stringKey && Strings[config.stringKey] ? Strings[config.stringKey] : null,
+        url: config.stringKey && Strings[config.stringKey] ? Strings[config.stringKey] : (config.url || null),
         open: false
       };
 

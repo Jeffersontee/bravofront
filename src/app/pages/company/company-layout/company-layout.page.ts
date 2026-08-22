@@ -144,12 +144,13 @@ export class CompanyLayoutPage implements OnInit {
       ]
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', permissionKey: 'ADMIN_ACCOUNT'
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: (companyId: string) => '/company/my-profile', permissionKey: 'ADMIN_ACCOUNT'
     },
     { 
       title: 'Ajuda', 
       stringKey: 'ADMIN_HELP',
       icon: 'help-circle-outline',
+      url: (companyId: string) => '/company/help',
       permissionKey: 'ADMIN_HELP'
     },
   ];
@@ -190,9 +191,15 @@ export class CompanyLayoutPage implements OnInit {
 
         this.checkRouteForMenuCollapse(this.router.url);
 
-        // Redirecionamento preventivo se o lojista cair nas rotas raiz ou genéricas de dashboard global
+        // Redirecionamento preventivo se o lojista cair nas rotas raiz ou genéricas
         if (this.router.url === '/company' || this.router.url === '/company/dashboard') {
-          this.router.navigate([`/company/companies/${companyId}/dashboard`], { replaceUrl: true });
+          const firstAvailableUrl = this.getFirstAvailableUrl(this.menuItems);
+          if (firstAvailableUrl) {
+            this.router.navigate([firstAvailableUrl], { replaceUrl: true });
+          } else {
+            // Fallback se não tiver nenhum menu (evita tela branca)
+            this.router.navigate([`/company/companies/${companyId}/dashboard`], { replaceUrl: true });
+          }
         }
       }
     } catch (err) {
@@ -212,6 +219,26 @@ export class CompanyLayoutPage implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.checkRouteForMenuCollapse(this.router.url);
+  }
+
+  private getFirstAvailableUrl(menuItems: MenuItem[]): string | null {
+    for (const item of menuItems) {
+      if (item.url) {
+        // Evitamos redirecionar para links de logout/ajuda direto se houverem outros operacionais
+        if (!item.url.includes('logout') && !item.url.includes('help')) {
+          return item.url;
+        }
+      }
+      if (item.children && item.children.length > 0) {
+        const childUrl = this.getFirstAvailableUrl(item.children);
+        if (childUrl) {
+          return childUrl;
+        }
+      }
+    }
+    // Se só sobrar itens que pulamos acima (como Ajuda), pega o primeiro possível
+    const fallbackItem = menuItems.find(i => i.url);
+    return fallbackItem ? fallbackItem.url || null : null;
   }
 
   private buildMenuWithCompany(configList: any[], companyId: string, userPermissions: string[]): MenuItem[] {

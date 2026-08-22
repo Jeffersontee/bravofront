@@ -71,12 +71,13 @@ export class CollaboratorLayoutPage implements OnInit {
       title: 'Agenda 365', stringKey: 'COLLABORATOR_AGENDA', icon: 'calendar-outline',
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline' 
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: '/collaborator/my-profile'
     },
     { 
       title: 'Ajuda', 
       stringKey: 'ADMIN_HELP',
       icon: 'help-circle-outline',
+      url: '/collaborator/help'
     },
   ];
 

@@ -1,0 +1,78 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Central de Ajuda</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="help-header ion-text-center ion-margin-bottom">
+    <ion-icon name="help-circle-outline" color="primary" class="main-icon"></ion-icon>
+    <h2>Como podemos ajudar?</h2>
+    <p class="ion-text-color-medium">Encontre respostas para as principais dúvidas sobre o sistema.</p>
+  </div>
+
+  @for (section of helpService.helpSections(); track section.id) {
+    <div class="help-section ion-margin-bottom">
+
+      <!-- Cabeçalho da Seção -->
+      <div class="section-header">
+        <ion-icon [name]="section.icon" color="primary"></ion-icon>
+        <span class="section-title">{{ section.title | uppercase }}</span>
+        @if (isEditMode()) {
+          <div class="section-actions" style="margin-left: auto;">
+            <ion-button fill="clear" size="small" color="primary" (click)="editSection(section, $event)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" color="danger" (click)="deleteSection(section, $event)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" color="success" (click)="addTopic(section, $event)">
+              <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+            </ion-button>
+          </div>
+        }
+      </div>
+
+      <!-- Sub-tópicos da Seção -->
+      <ion-accordion-group>
+        @for (topic of section.topics; track topic.id) {
+          <ion-accordion [value]="topic.id">
+            <ion-item slot="header" color="light">
+              <ion-icon name="information-circle-outline" slot="start" color="medium"></ion-icon>
+              <ion-label class="ion-text-wrap"><strong>{{ topic.title }}</strong></ion-label>
+              @if (isEditMode()) {
+                <ion-buttons slot="end">
+                  <ion-button color="primary" (click)="editTopic(topic, section, $event)">
+                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button color="danger" (click)="deleteTopic(topic, section, $event)">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              }
+            </ion-item>
+            <div class="ion-padding" slot="content">
+              @for (paragraph of topic.content; track $index) {
+                <p class="topic-paragraph" [innerHTML]="paragraph"></p>
+              }
+            </div>
+          </ion-accordion>
+        }
+      </ion-accordion-group>
+
+    </div>
+  }
+
+</ion-content>
+
+@if (isEditMode()) {
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="addSection()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+}
+
