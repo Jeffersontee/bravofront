@@ -53,6 +53,9 @@
             <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
               Vínculo: {{ user.company_id?.name || 'Global / Sem Empresa' }}
             </p>
+            <p class="small text-muted" style="font-family: 'Outfit', sans-serif; font-size: 0.85em; margin-top: 4px;">
+              <strong>Permissões:</strong> {{ getPermissionLabels(user) }}
+            </p>
           </ion-label>
           <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
             {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
@@ -76,6 +79,9 @@
             <p class="staff-card__role">Tipo: {{ user.type }}</p>
             <p class="staff-card__detail">{{ user.email }}</p>
             <p class="staff-card__company">Empresa: {{ user.company_id?.name || 'Global' }}</p>
+            <p class="staff-card__company" style="font-size: 0.8em; margin-top: 6px; color: var(--ion-color-medium);">
+              <strong>Permissões:</strong> {{ getPermissionLabels(user) }}
+            </p>
           </div>
         }
       </div>

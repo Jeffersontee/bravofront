@@ -54,6 +54,21 @@
       </ion-item>
     }
 
+    @if (profileService.profile()?.type === 'super_admin') {
+      <ion-item-divider style="--background: transparent; margin-top: 15px;">
+        <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">PERMISSÕES DE MENU</ion-label>
+      </ion-item-divider>
+
+      <ion-item>
+        <ion-icon name="list-outline" slot="start" color="primary"></ion-icon>
+        <ion-select label="Módulos Liberados" labelPlacement="stacked" formControlName="permissions" [multiple]="true" interface="popover" placeholder="Selecione os acessos">
+          @for (p of availablePermissions; track p.value) {
+            <ion-select-option [value]="p.value">{{ p.label }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    }
+
     <ion-item lines="none" style="margin-top: 10px;">
       <ion-label>
         <h3 style="font-family: 'Outfit', sans-serif; font-weight: 600;">Conta Ativa</h3>

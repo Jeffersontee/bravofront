@@ -6,9 +6,11 @@ import {
   IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, businessOutline } from 'ionicons/icons';
+import { person, mail, call, key, businessOutline, listOutline } from 'ionicons/icons';
 import { StaffUser } from 'src/app/services/staff/staff.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
+import { AVAILABLE_PERMISSIONS } from 'src/app/enum/permissions';
+import { ProfileService } from 'src/app/services/profile/profile.service';
 
 @Component({
   selector: 'app-staff-form',
@@ -31,6 +33,7 @@ export class StaffFormComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private companyService = inject(CompanyService);
+  public profileService = inject(ProfileService);
 
   staffForm!: FormGroup;
   formReady = signal<boolean>(false);
@@ -44,6 +47,8 @@ export class StaffFormComponent implements OnInit {
     { value: 'collaborator', label: 'Colaborador / Campo' }
   ];
 
+  availablePermissions = AVAILABLE_PERMISSIONS;
+
   hasChanges = computed(() => {
     const changed = this.formChanged();
     if (!this.formReady() || !this.staffForm) return false;
@@ -52,7 +57,7 @@ export class StaffFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, businessOutline });
+    addIcons({ person, mail, call, key, businessOutline, listOutline });
 
     effect(() => {
       if (!this.formReady() || !this.staffForm) return;
@@ -109,6 +114,7 @@ export class StaffFormComponent implements OnInit {
       password: ['', this.isEditMode() ? [] : [Validators.required, Validators.minLength(6)]],
       type: ['admin', Validators.required],
       company_id: [''],
+      permissions: [[]],
       active: [true]
     });
     this.formReady.set(true);
@@ -150,6 +156,7 @@ export class StaffFormComponent implements OnInit {
       phone: this.applyPhoneMask(data.phone || ''),
       type: data.type || 'admin',
       company_id: data.company_id?._id || data.company_id || '',
+      permissions: data.permissions || [],
       active: data.status === 'active'
     });
     
@@ -169,6 +176,7 @@ export class StaffFormComponent implements OnInit {
       phone: (formValue.phone || '').replace(/\D/g, ''),
       type: formValue.type,
       company_id: formValue.company_id || null,
+      permissions: formValue.permissions || [],
       status: formValue.active ? 'active' : 'inactive'
     };
 

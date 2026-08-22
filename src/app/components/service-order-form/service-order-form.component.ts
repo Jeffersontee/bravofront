@@ -14,6 +14,7 @@ import { CompanyService } from 'src/app/services/company/company.service';
 import { ServiceService } from 'src/app/services/service/service.service';
 import { CollaboratorService } from 'src/app/services/collaborator/collaborator.service';
 import { UnitService } from 'src/app/services/unit/unit.service';
+import { getPriorityFromGUT, getGUTFromPriority, PriorityLevel } from 'src/app/utils/gut-priority.util';
 
 @Component({
   selector: 'app-service-order-form',
@@ -50,6 +51,8 @@ export class ServiceOrderFormComponent implements OnInit {
   units = signal<any[]>([]);
   services = signal<any[]>([]);
   collaborators = signal<any[]>([]);
+
+  selectedPriority: PriorityLevel = '';
 
   hasChanges = computed(() => {
     const changed = this.formChanged();
@@ -207,9 +210,30 @@ export class ServiceOrderFormComponent implements OnInit {
       gut_trend: order.gut_trend || 1
     });
 
+    const g = order.gut_gravity || 1;
+    const u = order.gut_urgency || 1;
+    const t = order.gut_trend || 1;
+
+    this.selectedPriority = getPriorityFromGUT(g, u, t);
+
     this.form.markAsPristine();
     this.form.markAsUntouched();
     this.formChanged.set(false);
+  }
+
+  setPriority(level: PriorityLevel) {
+    if (this.isReadOnly() || !level) return;
+    
+    this.selectedPriority = level;
+    const gut = getGUTFromPriority(level);
+
+    this.form.patchValue({
+      gut_gravity: gut.gravity,
+      gut_urgency: gut.urgency,
+      gut_trend: gut.trend
+    });
+    this.form.markAsDirty();
+    this.formChanged.set(true);
   }
 
   onCancel() {

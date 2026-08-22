@@ -13,6 +13,7 @@ export interface StaffUser {
   company_id?: any;
   created_at?: string;
   updated_at?: string;
+  permissions?: string[];
 }
 
 @Injectable({

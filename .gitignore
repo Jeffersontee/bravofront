@@ -72,3 +72,7 @@ Thumbs.db
 # Environments
 .env
 .env.*
+
+# Firebase cache
+.firebase/
+*.cache
