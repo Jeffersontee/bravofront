@@ -59,99 +59,98 @@ export class CompanyLayoutPage implements OnInit {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
 
-  private readonly MENU_DATA = [
+  private readonly MENU_DATA: any[] = [
     {
       title: 'Dashboard',
       icon: 'speedometer-outline',
+      permissionKey: 'SUPER_DASHBOARD',
       url: (companyId: string) => `/company/companies/${companyId}/dashboard`
     },
     {
       title: 'Minha Empresa',
       icon: 'storefront-outline',
+      permissionKey: 'SUPER_COMPANIES_PANEL',
       children: [
-        { title: 'Dados da Empresa', icon: 'document-text-outline', url: (companyId: string) => `/company/companies/edit/${companyId}` },
-        { title: 'Unidades / Filiais', icon: 'business-outline', url: (companyId: string) => `/company/companies/${companyId}/units` },
-        { title: 'Catálogo de Serviços', icon: 'layers-outline', url: (companyId: string) => `/company/companies/${companyId}/catalog` }
+        { title: 'Dados da Empresa', icon: 'document-text-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/edit/${companyId}` },
+        { title: 'Unidades / Filiais', icon: 'business-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/units` },
+        { title: 'Catálogo de Serviços', icon: 'layers-outline', permissionKey: 'SUPER_SERVICES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/catalog` }
       ]
     },
     {
       title: 'Colaborador',
       icon: 'person-outline',
+      permissionKey: 'SUPER_COLLABORATORS_PANEL',
       children: [
-        { title: 'Usuários', stringKey: 'ADMIN_STAFF', icon: 'people-outline' },
-        { title: 'Cadastro de Colaborador', stringKey: 'ADMIN_STAFF_CREATE', icon: 'person-add-outline'},
+        { title: 'Usuários', stringKey: 'ADMIN_STAFF', icon: 'people-outline', permissionKey: 'SUPER_STAFF' },
+        { title: 'Cadastro de Colaborador', stringKey: 'ADMIN_STAFF_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE'},
       ]
     },
     {
       title: 'Operacional',
       icon: 'receipt-outline',
+      permissionKey: 'SUPER_OPERATIONAL_PANEL',
       children: [
-        { title: 'Ordens de Serviço', icon: 'list-outline', url: (companyId: string) => `/company/orders` },
+        { title: 'Ordens de Serviço', icon: 'list-outline', permissionKey: 'SUPER_OPERATIONAL_ORDERS', url: (companyId: string) => `/company/orders` },
       ]
     },
     {
-      title: 'Agenda 365', icon: 'calendar-number-outline', url: (companyId: string) => `/company/companies/${companyId}/agenda`,      
+      title: 'Agenda 365', icon: 'calendar-number-outline', permissionKey: 'SUPER_OPERATIONAL_AGENDA', url: (companyId: string) => `/company/companies/${companyId}/agenda`,      
     },
     {
       title: 'Financeiro',
       icon: 'cash-outline',
+      permissionKey: 'COMPANY_FINANCIAL_PANEL',
       children: [
-        { title: 'Minhas Faturas', stringKey: 'ADMIN_INVOICES', icon: 'receipt-outline' }, // Aponta para a página unificada
-        { title: 'Contas', stringKey: 'ADMIN_FIADOS', icon: 'mail-outline' },
-        { title: 'Fiados (Conta Corrente)', stringKey: 'ADMIN_FIADOS', icon: 'folder-open-outline' },
-        { title: 'Pagamentos', stringKey: 'ADMIN_PAYMENTS', icon: 'wallet-outline'},
-        { title: 'Assinaturas', stringKey: 'ADMIN_SUBSCRIPTIONS', icon: 'repeat-outline' },
+        { title: 'Minhas Faturas', stringKey: 'ADMIN_INVOICES', icon: 'receipt-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' }, 
+        { title: 'Contas', stringKey: 'ADMIN_FIADOS', icon: 'mail-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' },
+        { title: 'Fiados (Conta Corrente)', stringKey: 'ADMIN_FIADOS', icon: 'folder-open-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' },
+        { title: 'Pagamentos', stringKey: 'ADMIN_PAYMENTS', icon: 'wallet-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL'},
+        { title: 'Assinaturas', stringKey: 'ADMIN_SUBSCRIPTIONS', icon: 'repeat-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' },
       ]
     },
     { 
       title: 'Inteligência', 
       icon: 'analytics-outline',
+      permissionKey: 'COMPANY_INTELLIGENCE_PANEL',
       children: [
-        { title: 'Relatórios Consolidados', stringKey: 'ADMIN_REPORTS', icon: 'pie-chart-outline' },
-        { title: 'Logs de Auditoria', stringKey: 'ADMIN_AUDIT', icon: 'shield-checkmark-outline' },
+        { title: 'Relatórios Consolidados', stringKey: 'ADMIN_REPORTS', icon: 'pie-chart-outline', permissionKey: 'COMPANY_INTELLIGENCE_PANEL' },
+        { title: 'Logs de Auditoria', stringKey: 'ADMIN_AUDIT', icon: 'shield-checkmark-outline', permissionKey: 'COMPANY_INTELLIGENCE_PANEL' },
       ]
     },
     {
-      title: 'Relatórios',
-      icon: 'storefront-outline',
-      children: [
-        { title: 'Dados da Empresa', icon: 'document-text-outline', url: (companyId: string) => `/company/companies/edit/${companyId}` },
-        { title: 'Unidades / Filiais', icon: 'business-outline', url: (companyId: string) => `/company/companies/${companyId}/units` },
-        { title: 'Catálogo de Serviços', icon: 'layers-outline', url: (companyId: string) => `/company/companies/${companyId}/catalog` }
-      ]
-    },
-       {
       title: 'Configurações',
       icon: 'settings-outline',
+      permissionKey: 'COMPANY_SETTINGS_PANEL',
       children: [
         { 
           title: 'Gerais', 
-          //stringKey: 'ADMIN_PAYMENTS', 
           icon: 'settings-outline',
+          permissionKey: 'COMPANY_SETTINGS_PANEL',
           children: [
-            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline' },
+            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline', permissionKey: 'ADMIN_SALES_TARGET' },
           ] 
-        
         },
         { 
           title: 'Plataforma de Pagamento', 
           icon: 'construct-outline',
+          permissionKey: 'ADMIN_PAYMENT_GATEWAY',
           children: [
-            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline' },
-            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline' },
-            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline' }
+            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline', permissionKey: 'ADMIN_PAYMENT_GATEWAY' },
+            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline', permissionKey: 'ADMIN_GATEWAY_KEYS' },
+            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline', permissionKey: 'ADMIN_PAYMENT_METHODS' }
           ]
         },
-        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline' },
+        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline', permissionKey: 'ADMIN_APPEARANCE' },
       ]
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline' 
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', permissionKey: 'ADMIN_ACCOUNT'
     },
     { 
       title: 'Ajuda', 
       stringKey: 'ADMIN_HELP',
       icon: 'help-circle-outline',
+      permissionKey: 'ADMIN_HELP'
     },
   ];
 
@@ -178,9 +177,10 @@ export class CompanyLayoutPage implements OnInit {
       const user = await this.profileService.getProfile();
       if (user) {
         const companyId = user.company_id || '';
+        const userPermissions = user.permissions || [];
         
         // Reconstrói o menu dinâmico com o company_id do lojista
-        this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId);
+        this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId, userPermissions);
         
         this.router.events.pipe(
           filter(event => event instanceof NavigationEnd)
@@ -214,8 +214,17 @@ export class CompanyLayoutPage implements OnInit {
     this.checkRouteForMenuCollapse(this.router.url);
   }
 
-  private buildMenuWithCompany(configList: any[], companyId: string): MenuItem[] {
-    return configList.map(config => {
+  private buildMenuWithCompany(configList: any[], companyId: string, userPermissions: string[]): MenuItem[] {
+    const items: MenuItem[] = [];
+
+    for (const config of configList) {
+      if (config.permissionKey && !userPermissions.includes(config.permissionKey)) {
+        // Exceções de menus essenciais que nunca somem
+        if (config.permissionKey !== 'ADMIN_ACCOUNT' && config.permissionKey !== 'ADMIN_HELP') {
+          continue;
+        }
+      }
+
       let resolvedUrl: string | null = null;
       if (config.url) {
         resolvedUrl = config.url(companyId);
@@ -231,11 +240,17 @@ export class CompanyLayoutPage implements OnInit {
       };
 
       if (config.children && config.children.length > 0) {
-        item.children = this.buildMenuWithCompany(config.children, companyId);
+        item.children = this.buildMenuWithCompany(config.children, companyId, userPermissions);
+        // Se o menu pai precisava de filhos e todos foram bloqueados, esconde o pai
+        if (item.children.length === 0 && !item.url) {
+          continue;
+        }
       }
 
-      return item;
-    });
+      items.push(item);
+    }
+    
+    return items;
   }
 
   public toggleSidebar() {

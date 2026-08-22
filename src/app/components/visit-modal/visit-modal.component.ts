@@ -9,6 +9,7 @@ import { Unit } from 'src/app/services/unit/unit.service';
 import { ServiceItem } from 'src/app/services/service/service.service';
 import { ServiceOrderService, ServiceOrder } from 'src/app/services/service-order/service-order.service';
 import { GlobalService } from 'src/app/services/global/global.service';
+import { getPriorityFromGUT, getGUTFromPriority, PriorityLevel } from 'src/app/utils/gut-priority.util';
 
 @Component({
   selector: 'app-visit-modal',
@@ -33,6 +34,7 @@ export class VisitModalComponent implements OnInit {
   
   categories: string[] = ['ELÉTRICA', 'HIDRÁULICA/CIVIL', 'SERRALHERIA'];
   selectedCategory = '';
+  selectedPriority: PriorityLevel = '';
 
   constructor() { 
     addIcons({ closeOutline });
@@ -89,7 +91,27 @@ export class VisitModalComponent implements OnInit {
           this.categories.push(this.selectedCategory); // Add dynamically if not present
         }
       }
+
+      // Infer priority based on existing GUT values
+      const g = this.serviceOrder.gut_gravity || 1;
+      const u = this.serviceOrder.gut_urgency || 1;
+      const t = this.serviceOrder.gut_trend || 1;
+
+      this.selectedPriority = getPriorityFromGUT(g, u, t);
     }
+  }
+
+  setPriority(level: PriorityLevel) {
+    if (!level) return;
+    this.selectedPriority = level;
+    
+    const gut = getGUTFromPriority(level);
+
+    this.visitForm.patchValue({
+      gut_gravity: gut.gravity,
+      gut_urgency: gut.urgency,
+      gut_trend: gut.trend
+    });
   }
 
   onUnitChange(event: any) {

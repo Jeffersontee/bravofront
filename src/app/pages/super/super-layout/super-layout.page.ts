@@ -18,6 +18,7 @@ import {
   calendarNumberOutline, personCircleOutline, helpCircleOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
+import { ProfileService } from '../../../services/profile/profile.service';
 import { Strings } from 'src/app/enum/strings';
 
 interface MenuItem {
@@ -32,6 +33,7 @@ interface MenuConfig {
   title: string;
   stringKey?: keyof typeof Strings;
   icon: string;
+  permissionKey?: string;
   children?: MenuConfig[];
 }
 
@@ -56,92 +58,93 @@ export class SuperLayoutPage implements OnInit {
       title: 'Dashboard',
       stringKey: 'SUPER_DASHBOARD',
       icon: 'speedometer-outline',
+      permissionKey: 'SUPER_DASHBOARD'
     },
     {
       title: 'Operacional',
       icon: 'receipt-outline',
       children: [
-        { title: 'Painel', stringKey: 'SUPER_OPERATIONAL_PANEL', icon: 'grid-outline' },
-        { title: 'Lista', stringKey: 'SUPER_OPERATIONAL_ORDERS', icon: 'list-outline' },
-        { title: 'Cadastrar Ordem', stringKey: 'SUPER_OPERATIONAL_ORDERS_CREATE', icon: 'add-circle-outline' },
+        { title: 'Painel', stringKey: 'SUPER_OPERATIONAL_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_OPERATIONAL_PANEL' },
+        { title: 'Lista', stringKey: 'SUPER_OPERATIONAL_ORDERS', icon: 'list-outline', permissionKey: 'SUPER_OPERATIONAL_ORDERS' },
+        { title: 'Cadastrar Ordem', stringKey: 'SUPER_OPERATIONAL_ORDERS_CREATE', icon: 'add-circle-outline', permissionKey: 'SUPER_OPERATIONAL_ORDERS_CREATE' },
       ]
     },
     {
-      title: 'Agenda 365', stringKey: 'SUPER_OPERATIONAL_AGENDA', icon: 'calendar-outline',
+      title: 'Agenda 365', stringKey: 'SUPER_OPERATIONAL_AGENDA', icon: 'calendar-outline', permissionKey: 'SUPER_OPERATIONAL_AGENDA'
     },
     {
       title: 'Empresas / Clientes',
       icon: 'business-outline',
       children: [
-        { title: 'Painel', stringKey: 'SUPER_COMPANIES_PANEL', icon: 'grid-outline' },
-        { title: 'Ver Empresas', stringKey: 'SUPER_COMPANIES', icon: 'list-outline' },
-        { title: 'Cadastrar Empresa', stringKey: 'SUPER_COMPANIES_CREATE', icon: 'add-circle-outline' },
+        { title: 'Painel', stringKey: 'SUPER_COMPANIES_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_COMPANIES_PANEL' },
+        { title: 'Ver Empresas', stringKey: 'SUPER_COMPANIES', icon: 'list-outline', permissionKey: 'SUPER_COMPANIES' },
+        { title: 'Cadastrar Empresa', stringKey: 'SUPER_COMPANIES_CREATE', icon: 'add-circle-outline', permissionKey: 'SUPER_COMPANIES_CREATE' },
       ]
     },
     {
       title: 'Catálogo',
       icon: 'construct-outline',
       children: [
-        { title: 'Painel', stringKey: 'SUPER_SERVICES_PANEL', icon: 'grid-outline' },
-        { title: 'Lista', stringKey: 'SUPER_SERVICES', icon: 'list-outline' },
-        { title: 'Cadastrar Serviço', stringKey: 'SUPER_SERVICES_CREATE', icon: 'add-circle-outline' },
+        { title: 'Painel', stringKey: 'SUPER_SERVICES_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_SERVICES_PANEL' },
+        { title: 'Lista', stringKey: 'SUPER_SERVICES', icon: 'list-outline', permissionKey: 'SUPER_SERVICES' },
+        { title: 'Cadastrar Serviço', stringKey: 'SUPER_SERVICES_CREATE', icon: 'add-circle-outline', permissionKey: 'SUPER_SERVICES_CREATE' },
       ]
     },
     {
       title: 'Colaboradores',
       icon: 'briefcase-outline',
       children: [
-        { title: 'Painel', stringKey: 'SUPER_COLLABORATORS_PANEL', icon: 'grid-outline' },
-        { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-outline' },
-        { title: 'Lista', stringKey: 'SUPER_COLLABORATORS', icon: 'list-outline' },
-        { title: 'Cadastrar Colaborador', stringKey: 'SUPER_COLLABORATORS_CREATE', icon: 'person-add-outline' },
+        { title: 'Painel', stringKey: 'SUPER_COLLABORATORS_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_COLLABORATORS_PANEL' },
+        { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-outline', permissionKey: 'SUPER_COLLABORATORS_TEAMS' },
+        { title: 'Lista', stringKey: 'SUPER_COLLABORATORS', icon: 'list-outline', permissionKey: 'SUPER_COLLABORATORS' },
+        { title: 'Cadastrar Colaborador', stringKey: 'SUPER_COLLABORATORS_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_COLLABORATORS_CREATE' },
       ]
     },
     {
       title: 'Usuários Globais',
       icon: 'people-outline',
       children: [
-        { title: 'Painel', stringKey: 'SUPER_STAFF_PANEL', icon: 'grid-outline' },
-        { title: 'Listar Usuários', stringKey: 'SUPER_STAFF', icon: 'list-outline' },
-        { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline' },
+        { title: 'Painel', stringKey: 'SUPER_STAFF_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_STAFF_PANEL' },
+        { title: 'Listar Usuários', stringKey: 'SUPER_STAFF', icon: 'list-outline', permissionKey: 'SUPER_STAFF' },
+        { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE' },
       ]
     },
-       {
+    {
       title: 'Configurações',
       icon: 'settings-outline',
       children: [
         { 
           title: 'Gerais', 
-          //stringKey: 'ADMIN_PAYMENTS', 
           icon: 'settings-outline',
           children: [
-            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline' },
+            { title: 'Metas de Vendas', stringKey: 'ADMIN_SALES_TARGET', icon: 'swap-horizontal-outline', permissionKey: 'ADMIN_SALES_TARGET' },
           ] 
-        
         },
         { 
           title: 'Plataforma de Pagamento', 
           icon: 'construct-outline',
           children: [
-            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline' },
-            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline' },
-            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline' }
+            { title: 'Gateway de Pagamento', stringKey: 'ADMIN_PAYMENT_GATEWAY', icon: 'server-outline', permissionKey: 'ADMIN_PAYMENT_GATEWAY' },
+            { title: 'Gateway Chave', stringKey: 'ADMIN_GATEWAY_KEYS', icon: 'key-outline', permissionKey: 'ADMIN_GATEWAY_KEYS' },
+            { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline', permissionKey: 'ADMIN_PAYMENT_METHODS' }
           ]
         },
-        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline' },
+        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline', permissionKey: 'ADMIN_APPEARANCE' },
       ]
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline' 
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', permissionKey: 'ADMIN_ACCOUNT'
     },
     { 
       title: 'Ajuda', 
       stringKey: 'ADMIN_HELP',
       icon: 'help-circle-outline',
+      permissionKey: 'ADMIN_HELP'
     },
   ];
 
   private authService = inject(AuthService);
+  private profileService = inject(ProfileService);
   private router = inject(Router);
   private alertCtrl = inject(AlertController);
 
@@ -181,7 +184,18 @@ export class SuperLayoutPage implements OnInit {
   }
 
   private buildMenu(configList: MenuConfig[]): MenuItem[] {
-    return configList.map(config => {
+    const user = this.profileService.profile();
+    const isSuperAdmin = user?.type === 'super_admin';
+    const userPermissions = user?.permissions || [];
+
+    const items: MenuItem[] = [];
+
+    for (const config of configList) {
+      // Se não for super admin e a rota exigir permissão que o usuário não tem, pule este item
+      if (!isSuperAdmin && config.permissionKey && !userPermissions.includes(config.permissionKey)) {
+        continue;
+      }
+
       const item: MenuItem = {
         title: config.title,
         icon: config.icon,
@@ -191,10 +205,16 @@ export class SuperLayoutPage implements OnInit {
 
       if (config.children && config.children.length > 0) {
         item.children = this.buildMenu(config.children);
+        // Se for uma pasta que não tem URL próprio e ficou sem filhos após o filtro, removemos a pasta
+        if (item.children.length === 0 && !item.url) {
+          continue;
+        }
       }
 
-      return item;
-    });
+      items.push(item);
+    }
+
+    return items;
   }
 
   public toggleSidebar() {

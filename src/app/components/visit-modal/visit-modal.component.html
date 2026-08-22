@@ -74,46 +74,43 @@
 
       <!-- Seção: Matriz GUT (Prioridade de Chamado) -->
       <div class="form-section">
-        <h3 class="section-title">MATRIZ DE URGÊNCIA (GUT)</h3>
-        <p class="section-desc">Classifique a solicitação para que a Central possa planejar a prioridade de atendimento.</p>
+        <h3 class="section-title">ESCOLHA A PRIORIDADE</h3>
+        <p class="section-desc">Classifique a solicitação para que a Central possa planejar o atendimento.</p>
         
-        <div class="inputs-row gut-row">
-          <!-- Gravidade -->
-          <div class="form-group">
-            <label class="section-label">GRAVIDADE *</label>
-            <select formControlName="gut_gravity" class="custom-select">
-              <option [value]="1">1 - Sem gravidade</option>
-              <option [value]="2">2 - Pouco grave</option>
-              <option [value]="3">3 - Grave</option>
-              <option [value]="4">4 - Muito grave</option>
-              <option [value]="5">5 - Extremamente grave</option>
-            </select>
-          </div>
-
-          <!-- Urgência -->
-          <div class="form-group">
-            <label class="section-label">URGÊNCIA *</label>
-            <select formControlName="gut_urgency" class="custom-select">
-              <option [value]="1">1 - Pode esperar</option>
-              <option [value]="2">2 - Pouco urgente</option>
-              <option [value]="3">3 - Urgente</option>
-              <option [value]="4">4 - Muito urgente</option>
-              <option [value]="5">5 - Imediata</option>
-            </select>
-          </div>
-
-          <!-- Tendência -->
-          <div class="form-group">
-            <label class="section-label">TENDÊNCIA *</label>
-            <select formControlName="gut_trend" class="custom-select">
-              <option [value]="1">1 - Não vai piorar</option>
-              <option [value]="2">2 - Piorar a longo prazo</option>
-              <option [value]="3">3 - Piorar a médio prazo</option>
-              <option [value]="4">4 - Piorar rapidamente</option>
-              <option [value]="5">5 - Piorar imediatamente</option>
-            </select>
-          </div>
+        <div class="priority-buttons">
+          <button type="button" 
+                  class="priority-btn btn-urgent" 
+                  [class.active]="selectedPriority === 'URGENTE'"
+                  (click)="setPriority('URGENTE')">
+            <span class="dot"></span> URGENTE
+          </button>
+          
+          <button type="button" 
+                  class="priority-btn btn-high" 
+                  [class.active]="selectedPriority === 'ALTA'"
+                  (click)="setPriority('ALTA')">
+            <span class="dot"></span> ALTA
+          </button>
+          
+          <button type="button" 
+                  class="priority-btn btn-medium" 
+                  [class.active]="selectedPriority === 'MEDIA'"
+                  (click)="setPriority('MEDIA')">
+            <span class="dot"></span> MÉDIA
+          </button>
+          
+          <button type="button" 
+                  class="priority-btn btn-low" 
+                  [class.active]="selectedPriority === 'BAIXA'"
+                  (click)="setPriority('BAIXA')">
+            <span class="dot"></span> BAIXA
+          </button>
         </div>
+
+        <!-- Hidden GUT inputs to keep the logic working under the hood -->
+        <input type="hidden" formControlName="gut_gravity" />
+        <input type="hidden" formControlName="gut_urgency" />
+        <input type="hidden" formControlName="gut_trend" />
       </div>
 
       <!-- Seção: Informações Complementares -->
