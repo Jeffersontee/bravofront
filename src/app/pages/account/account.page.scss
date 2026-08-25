@@ -24,3 +24,26 @@ p {
 .borderBottom {
     border-bottom: 1px solid var(--ion-color-light-shade);
 }
+
+.high-contrast-header {
+  --background: var(--ion-color-dark, #1a1a1a);
+  --color: var(--ion-color-primary, #ffc409);
+  
+  ion-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+.bg-light {
+  --background: #f4f5f8;
+}
+
+.profile-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin: 16px;
+  padding: 16px 0;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}

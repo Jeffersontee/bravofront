@@ -27,6 +27,7 @@ import { CollaboratorService } from 'src/app/services/collaborator/collaborator.
 import { Strings } from 'src/app/enum/strings';
 import { ServiceService } from 'src/app/services/service/service.service';
 import { StatusUtil } from 'src/app/utils/status.util';
+import { getPriorityFromGUT } from 'src/app/utils/gut-priority.util';
 
 @Component({
   selector: 'app-service-order-details',
@@ -65,6 +66,12 @@ export class ServiceOrderDetailsPage implements OnInit {
     const checkoutTime = new Date(os.checkout_time).getTime();
     const difference = Date.now() - checkoutTime;
     return difference > (30 * 60 * 1000); // 30 minutos
+  });
+
+  priorityLevel = computed(() => {
+    const os = this.order();
+    if (!os) return '';
+    return getPriorityFromGUT(os.gut_gravity, os.gut_urgency, os.gut_trend);
   });
 
   // Catálogo de Serviços para Aditivos do Técnico

@@ -53,6 +53,13 @@
             <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
               Empresa: {{ collab.company_id?.name || 'Global / Sem Vínculo' }}
             </p>
+            @if (collab.role === 'técnico' && collab.technician_profile?.specialties?.length) {
+              <p class="small" style="font-family: 'Outfit', sans-serif; margin-top: 4px;">
+                <ion-badge color="tertiary" *ngFor="let spec of collab.technician_profile!.specialties" style="margin-right: 4px; font-weight: normal;">
+                  {{ spec }}
+                </ion-badge>
+              </p>
+            }
           </ion-label>
           <ion-badge [color]="collab.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
             {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
@@ -76,6 +83,13 @@
             <p class="collab-card__role">Cargo: {{ collab.role }}</p>
             <p class="collab-card__detail">{{ collab.email }}</p>
             <p class="collab-card__company">Empresa: {{ collab.company_id?.name || 'Global' }}</p>
+            @if (collab.role === 'técnico' && collab.technician_profile?.specialties?.length) {
+              <div class="collab-card__specialties" style="margin-top: 8px;">
+                <ion-badge color="tertiary" *ngFor="let spec of collab.technician_profile!.specialties" style="margin-right: 4px; font-weight: normal; font-size: 10px;">
+                  {{ spec }}
+                </ion-badge>
+              </div>
+            }
           </div>
         }
       </div>

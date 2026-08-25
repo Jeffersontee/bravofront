@@ -121,30 +121,28 @@
         </ion-card>
       }
 
-      <!-- Matriz GUT e Score (Visível para Lojista/Admin e Super Admin) -->
+      <!-- Prioridade do Chamado (Visível para Lojista/Admin e Super Admin) -->
       @if (isSuperAdmin() || isCompanyOwner()) {
-        <div class="gut-card ion-margin-horizontal" style="margin-top: 10px; margin-bottom: 10px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.04);">
-          <h3 style="margin: 0 0 12px 0; font-size: 1.05rem; font-weight: 700; color: #1a1a1a; font-family: 'Outfit', sans-serif;">Prioridade de Atendimento (Matriz GUT)</h3>
-          <div style="display: flex; justify-content: space-between; gap: 10px;">
-            <div style="text-align: center; flex: 1; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-              <small style="display: block; color: #777; font-weight: 600; font-size: 0.75rem;">Gravidade</small>
-              <span style="font-size: 1.15rem; font-weight: 700; color: #1a1a1a;">{{ os.gut_gravity || 1 }}</span>
+        <div class="priority-display-card ion-margin-horizontal">
+          <h3>Prioridade de Atendimento</h3>
+          
+          @if (priorityLevel() === 'URGENTE') {
+            <div class="priority-badge-lg urgent">
+              <span class="dot"></span> URGENTE
             </div>
-            <div style="text-align: center; flex: 1; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-              <small style="display: block; color: #777; font-weight: 600; font-size: 0.75rem;">Urgência</small>
-              <span style="font-size: 1.15rem; font-weight: 700; color: #1a1a1a;">{{ os.gut_urgency || 1 }}</span>
+          } @else if (priorityLevel() === 'ALTA') {
+            <div class="priority-badge-lg high">
+              <span class="dot"></span> ALTA
             </div>
-            <div style="text-align: center; flex: 1; background: #f8f9fa; padding: 10px; border-radius: 8px;">
-              <small style="display: block; color: #777; font-weight: 600; font-size: 0.75rem;">Tendência</small>
-              <span style="font-size: 1.15rem; font-weight: 700; color: #1a1a1a;">{{ os.gut_trend || 1 }}</span>
+          } @else if (priorityLevel() === 'MEDIA') {
+            <div class="priority-badge-lg medium">
+              <span class="dot"></span> MÉDIA
             </div>
-          </div>
-          <div style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px dashed #e0e0e0;">
-            <span style="font-weight: 600; color: #666; font-size: 0.9rem;">Pontuação de Prioridade:</span>
-            <ion-badge [color]="(os.gut_score || 1) >= 60 ? 'danger' : (os.gut_score || 1) >= 20 ? 'warning' : 'success'" style="padding: 6px 12px; font-weight: 700; font-size: 0.9rem; border-radius: 6px;">
-              GUT Score: {{ os.gut_score || 1 }}
-            </ion-badge>
-          </div>
+          } @else {
+            <div class="priority-badge-lg low">
+              <span class="dot"></span> BAIXA
+            </div>
+          }
         </div>
       }
 

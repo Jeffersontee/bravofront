@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, signal, inject } from '@angul
 
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { powerOutline, checkmarkOutline, chevronForwardOutline, checkmarkCircleOutline, timeOutline, chevronDownCircleOutline, homeOutline, mailOutline, callOutline, receiptOutline, alertCircleOutline, walletOutline } from 'ionicons/icons';
+import { powerOutline, checkmarkOutline, chevronForwardOutline, checkmarkCircleOutline, timeOutline, chevronDownCircleOutline, homeOutline, mailOutline, callOutline, receiptOutline, alertCircleOutline, walletOutline, personOutline } from 'ionicons/icons';
 import { Router, RouterModule } from '@angular/router';
 import { IonContent, IonHeader, IonText, IonIcon, IonButtons, IonButton, IonAvatar, IonSpinner, IonLabel, IonToolbar, IonModal, IonRefresherContent, IonRefresher, IonTitle, IonCol, IonGrid, IonRow, IonMenuButton } from '@ionic/angular/standalone';
 import { OtpScreenComponent } from 'src/app/components/otp-screen/otp-screen.component';
@@ -37,7 +37,7 @@ export class AccountPage implements OnInit {
   Strings = Strings;
   
   constructor() {
-    addIcons({ powerOutline,mailOutline,callOutline,receiptOutline,homeOutline,checkmarkOutline,chevronForwardOutline,checkmarkCircleOutline,timeOutline,chevronDownCircleOutline, alertCircleOutline, walletOutline });
+    addIcons({ powerOutline,mailOutline,callOutline,receiptOutline,homeOutline,checkmarkOutline,chevronForwardOutline,checkmarkCircleOutline,timeOutline,chevronDownCircleOutline, alertCircleOutline, walletOutline, personOutline });
   }
 
   ngOnInit() {
