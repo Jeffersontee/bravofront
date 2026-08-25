@@ -1,0 +1,94 @@
+<ion-header class="ion-no-border ion-margin-top">
+  <ion-toolbar>
+    <ion-title color="dark">EDITAR CONTA</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+    <ion-list class="ion-padding-horizontal ion-margin-bottom">
+
+      <ion-item class="ion-margin-vertical">
+        <ion-input
+          #phoneInput
+          label="NÚMERO DE TELEFONE"
+          labelPlacement="floating"
+          type="tel"
+          minlength="11"
+          maxlength="11"
+          required
+          name="phone"
+          [ngModel]="phoneValue()"
+          (ionInput)="phoneValue.set($event.detail.value || '')"
+          #phone="ngModel">
+        </ion-input>
+        @if (phone.valid) {
+          <ion-icon name="checkmark-outline" slot="end" color="primary"></ion-icon>
+        }
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          type="email"
+          label="ENDEREÇO DE E-MAIL"
+          labelPlacement="floating"
+          required
+          name="email"
+          [ngModel]="emailValue()"
+          (ionInput)="emailValue.set($event.detail.value || '')"
+          #email="ngModel">
+        </ion-input>
+        @if (email.valid) {
+          <ion-icon name="checkmark-outline" slot="end" color="primary"></ion-icon>
+        }
+      </ion-item>
+
+      <!-- Campo de CPF/CNPJ -->
+      <ion-item class="ion-margin-vertical" [class.ion-invalid]="!isDocumentValid()">
+        <ion-input
+          label="CPF ou CNPJ"
+          labelPlacement="floating"
+          type="text"
+          name="cpf"
+          [ngModel]="documentValue()"
+          (ionInput)="documentValue.set($event.detail.value || '')"
+          placeholder="000.000.000-00 ou 00.000.000/0000-00">
+        </ion-input>
+        @if (isDocumentValid() && documentValue().length > 0) {
+          <ion-icon name="checkmark-outline" slot="end" color="primary"></ion-icon>
+        }
+        @if (!isDocumentValid()) {
+          <ion-note slot="error">{{ documentErrorMessage() }}</ion-note>
+        }
+      </ion-item>
+
+      <!-- Campo de Senha (condicionalmente obrigatório se o e-mail mudar) -->
+      @if (isEmailChanged()) {
+        <ion-item class="ion-margin-vertical">
+          <ion-input
+            label="SENHA ATUAL"
+            labelPlacement="floating"
+            type="password"
+            required
+            name="password"
+            [ngModel]="passwordValue()"
+            (ionInput)="passwordValue.set($event.detail.value || '')"
+            placeholder="Informe sua senha atual">
+          </ion-input>
+        </ion-item>
+      }
+
+    </ion-list>
+
+    <div class="ion-padding-horizontal ion-text-center">
+      @if (!isSubmitted()) {
+        <ion-button expand="block" type="submit" color="primary" [disabled]="!f.valid || !isDocumentValid() || !hasChanges()">ATUALIZAR</ion-button>
+      }
+      @if (isSubmitted()) {
+        <ion-button color="primary" [disabled]="true">
+          <ion-spinner name="crescent"></ion-spinner>
+        </ion-button>
+      }
+    </div>
+  </form>
+</ion-content>
