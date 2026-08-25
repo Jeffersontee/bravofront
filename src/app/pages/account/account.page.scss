@@ -1,3 +1,26 @@
-:host {
-  display: block;
+p {
+    font-size: 0.75rem;
+}
+.profile {
+    ion-avatar, img {
+        width: 4vh;
+        height: 4vh;
+    }
+    input[type='file'] {
+        display: none;
+    }
+}
+.alignSpinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+.dashedBorderBottom {
+    border-bottom: 1px dashed var(--ion-color-light-shade);
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+}
+.borderBottom {
+    border-bottom: 1px solid var(--ion-color-light-shade);
 }
