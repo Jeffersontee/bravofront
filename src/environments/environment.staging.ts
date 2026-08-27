@@ -7,6 +7,15 @@ export const environment: Environment = {
   imageUrl: 'https://adega-hub-staging-app-b43f425ba856.herokuapp.com/uploads/', // URL de Uploads de Homologação
   googleMapsApiKey: 'AIzaSyAFe1BrhL_Wi4S28qkEz2X55ByJZOoVobo',
   firebaseAPIKey: 'CHAVE_FIREBASE_HOMOLOG',
+  firebaseConfig: {
+    apiKey: 'YOUR_API_KEY',
+    authDomain: 'YOUR_AUTH_DOMAIN',
+    projectId: 'YOUR_PROJECT_ID',
+    storageBucket: 'YOUR_STORAGE_BUCKET',
+    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+    appId: 'YOUR_APP_ID'
+  },
+  vapidKey: 'YOUR_VAPID_KEY',
   razorpay: {
     key_id: 'homolog_key_id',
     key_secret: 'homolog_secret'

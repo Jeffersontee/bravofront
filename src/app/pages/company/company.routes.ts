@@ -66,6 +66,10 @@ export const companyRoutes: Routes = [
     loadComponent: () => import('../help/help.page').then(m => m.HelpPage)
   },
   {
+    path: 'settings/appearance',
+    loadComponent: () => import('../manage-settings/appearance/appearance.page').then(m => m.AppearancePage)
+  },
+  {
     path: 'my-profile',
     loadComponent: () => import('../account/account.page').then(m => m.AccountPage)
   }

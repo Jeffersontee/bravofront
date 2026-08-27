@@ -19,6 +19,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ProfileService } from '../../../services/profile/profile.service';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { Strings } from 'src/app/enum/strings';
 
 interface MenuItem {
@@ -130,7 +131,7 @@ export class SuperLayoutPage implements OnInit {
             { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline', permissionKey: 'ADMIN_PAYMENT_METHODS' }
           ]
         },
-        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline', permissionKey: 'ADMIN_APPEARANCE' },
+        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline', url: '/super-admin/settings/appearance', permissionKey: 'ADMIN_APPEARANCE' },
       ]
     },
     { 
@@ -147,6 +148,7 @@ export class SuperLayoutPage implements OnInit {
 
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private themeService = inject(ThemeService);
   private router = inject(Router);
   private alertCtrl = inject(AlertController);
 
@@ -159,7 +161,9 @@ export class SuperLayoutPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.themeService.loadAppearance('GLOBAL');
+
     this.menuItems = this.buildMenu(this.MENU_DATA);
     
     this.router.events.pipe(

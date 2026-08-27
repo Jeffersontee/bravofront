@@ -1,0 +1,182 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title>Aparência / Template</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="appearance-container">
+    <div class="header-section">
+      <h1 class="page-title">Identidade Visual</h1>
+      <p class="page-subtitle">Personalize a aparência. Dê a sua cara para o catálogo público e encante os seus clientes com um design Impeccable.</p>
+    </div>
+
+    <div class="main-content">
+      <!-- MOCKUP PREVIEW (Esquerda) -->
+      <div class="preview-section">
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          
+          <div class="phone-screen" [ngClass]="currentTheme()">
+            <div class="mockup-header" [style.background]="primaryColor()">
+              <div class="mockup-logo-area">
+                <img *ngIf="logoUrl()" [src]="logoUrl()" class="mockup-logo">
+                <span *ngIf="!logoUrl()" class="mockup-logo-text">LOGO</span>
+              </div>
+            </div>
+            
+            <div class="mockup-body" [style.background-image]="backgroundUrl() ? 'url(' + backgroundUrl() + ')' : 'none'">
+              <div class="mockup-card">
+                <div class="mockup-card-title">Vendas</div>
+                <div class="mockup-card-value">R$ 5k</div>
+              </div>
+              
+              <div class="mockup-card">
+                <div class="mockup-card-title">Visitas</div>
+                <div class="mockup-card-value">24</div>
+              </div>
+              
+              <div class="mockup-list">
+                <div class="mockup-list-item">
+                  <div class="mockup-avatar"></div>
+                  <div class="mockup-lines">
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line short"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mockup-tabbar">
+              <div class="mockup-tab"></div>
+              <div class="mockup-tab"></div>
+              <div class="mockup-tab"></div>
+              <div class="mockup-tab"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROLS (Direita) -->
+      <div class="controls-section">
+        
+        <!-- Logo Upload -->
+        <div class="control-block">
+          <h3 class="block-title">Logo da Empresa</h3>
+          <p class="block-desc">Faça upload da logomarca que será exibida no topo do seu catálogo.</p>
+          <div class="upload-area">
+            <div class="upload-preview" *ngIf="logoUrl()">
+              <img [src]="logoUrl()">
+              <ion-button fill="clear" color="danger" (click)="removeImage('logo')">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="upload-btn-wrapper" *ngIf="!logoUrl()">
+              <ion-button fill="outline" color="medium" class="upload-btn">
+                <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+                SELECIONAR ARQUIVO
+              </ion-button>
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'logo')" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Background Upload -->
+        <div class="control-block">
+          <h3 class="block-title">Imagem de Fundo</h3>
+          <p class="block-desc">Adicione uma imagem de fundo (background) para compor a apresentação dos produtos.</p>
+          <div class="upload-area">
+            <div class="upload-preview bg-preview" *ngIf="backgroundUrl()" [style.background-image]="'url(' + backgroundUrl() + ')'">
+              <ion-button fill="clear" color="danger" (click)="removeImage('background')">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="upload-btn-wrapper" *ngIf="!backgroundUrl()">
+              <ion-button fill="outline" color="medium" class="upload-btn">
+                <ion-icon name="image-outline" slot="start"></ion-icon>
+                SELECIONAR FUNDO
+              </ion-button>
+              <input type="file" accept="image/*" (change)="onFileSelected($event, 'background')" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <div class="control-block">
+          <h3 class="block-title">Estilo de Fundo (Tema)</h3>
+          <p class="block-desc">Escolha a atmosfera do seu catálogo.</p>
+          <div class="theme-cards">
+            <div class="theme-card light-card" 
+                 [class.active]="currentTheme() === 'light'"
+                 (click)="setTheme('light')">
+              <div class="card-mockup">
+                <div class="mockup-header"></div>
+                <div class="mockup-body">
+                  <div class="mockup-item"></div>
+                  <div class="mockup-item"></div>
+                </div>
+              </div>
+              <div class="card-label">Premium Branco</div>
+            </div>
+            
+            <div class="theme-card dark-card" 
+                 [class.active]="currentTheme() === 'dark'"
+                 (click)="setTheme('dark')">
+              <div class="card-mockup">
+                <div class="mockup-header"></div>
+                <div class="mockup-body">
+                  <div class="mockup-item"></div>
+                  <div class="mockup-item"></div>
+                </div>
+              </div>
+              <div class="card-label">Premium Escuro</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Color -->
+        <div class="control-block">
+          <h3 class="block-title">Cor Principal</h3>
+          <p class="block-desc">Esta cor será usada em botões, destaques e ícones de ação.</p>
+          
+          <div class="color-picker-container">
+            <div class="color-circles">
+              <div class="color-circle" 
+                   *ngFor="let color of presetColors" 
+                   [style.background]="color"
+                   [class.active]="primaryColor().toLowerCase() === color.toLowerCase()"
+                   (click)="setColor(color)">
+                <ion-icon name="checkmark-outline" *ngIf="primaryColor().toLowerCase() === color.toLowerCase()"></ion-icon>
+              </div>
+              
+              <!-- Custom color picker input -->
+              <div class="color-circle custom-color-picker">
+                <ion-icon name="add-outline" *ngIf="!isCustomColor()"></ion-icon>
+                <input type="color" [value]="primaryColor()" (change)="onCustomColorChange($event)">
+              </div>
+            </div>
+            <div class="selected-color-hex">
+              Cor Selecionada: <strong>{{ primaryColor() | uppercase }}</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <ion-button expand="block" class="save-btn" (click)="saveAppearance()" [disabled]="isLoading()">
+      {{ isLoading() ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES' }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

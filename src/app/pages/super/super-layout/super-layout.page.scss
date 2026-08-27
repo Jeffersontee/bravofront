@@ -1,7 +1,7 @@
 // Bravo Design Tokens
 $bravo-dark: #1a1a1a;
-$bravo-yellow: #ffc409;
-$bravo-yellow-soft: rgba(255, 196, 9, 0.10);
+$bravo-yellow: var(--ion-color-primary);
+$bravo-yellow-soft: rgba(var(--ion-color-primary-rgb), 0.10);
 $bravo-surface: #f5f6f8;
 $bravo-menu-bg: #fafafa;
 $bravo-ink: #2d2d2d;

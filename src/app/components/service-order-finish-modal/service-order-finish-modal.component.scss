@@ -26,7 +26,7 @@
     transition: all 0.3s ease;
 
     &.active {
-      background: #ffc409;
+      background: var(--ion-color-primary);
       color: #1a1a1a;
     }
   }
@@ -40,7 +40,7 @@
     transition: all 0.3s ease;
 
     &.active {
-      background: #ffc409;
+      background: var(--ion-color-primary);
     }
   }
 }
@@ -142,9 +142,9 @@
   }
 
   &:hover {
-    border-color: #ffc409;
-    color: #ffc409;
-    background: rgba(255, 196, 9, 0.03);
+    border-color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.03);
   }
 }
 
@@ -154,7 +154,7 @@
   gap: 10px;
   margin-top: 16px;
   padding: 10px 14px;
-  background: rgba(255, 196, 9, 0.08);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
   border-radius: 8px;
   color: #c49500;
   font-family: 'Outfit', sans-serif;

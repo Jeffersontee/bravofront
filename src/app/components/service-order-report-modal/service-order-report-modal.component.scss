@@ -28,7 +28,7 @@
       font-family: 'Outfit', sans-serif;
       font-weight: 800;
       font-size: 24px;
-      color: #ffc409;
+      color: var(--ion-color-primary);
       background: #1a1a1a;
       width: 38px;
       height: 38px;
@@ -70,7 +70,7 @@
 
 .divider {
   height: 2px;
-  background: #ffc409;
+  background: var(--ion-color-primary);
   margin: 20px 0;
 }
 
@@ -113,7 +113,7 @@
 
   .service-title {
     font-size: 16px;
-    color: #ffc409;
+    color: var(--ion-color-primary);
     font-weight: 700;
   }
 }
@@ -140,7 +140,7 @@
 
   ion-icon {
     font-size: 20px;
-    color: #ffc409;
+    color: var(--ion-color-primary);
   }
 
   small {

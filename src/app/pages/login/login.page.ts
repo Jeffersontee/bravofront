@@ -12,6 +12,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../services/auth/auth.service';
 import { GlobalService } from '../../services/global/global.service';
+import { ThemeService } from '../../services/theme/theme.service';
 import { ResetPasswordComponent } from 'src/app/components/reset-password/reset-password.component';
 import { Strings } from 'src/app/enum/strings';
 
@@ -28,6 +29,7 @@ export class LoginPage implements OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private global = inject(GlobalService);
+  private themeService = inject(ThemeService);
 
   // Inputs controlados via signals
   public emailInput = signal<string>('');
@@ -52,6 +54,7 @@ export class LoginPage implements OnDestroy {
 
   ngOnInit() {
     this.checkIfLoggedIn();
+    this.themeService.loadAppearance('GLOBAL');
   }
 
   async checkIfLoggedIn() {

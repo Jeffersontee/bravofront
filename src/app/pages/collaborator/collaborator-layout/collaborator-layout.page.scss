@@ -3,7 +3,7 @@ ion-split-pane {
 }
 
 $bravo-dark: #1a1a1a;
-$bravo-yellow: #ffc409;
+$bravo-yellow: var(--ion-color-primary);
 
 .bravo-menu-header {
   --background: #{$bravo-dark};
@@ -110,12 +110,12 @@ ion-menu {
 }
 
 .menu-item.selected {
-  --background: rgba(255, 196, 9, 0.1);
+  --background: rgba(var(--ion-color-primary-rgb), 0.1);
   --color: #1a1a1a;
   font-weight: 700;
 
   ion-icon {
-    color: #ffc409;
+    color: var(--ion-color-primary);
   }
 }
 

@@ -109,6 +109,10 @@ export const superAdminRoutes: Routes = [
   },
 
   {
+    path: 'settings/appearance',
+    loadComponent: () => import('../manage-settings/appearance/appearance.page').then(m => m.AppearancePage)
+  },
+  {
     path: 'my-profile',
     loadComponent: () => import('../account/account.page').then(m => m.AccountPage)
   },

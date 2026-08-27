@@ -82,7 +82,7 @@
             <small>SERVIÇOS ADITIVOS ADICIONAIS</small>
             <div class="aditives-list" style="margin-top: 5px;">
               @for (aditive of order.aditives; track aditive; let i = $index) {
-                <div class="aditive-item" style="background: #f4f6f9; border-left: 4px solid var(--ion-color-warning, #ffc409); padding: 8px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;">
+                <div class="aditive-item" style="background: #f4f6f9; border-left: 4px solid var(--ion-color-warning, var(--ion-color-primary)); padding: 8px 12px; margin-bottom: 8px; border-radius: 0 6px 6px 0;">
                   <span style="font-weight: 600; color: #1a1a1a; display: block; font-size: 0.9rem;">
                     Aditivo #{{ i + 1 }}
                   </span>
@@ -175,7 +175,7 @@
           <div class="info-block full-width ion-margin-top" style="background: #fff9e6; border: 1px solid #ffe599; border-radius: 8px; padding: 12px; margin-top: 15px;">
             <small style="color: #856404; font-weight: 700;">AVALIAÇÃO E COMENTÁRIOS DO CLIENTE</small>
             @if (order.client_stars) {
-              <div style="display: flex; gap: 2px; color: #ffc409; margin: 4px 0;">
+              <div style="display: flex; gap: 2px; color: var(--ion-color-primary); margin: 4px 0;">
                 @for (star of [1,2,3,4,5]; track star) {
                   <ion-icon [name]="star <= (order.client_stars || 0) ? 'star' : 'star-outline'"></ion-icon>
                 }
@@ -203,7 +203,7 @@
               @for (star of [1, 2, 3, 4, 5]; track star) {
                 <ion-icon 
                   [name]="lojistaStars() >= star ? 'star' : 'star-outline'" 
-                  style="font-size: 2rem; color: #ffc409; cursor: pointer;" 
+                  style="font-size: 2rem; color: var(--ion-color-primary); cursor: pointer;" 
                   (click)="lojistaStars.set(star)">
                 </ion-icon>
               }
