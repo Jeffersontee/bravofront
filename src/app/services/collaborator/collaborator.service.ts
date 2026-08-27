@@ -10,6 +10,9 @@ export interface Collaborator {
   phone?: string;
   role: string;
   status: string;
+  technician_profile?: {
+    specialties?: string[];
+  };
   company_id?: any;
   created_at?: string;
   updated_at?: string;

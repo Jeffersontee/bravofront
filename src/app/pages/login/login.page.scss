@@ -5,7 +5,7 @@ ion-content.bg-neutral {
 
 /* Cabeçalho Escuro (Hero Header) */
 .hero-header {
-  background: #1a1a1a;
+  background: linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.8)), url('/assets/icon/fundo.jpg') center/cover no-repeat;
   color: white;
   padding: 48px 24px 80px 24px; /* Extra bottom padding for overlap */
   border-bottom-left-radius: 24px;
@@ -21,13 +21,23 @@ ion-content.bg-neutral {
 }
 
 .brand-logo {
-  background: #ffc409;
-  border-radius: 10px;
-  width: 40px;
-  height: 40px;
+  background: transparent;
+  border-radius: 12px;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.brand-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%; /* Crops out the text below and focuses on the globe */
+  display: block;
 }
 
 .brand-icon {
