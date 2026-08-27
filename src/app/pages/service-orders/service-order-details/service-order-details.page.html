@@ -87,7 +87,7 @@
       <!-- Card de Designação de Técnico (Apenas Super Admin e status iniciais) -->
       @if (isSuperAdmin() && (os.current_status === 'SOLICITADO' || os.current_status === 'DATA_SUGERIDA' || os.current_status === 'PROPOSTO' || (os.current_status === 'APROVADO' && !os.collaborator_id))) {
         <ion-card class="admin-action-card ion-margin-top" style="margin-bottom: 24px; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-          <ion-card-header style="background: #1a1a1a; color: #ffc409; padding: 16px 20px;">
+          <ion-card-header style="background: #1a1a1a; color: var(--ion-color-primary); padding: 16px 20px;">
             <ion-card-title style="font-size: 1.1rem; font-weight: 700; font-family: 'Outfit', sans-serif;">Designar Técnico e Confirmar Agenda</ion-card-title>
           </ion-card-header>
           <ion-card-content style="padding: 20px; background: white;">
@@ -223,7 +223,7 @@
           
           <div style="display: flex; justify-content: center; gap: 12px; margin-bottom: 20px;">
             @for (star of [1, 2, 3, 4, 5]; track star) {
-              <ion-icon [name]="ratingStars() >= star ? 'star' : 'star-outline'" style="font-size: 2.2rem; color: #ffc409; cursor: pointer;" (click)="ratingStars.set(star)"></ion-icon>
+              <ion-icon [name]="ratingStars() >= star ? 'star' : 'star-outline'" style="font-size: 2.2rem; color: var(--ion-color-primary); cursor: pointer;" (click)="ratingStars.set(star)"></ion-icon>
             }
           </div>
 

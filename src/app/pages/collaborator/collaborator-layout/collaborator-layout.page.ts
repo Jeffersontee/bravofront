@@ -27,7 +27,8 @@ import {
   calendarNumberOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
-import { ProfileService } from 'src/app/services/profile/profile.service';
+import { ProfileService } from '../../../services/profile/profile.service';
+import { ThemeService } from '../../../services/theme/theme.service';
 import { Strings } from 'src/app/enum/strings';
 
 interface MenuItem {
@@ -53,8 +54,10 @@ interface MenuItem {
 export class CollaboratorLayoutPage implements OnInit {
   public isCollapsed = false; 
   public menuItems: MenuItem[] = [];
-  private authService = inject(AuthService);
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private profileService = inject(ProfileService);
+  private themeService = inject(ThemeService);
     
   private readonly MENU_DATA = [
     {
@@ -83,8 +86,6 @@ export class CollaboratorLayoutPage implements OnInit {
 
  
 
-  private profileService = inject(ProfileService);
-
   constructor() {
     addIcons({ 
       gridOutline, restaurantOutline, receiptOutline, barChartOutline,
@@ -104,6 +105,8 @@ export class CollaboratorLayoutPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.themeService.loadAppearance('GLOBAL');
+    
     try {
       const user = await this.profileService.getProfile();
       const companyId = user?.company_id || '';

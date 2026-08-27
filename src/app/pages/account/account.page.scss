@@ -27,7 +27,7 @@ p {
 
 .high-contrast-header {
   --background: var(--ion-color-dark, #1a1a1a);
-  --color: var(--ion-color-primary, #ffc409);
+  --color: var(--ion-color-primary, var(--ion-color-primary));
   
   ion-title {
     font-weight: 700;

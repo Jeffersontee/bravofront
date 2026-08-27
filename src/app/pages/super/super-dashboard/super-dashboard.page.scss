@@ -1,6 +1,6 @@
 // Bravo Design Tokens (Dashboard)
 $bravo-dark: #1a1a1a;
-$bravo-yellow: #ffc409;
+$bravo-yellow: var(--ion-color-primary);
 $bravo-surface: #f5f6f8;
 $bravo-ink: #2d2d2d;
 $bravo-muted: #6b7280;
@@ -66,7 +66,7 @@ $bravo-muted: #6b7280;
 }
 
 .kpi-icon--companies {
-  background: rgba(255, 196, 9, 0.12);
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
   ion-icon { color: #e0ac08; }
 }
 

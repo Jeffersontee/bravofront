@@ -4,8 +4,8 @@
 
   ion-segment-button {
     --color: rgba(255, 255, 255, 0.6);
-    --color-checked: var(--ion-color-primary, #ffc409);
-    --indicator-color: var(--ion-color-primary, #ffc409);
+    --color-checked: var(--ion-color-primary, var(--ion-color-primary));
+    --indicator-color: var(--ion-color-primary, var(--ion-color-primary));
     font-weight: 600;
     text-transform: none;
     letter-spacing: -0.01em;

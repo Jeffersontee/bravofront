@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { RouterModule, RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {
@@ -58,6 +59,7 @@ export class CompanyLayoutPage implements OnInit {
   private companyService = inject(CompanyService);
   private authService = inject(AuthService);
   private profileService = inject(ProfileService);
+  private themeService = inject(ThemeService);
 
   private readonly MENU_DATA: any[] = [
     {
@@ -140,7 +142,7 @@ export class CompanyLayoutPage implements OnInit {
             { title: 'Meios de Pagamento', stringKey: 'ADMIN_PAYMENT_METHODS', icon: 'card-outline', permissionKey: 'ADMIN_PAYMENT_METHODS' }
           ]
         },
-        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline', permissionKey: 'ADMIN_APPEARANCE' },
+        { title: 'Aparência/Template', stringKey: 'ADMIN_APPEARANCE', icon: 'color-palette-outline', url: (companyId: string) => '/company/settings/appearance', permissionKey: 'ADMIN_APPEARANCE' },
       ]
     },
     { 
@@ -180,6 +182,9 @@ export class CompanyLayoutPage implements OnInit {
         const companyId = user.company_id || '';
         const userPermissions = user.permissions || [];
         
+        // Carrega as configurações de aparência da empresa específica
+        this.themeService.loadAppearance('COMPANY', companyId);
+
         // Reconstrói o menu dinâmico com o company_id do lojista
         this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId, userPermissions);
         

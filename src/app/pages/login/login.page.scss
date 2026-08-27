@@ -68,7 +68,7 @@ ion-content.bg-neutral {
 }
 
 .highlight-text {
-  color: #ffc409;
+  color: var(--ion-color-primary);
 }
 
 .header-desc {
@@ -132,8 +132,8 @@ ion-content.bg-neutral {
 }
 
 .custom-input:focus {
-  border-color: #ffc409;
-  box-shadow: 0 0 0 3px rgba(255, 196, 9, 0.15);
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.15);
 }
 
 .password-input {
@@ -195,10 +195,10 @@ ion-content.bg-neutral {
 }
 
 .bravo-submit-btn.active-btn {
-  background: #ffc409;
+  background: var(--ion-color-primary);
   color: #1a1a1a;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 196, 9, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.2);
 }
 
 .bravo-submit-btn.active-btn:active {

@@ -44,28 +44,43 @@
   @if (!isLoading() && collaborators().length > 0) {
     <!-- MODO LISTA -->
     @if (viewMode() === 'list') {
-      <ion-list lines="inset" style="background: transparent;">
-        <ion-item *ngFor="let collab of collaborators()" button (click)="goToEdit(collab._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-          <ion-icon name="person-circle-outline" slot="start" color="primary" style="font-size: 24px;"></ion-icon>
-          <ion-label>
-            <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ collab.name }}</h2>
-            <p style="font-family: 'Outfit', sans-serif;">{{ collab.email }} | {{ collab.phone }}</p>
-            <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
-              Empresa: {{ collab.company_id?.name || 'Global / Sem Vínculo' }}
-            </p>
-            @if (collab.role === 'técnico' && collab.technician_profile?.specialties?.length) {
-              <p class="small" style="font-family: 'Outfit', sans-serif; margin-top: 4px;">
-                <ion-badge color="tertiary" *ngFor="let spec of collab.technician_profile!.specialties" style="margin-right: 4px; font-weight: normal;">
-                  {{ spec }}
-                </ion-badge>
+      <div class="collab-list">
+        @for (collab of collaborators(); track collab._id) {
+          <div class="collab-list-item" (click)="goToEdit(collab._id!)">
+            <div class="collab-list-item__avatar">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+            <div class="collab-list-item__content">
+              <div class="collab-list-item__header">
+                <h3 class="collab-list-item__name">{{ collab.name }}</h3>
+                <span class="collab-status-badge" [class.active]="collab.status === 'active'">
+                  {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
+                </span>
+              </div>
+              <p class="collab-list-item__contact">
+                {{ collab.email }} 
+                @if (collab.phone) { <span class="dot">&bull;</span> {{ collab.phone }} }
               </p>
-            }
-          </ion-label>
-          <ion-badge [color]="collab.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
-            {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
-          </ion-badge>
-        </ion-item>
-      </ion-list>
+              
+              <div class="collab-meta">
+                <span class="meta-item role">Cargo: <strong>{{ collab.role }}</strong></span>
+                <span class="meta-item company">Empresa: <strong>{{ collab.company_id?.name || 'Global / Sem Vínculo' }}</strong></span>
+              </div>
+
+              @if (collab.role === 'técnico' && collab.technician_profile?.specialties?.length) {
+                <div class="collab-specialties">
+                  <span class="specialties-label">Especialidades:</span>
+                  <div class="specialties-tags">
+                    @for (spec of collab.technician_profile!.specialties; track spec) {
+                      <span class="specialty-tag">{{ spec }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
     }
 
     <!-- MODO CARD -->
@@ -74,22 +89,37 @@
         @for (collab of collaborators(); track collab._id) {
           <div class="collab-card" (click)="goToEdit(collab._id!)">
             <div class="collab-card__header">
-              <ion-icon name="person-circle-outline" class="collab-card__icon"></ion-icon>
-              <span class="collab-card__status" [class.active]="collab.status === 'active'">
+              <div class="collab-card__avatar">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+              <span class="collab-status-badge" [class.active]="collab.status === 'active'">
                 {{ collab.status === 'active' ? 'Ativo' : 'Inativo' }}
               </span>
             </div>
-            <h3 class="collab-card__name">{{ collab.name }}</h3>
-            <p class="collab-card__role">Cargo: {{ collab.role }}</p>
-            <p class="collab-card__detail">{{ collab.email }}</p>
-            <p class="collab-card__company">Empresa: {{ collab.company_id?.name || 'Global' }}</p>
-            @if (collab.role === 'técnico' && collab.technician_profile?.specialties?.length) {
-              <div class="collab-card__specialties" style="margin-top: 8px;">
-                <ion-badge color="tertiary" *ngFor="let spec of collab.technician_profile!.specialties" style="margin-right: 4px; font-weight: normal; font-size: 10px;">
-                  {{ spec }}
-                </ion-badge>
+            
+            <div class="collab-card__content">
+              <h3 class="collab-card__name">{{ collab.name }}</h3>
+              <p class="collab-card__contact">{{ collab.email }}</p>
+              @if (collab.phone) {
+                <p class="collab-card__contact">{{ collab.phone }}</p>
+              }
+              
+              <div class="collab-meta">
+                <span class="meta-item role">Cargo: <strong>{{ collab.role }}</strong></span>
+                <span class="meta-item company">Empresa: <strong>{{ collab.company_id?.name || 'Global' }}</strong></span>
               </div>
-            }
+
+              @if (collab.role === 'técnico' && collab.technician_profile?.specialties?.length) {
+                <div class="collab-specialties">
+                  <span class="specialties-label">Especialidades:</span>
+                  <div class="specialties-tags">
+                    @for (spec of collab.technician_profile!.specialties; track spec) {
+                      <span class="specialty-tag">{{ spec }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
           </div>
         }
       </div>
