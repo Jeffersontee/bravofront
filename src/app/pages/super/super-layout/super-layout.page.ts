@@ -136,7 +136,7 @@ export class SuperLayoutPage implements OnInit {
       ]
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: '/super-admin/my-profile', permissionKey: 'ADMIN_ACCOUNT'
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: '/super-admin/profile', permissionKey: 'ADMIN_ACCOUNT'
     },
     { 
       title: 'Ajuda', 

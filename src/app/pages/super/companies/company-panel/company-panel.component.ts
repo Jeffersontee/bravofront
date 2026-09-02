@@ -56,7 +56,7 @@ export class CompanyPanelComponent implements OnInit {
   }
 
   selectCompany(company: Company) {
-    this.router.navigateByUrl(`/super-admin/companies/${company._id}/dashboard`);
+    this.router.navigateByUrl(`/super-admin/companies/${company._id}/painel`);
   }
 
   loadCompanyUsers(id: string) {

@@ -166,7 +166,12 @@ export class AnnualAgendaComponent implements OnInit {
 
   goToOrder(orderId: string | undefined) {
     if (orderId) {
-      const baseUrl = this.mode() === 'super_admin' ? Strings.SUPER_OPERATIONAL_ORDERS_DETAILS : Strings.COMPANY_ORDER_DETAILS;
+      let baseUrl = Strings.COMPANY_ORDER_DETAILS;
+      if (this.router.url.includes('/customer')) {
+        baseUrl = Strings.CUSTOMER_ORDER_DETAILS;
+      } else if (this.mode() === 'super_admin') {
+        baseUrl = Strings.SUPER_OPERATIONAL_ORDERS_DETAILS;
+      }
       this.router.navigate([`/${baseUrl}`, orderId]);
     }
   }

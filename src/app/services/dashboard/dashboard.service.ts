@@ -50,7 +50,11 @@ export class DashboardService {
     });
   }
 
-  getStats(): Observable<{ success: boolean; data: DashboardStats }> {
-    return this.http.get<{ success: boolean; data: DashboardStats }>(this.url, { headers: this.getHeaders() });
+  getStats(companyId?: string): Observable<{ success: boolean; data: DashboardStats }> {
+    let endpoint = this.url;
+    if (companyId && companyId !== 'ALL') {
+      endpoint += `?company_id=${companyId}`;
+    }
+    return this.http.get<{ success: boolean; data: DashboardStats }>(endpoint, { headers: this.getHeaders() });
   }
 }

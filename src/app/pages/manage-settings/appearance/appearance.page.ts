@@ -10,7 +10,7 @@ import {
   mailOutline, lockClosedOutline, eyeOutline,
   gridOutline, speedometerOutline, constructOutline,
   calendarOutline, businessOutline, buildOutline,
-  peopleOutline, settingsOutline, logOutOutline
+  peopleOutline, settingsOutline, logOutOutline, homeOutline
 } from 'ionicons/icons';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
@@ -42,7 +42,7 @@ export class AppearancePage implements OnInit {
   logoUrl = signal<string>('');
   backgroundUrl = signal<string>('');
   
-  previewTab = signal<'login' | 'dashboard'>('dashboard');
+  previewTab = signal<'login' | 'dashboard' | 'home'>('login');
   
   tenantType = signal<'GLOBAL' | 'COMPANY'>('GLOBAL');
   companyId = signal<string | undefined>(undefined);
@@ -56,7 +56,7 @@ export class AppearancePage implements OnInit {
       mailOutline, lockClosedOutline, eyeOutline,
       gridOutline, speedometerOutline, constructOutline,
       calendarOutline, businessOutline, buildOutline,
-      peopleOutline, settingsOutline, logOutOutline
+      peopleOutline, settingsOutline, logOutOutline, homeOutline
     });
   }
 

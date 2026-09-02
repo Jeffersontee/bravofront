@@ -32,8 +32,22 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/service-orders/service-order-details/service-order-details.page').then(m => m.ServiceOrderDetailsPage)
       },
       {
+        path: 'calendario',
+        loadComponent: () => import('./pages/agenda/agenda.page').then(m => m.AgendaPage)
+      },
+      {
+        path: 'agenda',
+        redirectTo: 'calendario',
+        pathMatch: 'full'
+      },
+      {
         path: 'profile',
-        loadComponent: () => import('./pages/customer/profile/profile.page').then(m => m.ProfilePage)
+        loadComponent: () => import('./pages/account/account.page').then(m => m.AccountPage)
+      },
+      {
+        path: 'my-profile',
+        redirectTo: 'profile',
+        pathMatch: 'full'
       },
       {
         path: 'service-request/:id',
@@ -87,8 +101,13 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/help/help.page').then(m => m.HelpPage)
       },
       {
-        path: 'my-profile',
+        path: 'profile',
         loadComponent: () => import('./pages/account/account.page').then(m => m.AccountPage)
+      },
+      {
+        path: 'my-profile',
+        redirectTo: 'profile',
+        pathMatch: 'full'
       },
       {
         path: '',

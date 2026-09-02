@@ -75,10 +75,13 @@ export class ServiceOrdersPage implements OnInit {
     
     try {
       const userData = await this.profileService.getProfile() as any;
-      const filters: { company_id?: string; collaborator_id?: string } = {};
+      const filters: { company_id?: string; collaborator_id?: string; user_id?: string } = {};
 
       if (userData) {
-        if (userData.type === Strings.COMPANY_OWNER_TYPE || userData.type === Strings.USER_TYPE) {
+        if (userData.type === Strings.USER_TYPE || userData.type === 'user') {
+          filters.user_id = userData._id;
+          this.isLojista.set(false);
+        } else if (userData.type === Strings.COMPANY_OWNER_TYPE) {
           filters.company_id = userData.company_id;
           this.isLojista.set(true);
           const companyId = userData.company_id;

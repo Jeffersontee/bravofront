@@ -38,6 +38,13 @@
             <button 
               type="button" 
               class="tab-btn" 
+              [class.active]="previewTab() === 'home'" 
+              (click)="previewTab.set('home')">
+              <ion-icon name="home-outline"></ion-icon> Home Cliente
+            </button>
+            <button 
+              type="button" 
+              class="tab-btn" 
               [class.active]="previewTab() === 'dashboard'" 
               (click)="previewTab.set('dashboard')">
               <ion-icon name="grid-outline"></ion-icon> Menu & Painel
@@ -93,6 +100,77 @@
                   </div>
 
                   <div class="preview-signup">Não tem uma conta? <strong>Inscrever-se</strong></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- PREVIEW 2: HOME DO CLIENTE (SUPER ADMIN GLOBAL) -->
+        @if (tenantType() === 'GLOBAL' && previewTab() === 'home') {
+          <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            
+            <div class="phone-screen home-preview-screen" [ngClass]="currentTheme()">
+              <div class="hero-home-preview">
+                
+                <!-- HERO HEADER DO PREVIEW DA HOME -->
+                <div class="hero-preview-header" [style.background-image]="backgroundUrl() ? 'linear-gradient(rgba(26, 26, 26, 0.75), rgba(26, 26, 26, 0.85)), url(' + backgroundUrl() + ')' : 'linear-gradient(rgba(26, 26, 26, 0.75), rgba(26, 26, 26, 0.85)), url(/assets/icon/fundo.jpg)'">
+                  <div class="hero-brand">
+                    <div class="hero-logo-box">
+                      <img *ngIf="logoUrl()" [src]="logoUrl()" class="hero-logo-img">
+                      <img *ngIf="!logoUrl()" src="assets/icon/logo.jpg" class="hero-logo-img">
+                    </div>
+                    <div class="hero-user-greeting">
+                      <span class="greeting-sub">Olá, bem-vindo(a)</span>
+                      <div class="greeting-name">João Silva</div>
+                    </div>
+                  </div>
+                  
+                  <div class="hero-address-preview">
+                    <ion-icon name="location-outline" [style.color]="primaryColor()"></ion-icon>
+                    <span>Av. Paulista, 1000 - São Paulo, SP</span>
+                  </div>
+                </div>
+
+                <!-- FLOATING MOCKUP DA HOME DO CLIENTE -->
+                <div class="home-mockup-body">
+                  <div class="mockup-section-title">Em andamento</div>
+                  
+                  <div class="mockup-order-card">
+                    <div class="order-icon-badge" [style.background]="primaryColor()">
+                      <ion-icon name="flash-outline"></ion-icon>
+                    </div>
+                    <div class="order-details-box">
+                      <div class="order-name">Elétrica Geral</div>
+                      <div class="order-meta">
+                        <span class="status-badge-orange">Agendado</span>
+                        <span class="price-lbl">R$ 110,00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mockup-section-title mt-10">Selecione o serviço</div>
+
+                  <div class="mockup-service-grid">
+                    <div class="service-pill-card">
+                      <div class="service-pill-icon blue"><ion-icon name="flash-outline"></ion-icon></div>
+                      <span>Elétrica</span>
+                    </div>
+                    <div class="service-pill-card">
+                      <div class="service-pill-icon orange"><ion-icon name="hammer-outline"></ion-icon></div>
+                      <span>Civil</span>
+                    </div>
+                    <div class="service-pill-card">
+                      <div class="service-pill-icon cyan"><ion-icon name="water-outline"></ion-icon></div>
+                      <span>Hidráulica</span>
+                    </div>
+                    <div class="service-pill-card">
+                      <div class="service-pill-icon slate"><ion-icon name="construct-outline"></ion-icon></div>
+                      <span>Serralheria</span>
+                    </div>
+                  </div>
                 </div>
 
               </div>

@@ -8,6 +8,51 @@
   overflow-x: hidden;
 }
 
+.company-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ion-color-step-100, #f1f5f9);
+  border: 1px solid var(--ion-color-step-200, #e2e8f0);
+  border-radius: 10px;
+  padding: 4px 10px;
+  margin-right: 12px;
+  max-width: 280px;
+
+  .select-icon {
+    font-size: 18px;
+    color: var(--ion-color-primary, #1d4ed8);
+    flex-shrink: 0;
+  }
+
+  .company-select {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #1e293b);
+    cursor: pointer;
+    width: 100%;
+
+    option {
+      background: var(--ion-card-background, #ffffff);
+      color: var(--ion-text-color, #1e293b);
+    }
+  }
+
+  @media (max-width: 768px) {
+    max-width: 170px;
+    padding: 2px 6px;
+    margin-right: 6px;
+
+    .company-select {
+      font-size: 0.75rem;
+    }
+  }
+}
+
 .dashboard-container {
   width: 100%;
   max-width: 1400px;
