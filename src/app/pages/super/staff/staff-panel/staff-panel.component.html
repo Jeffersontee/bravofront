@@ -1,74 +1,234 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="secondary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Painel de Usuários Globais</ion-title>
+    <ion-title class="page-header-title">Painel de Usuários Globais</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadData()" title="Atualizar Dados">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="panel-container" style="max-width: 1200px; margin: 0 auto;">
+<ion-content class="ion-padding staff-panel-content">
+  <div class="panel-container">
     
+    <!-- CABEÇALHO DA PÁGINA -->
+    <div class="panel-header">
+      <div class="panel-header__info">
+        <h1 class="panel-header__title">Gestão de Usuários Globais</h1>
+        <p class="panel-header__subtitle">Controle administrativo de perfis, acessos e permissões do sistema.</p>
+      </div>
+      <div class="panel-header__actions">
+        <div class="view-toggle-group">
+          <button 
+            type="button" 
+            class="view-toggle-btn" 
+            [class.active]="viewMode() === 'list'" 
+            (click)="viewMode.set('list')" 
+            title="Visualização em Lista">
+            <ion-icon name="list-outline"></ion-icon>
+          </button>
+          <button 
+            type="button" 
+            class="view-toggle-btn" 
+            [class.active]="viewMode() === 'card'" 
+            (click)="viewMode.set('card')" 
+            title="Visualização em Grade">
+            <ion-icon name="grid-outline"></ion-icon>
+          </button>
+        </div>
+        <ion-button (click)="goToCreate()" color="success" class="btn-create-user">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Novo Usuário
+        </ion-button>
+      </div>
+    </div>
+
     @if (isLoading()) {
-      <div class="text-center ion-padding">
-        <ion-spinner></ion-spinner>
-        <p class="text-muted mt-2">Carregando painel de usuários...</p>
+      <div class="loading-state">
+        <ion-spinner color="primary"></ion-spinner>
+        <p class="loading-state__text">Carregando usuários administrativos...</p>
       </div>
     }
 
     @if (!isLoading()) {
-      <!-- KPIs -->
-      <div class="kpi-grid mb-4">
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--total">
+      <!-- KPIs INTELIGENTES / DINÂMICOS -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-card--total">
+          <div class="kpi-card__icon">
             <ion-icon name="people-outline"></ion-icon>
           </div>
-          <div class="kpi-body">
-            <span class="kpi-value">{{ staffList().length }}</span>
-            <span class="kpi-label">Usuários Administrativos</span>
+          <div class="kpi-card__body">
+            <span class="kpi-card__value">{{ totalCount() }}</span>
+            <span class="kpi-card__label">Usuários Exibidos</span>
           </div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--super">
+        <div class="kpi-card kpi-card--super">
+          <div class="kpi-card__icon">
             <ion-icon name="key-outline"></ion-icon>
           </div>
-          <div class="kpi-body">
-            <span class="kpi-value">{{ superAdminsCount() }}</span>
-            <span class="kpi-label">Super Administradores</span>
+          <div class="kpi-card__body">
+            <span class="kpi-card__value">{{ superAdminsCount() }}</span>
+            <span class="kpi-card__label">Super Administradores</span>
           </div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--owner">
+        <div class="kpi-card kpi-card--owner">
+          <div class="kpi-card__icon">
             <ion-icon name="shield-checkmark-outline"></ion-icon>
           </div>
-          <div class="kpi-body">
-            <span class="kpi-value">{{ companyOwnersCount() }}</span>
-            <span class="kpi-label">Donos de Empresa</span>
+          <div class="kpi-card__body">
+            <span class="kpi-card__value">{{ companyOwnersCount() }}</span>
+            <span class="kpi-card__label">Donos de Empresa</span>
           </div>
         </div>
       </div>
 
-      <!-- LISTA DE USUÁRIOS RECENTES -->
-      <h3 style="font-family: 'Outfit', sans-serif; font-weight: 600; margin-bottom: 12px;">Usuários do Sistema</h3>
-      <ion-list lines="inset" style="background: transparent;">
-        @for (user of staffList(); track user._id) {
-          <ion-item button (click)="goToEdit(user._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-            <ion-label>
-              <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ user.name }}</h2>
-              <p style="font-family: 'Outfit', sans-serif;">{{ user.email }} | Tipo: <strong>{{ user.type }}</strong></p>
-              <p class="small text-muted" style="font-family: 'Outfit', sans-serif;">
-                Vínculo: {{ user.company_id?.name || 'Global / Sem Vínculo' }}
-              </p>
-            </ion-label>
-            <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
-              {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
-            </ion-badge>
-          </ion-item>
+      <!-- BARRA DE BUSCA E FILTROS -->
+      <div class="filter-card">
+        <div class="filter-card__grid">
+          <!-- CAMPO DE BUSCA -->
+          <div class="filter-card__field">
+            <ion-searchbar 
+              [value]="searchTerm()" 
+              (ionInput)="onSearchInput($event)" 
+              placeholder="Buscar por nome, e-mail ou tipo..."
+              debounce="200"
+              class="custom-searchbar">
+            </ion-searchbar>
+          </div>
+
+          <!-- SELECT DE EMPRESA -->
+          <div class="filter-card__field">
+            <ion-item lines="none" class="custom-select-item">
+              <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
+              <ion-select 
+                [value]="selectedCompanyId()" 
+                label="Empresa Parceira" 
+                labelPlacement="floating" 
+                (ionChange)="filterByCompany($event)" 
+                placeholder="Todas as Empresas">
+                <ion-select-option value="">Todas as Empresas</ion-select-option>
+                @for (company of companies(); track company._id) {
+                  <ion-select-option [value]="company._id">{{ company.name }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </div>
+        </div>
+
+        @if (selectedCompanyId() || searchTerm()) {
+          <div class="filter-card__footer">
+            <span class="filter-card__summary">Filtro ativo: {{ totalCount() }} usuário(s) encontrado(s)</span>
+            <ion-button fill="clear" size="small" color="danger" (click)="clearFilters()" class="btn-clear-filter">
+              <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+              Limpar Filtros
+            </ion-button>
+          </div>
         }
-      </ion-list>
+      </div>
+
+      <!-- SEÇÃO DE RESULTADOS -->
+      <div class="section-header">
+        <h2 class="section-header__title">Usuários do Sistema</h2>
+        <span class="section-header__badge">{{ filteredStaffList().length }} cadastros</span>
+      </div>
+
+      <!-- VISUALIZAÇÃO EM LISTA -->
+      @if (viewMode() === 'list') {
+        <div class="user-list">
+          @for (user of filteredStaffList(); track user._id) {
+            <div class="user-list-item" (click)="goToEdit(user._id!)">
+              <div class="user-list-item__avatar" [class]="'avatar--' + user.type">
+                <ion-icon [name]="getUserIcon(user.type)"></ion-icon>
+              </div>
+              <div class="user-list-item__content">
+                <div class="user-list-item__top">
+                  <h3 class="user-list-item__name">{{ user.name }}</h3>
+                  <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" class="status-badge">
+                    {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
+                  </ion-badge>
+                </div>
+                <div class="user-list-item__details">
+                  <span class="detail-item email">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    {{ user.email }}
+                  </span>
+                  <span class="detail-item company">
+                    <ion-icon name="business-outline"></ion-icon>
+                    {{ user.company_id?.name || 'Global / Sem Vínculo' }}
+                  </span>
+                </div>
+              </div>
+              <div class="user-list-item__type-col">
+                <ion-badge [color]="getTypeBadgeColor(user.type)" class="type-badge">
+                  {{ getTypeLabel(user.type) }}
+                </ion-badge>
+                <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- VISUALIZAÇÃO EM CARDS / GRADE -->
+      @if (viewMode() === 'card') {
+        <div class="user-grid">
+          @for (user of filteredStaffList(); track user._id) {
+            <div class="user-card" (click)="goToEdit(user._id!)">
+              <div class="user-card__header">
+                <div class="user-card__avatar" [class]="'avatar--' + user.type">
+                  <ion-icon [name]="getUserIcon(user.type)"></ion-icon>
+                </div>
+                <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" class="status-badge">
+                  {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
+                </ion-badge>
+              </div>
+
+              <div class="user-card__body">
+                <h3 class="user-card__name">{{ user.name }}</h3>
+                <p class="user-card__email">{{ user.email }}</p>
+                <div class="user-card__meta">
+                  <span class="meta-tag company">
+                    <ion-icon name="business-outline"></ion-icon>
+                    {{ user.company_id?.name || 'Global / Sem Vínculo' }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="user-card__footer">
+                <ion-badge [color]="getTypeBadgeColor(user.type)" class="type-badge">
+                  {{ getTypeLabel(user.type) }}
+                </ion-badge>
+                <span class="edit-link">
+                  Editar
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ESTADO VAZIO -->
+      @if (filteredStaffList().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+          <h3 class="empty-state__title">Nenhum usuário encontrado</h3>
+          <p class="empty-state__text">Não encontramos resultados para os filtros aplicados nesta busca.</p>
+          @if (selectedCompanyId() || searchTerm()) {
+            <ion-button fill="outline" color="primary" size="small" (click)="clearFilters()" class="empty-state__btn">
+              Limpar Filtros de Busca
+            </ion-button>
+          }
+        </div>
+      }
     }
 
   </div>

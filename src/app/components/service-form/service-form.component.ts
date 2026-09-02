@@ -3,14 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { 
   IonList, IonItem, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, 
-  IonToggle, IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar 
+  IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  flashOutline, waterOutline, constructOutline, hardwareChipOutline, 
-  shieldCheckmarkOutline, closeOutline, listOutline, saveOutline 
-} from 'ionicons/icons';
+import { closeOutline, listOutline, saveOutline } from 'ionicons/icons';
 import { ServiceItem } from 'src/app/services/service/service.service';
+import { registerServiceIcons, SERVICE_AVAILABLE_ICONS } from 'src/app/utils/service-icons';
 
 @Component({
   selector: 'app-service-form',
@@ -20,7 +18,7 @@ import { ServiceItem } from 'src/app/services/service/service.service';
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule,
     IonList, IonItem, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, 
-    IonToggle, IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar
+    IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar
   ]
 })
 export class ServiceFormComponent implements OnInit {
@@ -38,13 +36,7 @@ export class ServiceFormComponent implements OnInit {
   formReady = signal<boolean>(false);
   formChanged = signal<boolean>(false);
 
-  availableIcons = [
-    { name: 'flash-outline', label: 'Elétrica' },
-    { name: 'construct-outline', label: 'Civil/Serralheria' },
-    { name: 'water-outline', label: 'Hidráulica' },
-    { name: 'hardware-chip-outline', label: 'Tecnologia' },
-    { name: 'shield-checkmark-outline', label: 'Preventivo' }
-  ];
+  availableIcons = SERVICE_AVAILABLE_ICONS;
 
   hasChanges = computed(() => {
     const changed = this.formChanged();
@@ -54,10 +46,8 @@ export class ServiceFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ 
-      flashOutline, waterOutline, constructOutline, hardwareChipOutline, 
-      shieldCheckmarkOutline, closeOutline, listOutline, saveOutline 
-    });
+    registerServiceIcons();
+    addIcons({ closeOutline, listOutline, saveOutline });
 
     effect(() => {
       if (!this.formReady() || !this.form) return;

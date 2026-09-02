@@ -15,7 +15,8 @@ import {
   menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
   businessOutline, receiptOutline, gridOutline, settingsOutline,
   colorPaletteOutline, calendarOutline,
-  calendarNumberOutline, personCircleOutline, helpCircleOutline
+  calendarNumberOutline, personCircleOutline, helpCircleOutline,
+  serverOutline, keyOutline, cardOutline, swapHorizontalOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ProfileService } from '../../../services/profile/profile.service';
@@ -75,7 +76,7 @@ export class SuperLayoutPage implements OnInit {
       title: 'Agenda 365', stringKey: 'SUPER_OPERATIONAL_AGENDA', icon: 'calendar-outline', permissionKey: 'SUPER_OPERATIONAL_AGENDA'
     },
     {
-      title: 'Empresas / Clientes',
+      title: 'Empresas (Lojistas)',
       icon: 'business-outline',
       children: [
         { title: 'Painel', stringKey: 'SUPER_COMPANIES_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_COMPANIES_PANEL' },
@@ -93,7 +94,7 @@ export class SuperLayoutPage implements OnInit {
       ]
     },
     {
-      title: 'Colaboradores',
+      title: 'Colaboradores / Técnicos',
       icon: 'briefcase-outline',
       children: [
         { title: 'Painel', stringKey: 'SUPER_COLLABORATORS_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_COLLABORATORS_PANEL' },
@@ -107,7 +108,7 @@ export class SuperLayoutPage implements OnInit {
       icon: 'people-outline',
       children: [
         { title: 'Painel', stringKey: 'SUPER_STAFF_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_STAFF_PANEL' },
-        { title: 'Listar Usuários', stringKey: 'SUPER_STAFF', icon: 'list-outline', permissionKey: 'SUPER_STAFF' },
+        { title: 'Listar Todos', stringKey: 'SUPER_STAFF', icon: 'list-outline', permissionKey: 'SUPER_STAFF' },
         { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE' },
       ]
     },
@@ -157,7 +158,8 @@ export class SuperLayoutPage implements OnInit {
       homeOutline, logOutOutline, speedometerOutline, trendingUpOutline, personCircleOutline, helpCircleOutline,
       peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown, calendarNumberOutline,
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
-      businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline, calendarOutline
+      businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline, calendarOutline,
+      serverOutline, keyOutline, cardOutline, swapHorizontalOutline
     });
   }
 

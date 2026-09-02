@@ -2,8 +2,7 @@ import { Component, OnInit, input, output, signal, effect, untracked, inject, co
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
-  IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonContent,
-  IonItemDivider, IonProgressBar, IonTextarea 
+  IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar, IonTextarea 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { person, mail, call, businessOutline, documentTextOutline, addCircleOutline } from 'ionicons/icons';

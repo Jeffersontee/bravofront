@@ -28,7 +28,7 @@
     @for (service of services(); track service._id) {
       <div class="service-card" (click)="goToEdit(service)">
         <div class="icon-container">
-          <ion-icon [name]="service.icon"></ion-icon>
+          <ion-icon [name]="service.icon || 'build-outline'"></ion-icon>
         </div>
         <div class="service-info">
           <h3>{{ service.name }}</h3>

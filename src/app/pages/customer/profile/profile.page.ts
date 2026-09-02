@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { OrderService } from '../../../services/order/order.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { 
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButton, 
-  IonIcon, IonLabel, IonNote, IonList, IonItem 
+  IonContent, IonIcon 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -19,8 +18,7 @@ import {
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, 
-    IonButton, IonIcon, IonLabel, IonNote, IonList, IonItem
+    CommonModule, IonContent, IonIcon
   ]
 })
 export class ProfilePage {

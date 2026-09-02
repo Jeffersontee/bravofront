@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonLabel, IonItemGroup, IonList, IonItem, IonIcon, IonText, IonButton, IonSpinner, IonInput, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
+import { IonContent, IonButtons, IonBackButton, IonLabel, IonIcon, IonText, IonButton, IonSpinner, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 import { GlobalService } from 'src/app/services/global/global.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Strings } from 'src/app/enum/strings';
 // Icon
@@ -16,10 +16,10 @@ import { personOutline, eyeOutline, mailOutline, callOutline, eyeOffOutline, loc
   styleUrls: ['./signup.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule,
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, 
-    IonItemGroup, IonList, IonItem, IonIcon, IonText, IonButton, IonSpinner, 
-    IonInput, IonSegment, IonSegmentButton, IonLabel
+    CommonModule, FormsModule, RouterLink,
+    IonContent, IonButtons, IonBackButton, 
+    IonIcon, IonText, IonButton, IonSpinner, 
+    IonSegment, IonSegmentButton, IonLabel
   ]
 })
 export class SignupPage implements OnInit, OnDestroy {
@@ -28,6 +28,7 @@ export class SignupPage implements OnInit, OnDestroy {
   isCompany: boolean = false;
   public passwordHidden: boolean = true;
   public confirmPasswordHidden: boolean = true;
+  public Strings = Strings;
 
   constructor(
     private authService: AuthService, 
@@ -71,14 +72,19 @@ export class SignupPage implements OnInit, OnDestroy {
     
     try {
       let user: any;
+      const privacy_consent = {
+        accepted: true,
+        version: 'v1.0.2026'
+      };
+
       if (this.isCompany) {
         const { owner_name, email, phone, password, company_name, cnpj } = form.value;
-        const payload = { owner_name, email, phone, password, company_name, cnpj };
+        const payload = { owner_name, email, phone, password, company_name, cnpj, privacy_consent };
         const response = await this.authService.registerCompany(payload);
         user = response?.data?.user;
       } else {
         const { name, email, phone, password, cpf } = form.value;
-        const payload = { name, email, phone, password, cpf };
+        const payload = { name, email, phone, password, cpf, privacy_consent };
         const response = await this.authService.register(payload);
         user = response?.data?.user;
       }

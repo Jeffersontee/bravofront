@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
-  IonContent, IonHeader, IonToolbar, IonTitle, IonButton, 
-  IonIcon, IonLabel, IonGrid, IonRow, IonCol, IonInput, IonTextarea,
-  ToastController
+  IonContent, IonTitle, IonButton, 
+  IonIcon, IonGrid, IonRow, IonCol, ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -34,9 +33,8 @@ interface ServiceCategory {
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonToolbar, 
-    IonTitle, IonButton, IonIcon, IonLabel, IonGrid, IonRow, IonCol, 
-    IonInput, IonTextarea, CardServicesComponent
+    CommonModule, FormsModule, IonContent, IonTitle, IonButton, IonIcon, IonGrid, IonRow, IonCol, 
+    CardServicesComponent
   ]
 })
 export class HomePage {

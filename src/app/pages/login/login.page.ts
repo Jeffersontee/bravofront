@@ -22,7 +22,7 @@ import { Strings } from 'src/app/enum/strings';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonIcon, IonModal, IonText, RouterLink, ResetPasswordComponent
+    CommonModule, FormsModule, IonContent, IonIcon, IonModal, RouterLink, ResetPasswordComponent
   ]
 })
 export class LoginPage implements OnDestroy {

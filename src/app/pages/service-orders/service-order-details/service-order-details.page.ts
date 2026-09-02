@@ -5,7 +5,7 @@ import { IonicModule, NavController, AlertController, ToastController, ModalCont
 import { ActivatedRoute } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { 
-  arrowBack, locationOutline, timeOutline, checkmarkCircle, 
+  arrowBack, locationOutline, timeOutline, checkmarkCircle, checkmarkCircleOutline,
   ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
   personOutline, buildOutline, businessOutline, closeCircleOutline,
   checkmarkDoneOutline, calendarOutline,
@@ -106,7 +106,7 @@ export class ServiceOrderDetailsPage implements OnInit {
 
   constructor() {
     addIcons({
-      arrowBack, locationOutline, timeOutline, checkmarkCircle, 
+      arrowBack, locationOutline, timeOutline, checkmarkCircle, checkmarkCircleOutline,
       ellipsisHorizontalCircle, playCircle, stopCircle, mapOutline,
       personOutline, buildOutline, businessOutline, closeCircleOutline,
       checkmarkDoneOutline, calendarOutline, carOutline, documentTextOutline,

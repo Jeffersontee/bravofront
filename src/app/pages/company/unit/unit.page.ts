@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonSpinner, IonBackButton, IonMenuButton, IonList, IonItem, IonIcon, IonLabel, IonBadge, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonSpinner, IonBackButton, IonList, IonItem, IonIcon, IonLabel, IonBadge, IonButton } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UnitService, Unit } from 'src/app/services/unit/unit.service';
 import { UnitFormComponent } from 'src/app/components/unit-form/unit-form.component';
@@ -18,7 +18,7 @@ import { businessOutline, business, addCircle } from 'ionicons/icons';
   standalone: true,
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonSpinner, 
-    IonBackButton, IonMenuButton, IonList, IonItem, IonIcon, IonLabel, IonBadge, IonButton,
+    IonBackButton, IonList, IonItem, IonIcon, IonLabel, IonBadge, IonButton,
     CommonModule, FormsModule, 
     UnitFormComponent 
   ]

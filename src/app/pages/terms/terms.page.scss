@@ -1,0 +1,76 @@
+.terms-container {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 16px 8px;
+}
+
+.hero-section {
+  .page-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+  }
+}
+
+.bravo-segment {
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 4px;
+
+  ion-segment-button {
+    --color: #64748b;
+    --color-checked: #1e293b;
+    --indicator-color: #ffffff;
+    font-weight: 600;
+  }
+}
+
+.legal-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.legal-body {
+  padding: 24px;
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.6;
+
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #f1f5f9;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  ul {
+    padding-left: 20px;
+    margin-bottom: 16px;
+
+    li {
+      margin-bottom: 6px;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal, IonMenuButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonIcon, IonToggle, IonModal, IonMenuButton } from '@ionic/angular/standalone';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { UnitService } from 'src/app/services/unit/unit.service';
 import { GlobalService } from 'src/app/services/global/global.service';
@@ -13,7 +13,7 @@ import { caretDownSharp, caretUpSharp, closeOutline } from 'ionicons/icons';
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonToggle, IonModal, IonMenuButton, CommonModule, FormsModule, ReactiveFormsModule]
+  imports: [IonContent, IonHeader, IonIcon, IonToggle, IonModal, IonMenuButton, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class DashboardPage implements OnInit {
   private companyService = inject(CompanyService);
