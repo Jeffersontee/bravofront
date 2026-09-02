@@ -1,72 +1,139 @@
 @if (isLoading()) {
-  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  <ion-progress-bar type="indeterminate" color="primary"></ion-progress-bar>
 }
 
-<form [formGroup]="companyForm" (ngSubmit)="onSubmit()">
-  <ion-list lines="none">
+<form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="company-form-body">
+  <ion-list lines="none" class="form-list">
     
     <ion-item-divider class="section-divider">
-      <ion-label>Dados Principais</ion-label>
+      <ion-label>Dados Principais da Empresa</ion-label>
     </ion-item-divider>
 
-    <ion-item>
-      <ion-icon name="business-outline" slot="start"></ion-icon>
-      <ion-input label="Razão Social" labelPlacement="floating" formControlName="name"></ion-input>
-    </ion-item>
-    
-    <ion-item>
-      <ion-icon name="business-outline" slot="start"></ion-icon>
-      <ion-input label="Nome Fantasia / Apelido" labelPlacement="floating" formControlName="short_name"></ion-input>
-    </ion-item>
+    <div class="form-grid">
+      <div class="form-grid__col">
+        <ion-item class="custom-input-item">
+          <ion-icon name="business-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input label="Razão Social / Nome da Empresa *" labelPlacement="floating" formControlName="name" placeholder="Razão Social"></ion-input>
+        </ion-item>
+      </div>
+      
+      <div class="form-grid__col">
+        <ion-item class="custom-input-item">
+          <ion-icon name="business-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input label="Nome Fantasia / Apelido" labelPlacement="floating" formControlName="short_name" placeholder="Nome Fantasia"></ion-input>
+        </ion-item>
+      </div>
 
-    <ion-item>
-      <ion-icon name="document-text-outline" slot="start"></ion-icon>
-      <ion-input 
-        label="CNPJ" 
-        labelPlacement="floating" 
-        type="tel" 
-        formControlName="cnpj"
-        (ionInput)="onCnpjInput($event)">
-      </ion-input>
-    </ion-item>
+      <div class="form-grid__col">
+        <ion-item class="custom-input-item">
+          <ion-icon name="document-text-outline" slot="start" class="input-icon"></ion-icon>
+          <ion-input 
+            label="CNPJ *" 
+            labelPlacement="floating" 
+            type="tel" 
+            formControlName="cnpj"
+            placeholder="00.000.000/0000-00"
+            (ionInput)="onCnpjInput($event)">
+          </ion-input>
+        </ion-item>
+      </div>
+    </div>
 
     <ion-item-divider class="section-divider">
-      <ion-label>Contato e Responsável</ion-label>
+      <ion-label>Contato e Responsável (Acesso)</ion-label>
     </ion-item-divider>
 
-    <ion-item>
-      <ion-icon name="person" slot="start"></ion-icon>
-      <ion-input label="Nome do Responsável" labelPlacement="floating" formControlName="owner_name"></ion-input>
-    </ion-item>
+    <div class="form-grid">
+      <div class="form-grid__col">
+        <ion-item class="custom-input-item">
+          <ion-icon name="person" slot="start" class="input-icon"></ion-icon>
+          <ion-input label="Nome do Responsável / Dono *" labelPlacement="floating" formControlName="owner_name" placeholder="Nome Completo"></ion-input>
+        </ion-item>
+      </div>
 
-    <ion-item>
-      <ion-icon name="mail" slot="start"></ion-icon>
-      <ion-input label="E-mail" labelPlacement="floating" type="email" formControlName="email"></ion-input>
-    </ion-item>
+      <div class="form-grid__col">
+        <ion-item class="custom-input-item">
+          <ion-icon name="mail" slot="start" class="input-icon"></ion-icon>
+          <ion-input label="E-mail (Login) *" labelPlacement="floating" type="email" formControlName="email" placeholder="email@empresa.com"></ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col">
+        <ion-item class="custom-input-item">
+          <ion-icon name="call" slot="start" class="input-icon"></ion-icon>
+          <ion-input label="Telefone de Contato" labelPlacement="floating" type="tel" formControlName="phone" placeholder="(11) 99999-9999"></ion-input>
+        </ion-item>
+      </div>
+
+      <!-- CAMPOS DE SENHA E CONFIRMAR SENHA CONFORME O DESIGN DO SIGNUP -->
+      @if (!isEditMode()) {
+        <div class="form-grid__col">
+          <div class="password-group">
+            <ion-item class="custom-input-item">
+              <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+              <ion-input 
+                [type]="passwordHidden() ? 'password' : 'text'" 
+                label="Senha de Acesso *" 
+                labelPlacement="floating" 
+                formControlName="password" 
+                placeholder="Mínimo 8 caracteres">
+              </ion-input>
+              <button type="button" slot="end" class="eye-btn" (click)="passwordHidden.set(!passwordHidden())" title="Alternar visibilidade">
+                <ion-icon [name]="passwordHidden() ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+              </button>
+            </ion-item>
+          </div>
+        </div>
+
+        <div class="form-grid__col">
+          <div class="password-group">
+            <ion-item class="custom-input-item">
+              <ion-icon name="lock-closed-outline" slot="start" class="input-icon"></ion-icon>
+              <ion-input 
+                [type]="confirmPasswordHidden() ? 'password' : 'text'" 
+                label="Confirmar Senha *" 
+                labelPlacement="floating" 
+                formControlName="confirmPassword" 
+                placeholder="Repita a senha">
+              </ion-input>
+              <button type="button" slot="end" class="eye-btn" (click)="confirmPasswordHidden.set(!confirmPasswordHidden())" title="Alternar visibilidade">
+                <ion-icon [name]="confirmPasswordHidden() ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+              </button>
+            </ion-item>
+          </div>
+        </div>
+      }
+    </div>
 
     <ion-item-divider class="section-divider">
       <ion-label>Detalhes Adicionais</ion-label>
     </ion-item-divider>
 
-    <ion-item>
-      <ion-label position="stacked">Descrição da Empresa</ion-label>
-      <ion-textarea 
-        formControlName="description" 
-        placeholder="Informações adicionais, observações..."
-        rows="4">
-      </ion-textarea>
-    </ion-item>
+    <div class="form-grid">
+      <div class="form-grid__col form-grid__col--full">
+        <ion-item class="custom-input-item">
+          <ion-label position="stacked">Descrição da Empresa</ion-label>
+          <ion-textarea 
+            formControlName="description" 
+            placeholder="Informações adicionais, observações..."
+            rows="3">
+          </ion-textarea>
+        </ion-item>
+      </div>
 
-    <ion-item lines="none" class="toggle-item">
-      <ion-label>
-        <h3>Empresa Ativa</h3>
-        <p>Definir se esta empresa pode acessar e operar no sistema</p>
-      </ion-label>
-      <ion-toggle slot="end" formControlName="active"></ion-toggle>
-    </ion-item>
+      <div class="form-grid__col form-grid__col--full">
+        <div class="toggle-box">
+          <div class="toggle-box__info">
+            <span class="toggle-box__title">Empresa Ativa</span>
+            <span class="toggle-box__desc">Permite o acesso de donos e colaboradores ao sistema</span>
+          </div>
+          <ion-toggle formControlName="active" color="primary"></ion-toggle>
+        </div>
+      </div>
+    </div>
 
-    <div class="ion-padding">
-      <ion-button type="submit" expand="block" [disabled]="!companyForm.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
+    <div class="form-submit-container">
+      <ion-button type="submit" expand="block" color="primary" class="submit-btn" [disabled]="!companyForm.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
         @if (isLoading()) {
           <ion-spinner name="crescent" slot="start"></ion-spinner>
         }

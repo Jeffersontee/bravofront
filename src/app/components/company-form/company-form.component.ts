@@ -5,7 +5,10 @@ import {
   IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar, IonTextarea 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, businessOutline, documentTextOutline, addCircleOutline } from 'ionicons/icons';
+import { 
+  person, mail, call, businessOutline, documentTextOutline, addCircleOutline,
+  lockClosedOutline, eyeOutline, eyeOffOutline 
+} from 'ionicons/icons';
 import { Company } from 'src/app/services/company/company.service';
 
 @Component({
@@ -33,6 +36,9 @@ export class CompanyFormComponent implements OnInit {
   formReady = signal<boolean>(false);
   formChanged = signal<boolean>(false);
 
+  passwordHidden = signal<boolean>(true);
+  confirmPasswordHidden = signal<boolean>(true);
+
   hasChanges = computed(() => {
     const changed = this.formChanged();
     if (!this.formReady() || !this.companyForm) return false;
@@ -41,7 +47,10 @@ export class CompanyFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, businessOutline, documentTextOutline, addCircleOutline });
+    addIcons({ 
+      person, mail, call, businessOutline, documentTextOutline, addCircleOutline,
+      lockClosedOutline, eyeOutline, eyeOffOutline
+    });
 
     effect(() => {
       if (!this.formReady() || !this.companyForm) return;
@@ -59,6 +68,23 @@ export class CompanyFormComponent implements OnInit {
       const company = this.data();
       if (company) {
         untracked(() => this.patchForm(company));
+      }
+    });
+
+    effect(() => {
+      const isEdit = this.isEditMode();
+      if (this.formReady() && this.companyForm) {
+        const passControl = this.companyForm.get('password');
+        const cPassControl = this.companyForm.get('confirmPassword');
+        if (!isEdit) {
+          passControl?.setValidators([Validators.required, Validators.minLength(8)]);
+          cPassControl?.setValidators([Validators.required]);
+        } else {
+          passControl?.clearValidators();
+          cPassControl?.clearValidators();
+        }
+        passControl?.updateValueAndValidity({ emitEvent: false });
+        cPassControl?.updateValueAndValidity({ emitEvent: false });
       }
     });
   }
@@ -80,8 +106,11 @@ export class CompanyFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       owner_name: ['', Validators.required],
       short_name: [''],
-      cnpj: ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
-      email: ['', [Validators.email]],
+      cnpj: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      password: [''],
+      confirmPassword: [''],
       description: [''],
       active: [true]
     });
@@ -117,6 +146,7 @@ export class CompanyFormComponent implements OnInit {
       short_name: data.short_name || '',
       cnpj: this.applyCnpjMask(data.cnpj || ''),
       email: data.email || '',
+      phone: (data as any).phone || '',
       description: data.description || '',
       active: data.active !== undefined ? data.active : true
     });
@@ -130,6 +160,12 @@ export class CompanyFormComponent implements OnInit {
     if (!this.companyForm.valid || this.isReadOnly()) return;
 
     const formValue = this.companyForm.getRawValue();
+
+    if (!this.isEditMode()) {
+      if (formValue.password !== formValue.confirmPassword) {
+        return;
+      }
+    }
     
     const payload: Partial<Company> = {
       name: formValue.name,
@@ -138,7 +174,8 @@ export class CompanyFormComponent implements OnInit {
       cnpj: (formValue.cnpj || '').replace(/\D/g, ''),
       email: formValue.email?.trim().toLowerCase() || '',
       description: formValue.description || '',
-      active: formValue.active
+      active: formValue.active,
+      ...(formValue.password ? { password: formValue.password } : {})
     };
 
     this.save.emit(payload);

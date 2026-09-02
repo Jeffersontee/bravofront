@@ -17,14 +17,12 @@ export const environment: Environment = {
   },
   vapidKey: 'YOUR_VAPID_KEY',
   razorpay: {
-    key_id: 'local_key_id',
-    key_secret: 'local_secret'
+    key_id: 'local_key_id'
   },
   stripe: {
     publishableKey: 'pk_test_51TEhuWD35fDvfYWqGz41phFty8k1LYbQUau6zrazrbWU2a3D7nrvnE0xjOlsN2NfkGkWdxSXz74a4RqBmspn8CuV00L3a2ADNn'
   },
   mercadoPago: {
-    public_key: 'TEST-4e059d90-d653-43d3-8382-8425a9d39e5e', // Verifique se esta chave pública pertence à mesma conta do token abaixo
-    accessToken: 'TEST-8284964456931465-040923-6999a8c3c8e79a7142d9ea3a07076339-3158709223',
+    public_key: 'TEST-4e059d90-d653-43d3-8382-8425a9d39e5e'
   },
 };

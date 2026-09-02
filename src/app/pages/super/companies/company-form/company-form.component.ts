@@ -25,7 +25,11 @@ import {
   saveOutline, 
   personAddOutline, 
   shieldCheckmarkOutline, 
-  keyOutline 
+  keyOutline,
+  lockClosedOutline,
+  eyeOutline,
+  eyeOffOutline,
+  callOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -59,6 +63,12 @@ export class CompanyFormComponent implements OnInit {
   public showUserForm = signal(false);
   public globalServices = signal<ServiceItem[]>([]);
 
+  // Toggles de Visibilidade da Senha (conforme o design do Signup)
+  public passwordHidden = signal(true);
+  public confirmPasswordHidden = signal(true);
+  public userPasswordHidden = signal(true);
+  public userConfirmPasswordHidden = signal(true);
+
   constructor() {
     addIcons({ 
       businessOutline, 
@@ -72,7 +82,11 @@ export class CompanyFormComponent implements OnInit {
       saveOutline, 
       personAddOutline, 
       shieldCheckmarkOutline, 
-      keyOutline 
+      keyOutline,
+      lockClosedOutline,
+      eyeOutline,
+      eyeOffOutline,
+      callOutline
     });
   }
 
@@ -84,6 +98,9 @@ export class CompanyFormComponent implements OnInit {
       description: [''],
       cnpj: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      password: [''],
+      confirmPassword: [''],
       active: [true],
       services: [[]]
     });
@@ -93,16 +110,24 @@ export class CompanyFormComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       type: ['company_owner', Validators.required],
-      password: ['']
+      password: ['', [Validators.minLength(8)]],
+      confirmPassword: ['']
     });
 
     this.loadGlobalServices();
 
     this.companyId = this.route.snapshot.paramMap.get('id');
-    if (this.companyId) {
+    if (this.companyId && this.companyId !== 'create') {
       this.isEditMode.set(true);
       this.loadCompany(this.companyId);
       this.loadUsers(this.companyId);
+    } else {
+      this.isEditMode.set(false);
+      // Na criação, adiciona validadores de senha de 8 caracteres
+      this.form.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
+      this.form.get('confirmPassword')?.setValidators([Validators.required]);
+      this.form.get('password')?.updateValueAndValidity();
+      this.form.get('confirmPassword')?.updateValueAndValidity();
     }
   }
 
@@ -156,8 +181,16 @@ export class CompanyFormComponent implements OnInit {
       return;
     }
 
-    this.isLoading.set(true);
     const data = this.form.getRawValue();
+
+    if (!this.isEditMode()) {
+      if (data.password !== data.confirmPassword) {
+        this.global.errorToast('As senhas não conferem.');
+        return;
+      }
+    }
+
+    this.isLoading.set(true);
 
     if (this.isEditMode()) {
       this.companyService.updateCompany(this.companyId!, data).subscribe({
@@ -168,20 +201,20 @@ export class CompanyFormComponent implements OnInit {
         },
         error: (err: any) => {
           console.error(err);
-          this.global.errorToast('Erro ao salvar');
+          this.global.errorToast(err.error?.message || 'Erro ao salvar');
           this.isLoading.set(false);
         }
       });
     } else {
       this.companyService.createCompany(data).subscribe({
         next: (res: any) => {
-          this.global.successToast('Empresa criada!');
+          this.global.successToast('Empresa e conta do responsável criadas com sucesso!');
           this.router.navigateByUrl(Strings.SUPER_COMPANIES);
           this.isLoading.set(false);
         },
         error: (err: any) => {
           console.error(err);
-          this.global.errorToast('Erro ao salvar');
+          this.global.errorToast(err.error?.message || 'Erro ao criar empresa');
           this.isLoading.set(false);
         }
       });
@@ -202,8 +235,14 @@ export class CompanyFormComponent implements OnInit {
       this.userForm.markAllAsTouched();
       return;
     }
-    this.isUsersLoading.set(true);
+
     const data = this.userForm.getRawValue();
+    if (data.password && data.password !== data.confirmPassword) {
+      this.global.errorToast('As senhas do usuário não conferem.');
+      return;
+    }
+
+    this.isUsersLoading.set(true);
     this.companyService.assignUser(this.companyId!, data).subscribe({
       next: (res: any) => {
         this.global.successToast('Usuário vinculado com sucesso!');

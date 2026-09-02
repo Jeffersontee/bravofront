@@ -41,7 +41,27 @@ export class PushNotificationService {
       const permission = await Notification.requestPermission();
       if (permission === 'granted') {
         console.log('Notification permission granted.');
-        const currentToken = await getToken(this.messaging, { vapidKey: environment.vapidKey });
+
+        let registration: ServiceWorkerRegistration | undefined;
+        if ('serviceWorker' in navigator && environment.firebaseConfig && environment.firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+          const configParams = new URLSearchParams({
+            apiKey: environment.firebaseConfig.apiKey,
+            authDomain: environment.firebaseConfig.authDomain,
+            projectId: environment.firebaseConfig.projectId,
+            storageBucket: environment.firebaseConfig.storageBucket,
+            messagingSenderId: environment.firebaseConfig.messagingSenderId,
+            appId: environment.firebaseConfig.appId
+          }).toString();
+          
+          registration = await navigator.serviceWorker.register(`/firebase-messaging-sw.js?${configParams}`);
+        }
+
+        const tokenOptions: any = { vapidKey: environment.vapidKey };
+        if (registration) {
+          tokenOptions.serviceWorkerRegistration = registration;
+        }
+
+        const currentToken = await getToken(this.messaging, tokenOptions);
         if (currentToken) {
           console.log('FCM Token:', currentToken);
           this.sendTokenToBackend(currentToken);

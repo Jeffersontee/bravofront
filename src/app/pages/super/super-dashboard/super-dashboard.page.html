@@ -1,67 +1,81 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="secondary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Dashboard</ion-title>
+    <ion-title class="page-header-title">Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="ngOnInit()" title="Atualizar Métricas">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="dashboard-content">
   <div class="dashboard-container">
 
     <!-- LOADING -->
     @if (isLoading()) {
       <div class="loading-state">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
-        <p>Carregando dados...</p>
+        <p class="loading-state__text">Carregando métricas do sistema...</p>
       </div>
     }
 
     @if (!isLoading() && stats()) {
-      <!-- KPI CARDS -->
+      <!-- KPI CARDS GRID (2 COLUNAS NO MOBILE, 4 NO DESKTOP) -->
       <section class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--companies">
-            <ion-icon name="business-outline"></ion-icon>
+        <div class="kpi-card kpi-card--companies">
+          <div class="kpi-card__header">
+            <div class="kpi-icon kpi-icon--companies">
+              <ion-icon name="business-outline"></ion-icon>
+            </div>
+            <span class="kpi-sub">{{ stats()!.kpis.activeCompanies }} ativas</span>
           </div>
-          <div class="kpi-body">
+          <div class="kpi-card__body">
             <span class="kpi-value">{{ stats()!.kpis.totalCompanies }}</span>
             <span class="kpi-label">Empresas</span>
           </div>
-          <span class="kpi-sub">{{ stats()!.kpis.activeCompanies }} ativas</span>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--users">
-            <ion-icon name="people-outline"></ion-icon>
+        <div class="kpi-card kpi-card--users">
+          <div class="kpi-card__header">
+            <div class="kpi-icon kpi-icon--users">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+            <span class="kpi-sub">Cadastrados</span>
           </div>
-          <div class="kpi-body">
+          <div class="kpi-card__body">
             <span class="kpi-value">{{ stats()!.kpis.totalUsers }}</span>
             <span class="kpi-label">Usuários</span>
           </div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--orders">
-            <ion-icon name="clipboard-outline"></ion-icon>
+        <div class="kpi-card kpi-card--orders">
+          <div class="kpi-card__header">
+            <div class="kpi-icon kpi-icon--orders">
+              <ion-icon name="clipboard-outline"></ion-icon>
+            </div>
+            <span class="kpi-sub">{{ stats()!.kpis.pendingOrders }} pendentes</span>
           </div>
-          <div class="kpi-body">
+          <div class="kpi-card__body">
             <span class="kpi-value">{{ stats()!.kpis.totalOrders }}</span>
             <span class="kpi-label">Ordens de Serviço</span>
           </div>
-          <span class="kpi-sub">{{ stats()!.kpis.pendingOrders }} pendentes</span>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--completed">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <div class="kpi-card kpi-card--completed">
+          <div class="kpi-card__header">
+            <div class="kpi-icon kpi-icon--completed">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <span class="kpi-sub">{{ stats()!.kpis.canceledOrders }} canceladas</span>
           </div>
-          <div class="kpi-body">
+          <div class="kpi-card__body">
             <span class="kpi-value">{{ stats()!.kpis.completedOrders }}</span>
             <span class="kpi-label">Concluídas</span>
           </div>
-          <span class="kpi-sub">{{ stats()!.kpis.canceledOrders }} canceladas</span>
         </div>
       </section>
 
@@ -96,8 +110,8 @@
     @if (!isLoading() && !stats()) {
       <div class="empty-state">
         <ion-icon name="clipboard-outline"></ion-icon>
-        <h2>Sem dados disponíveis</h2>
-        <p>Cadastre empresas e crie ordens de serviço para visualizar as métricas aqui.</p>
+        <h2 class="empty-state__title">Sem dados disponíveis</h2>
+        <p class="empty-state__text">Cadastre empresas e crie ordens de serviço para visualizar as métricas aqui.</p>
       </div>
     }
 

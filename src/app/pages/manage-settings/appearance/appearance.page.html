@@ -1,5 +1,5 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="bravo-page-header">
     <ion-buttons slot="start">
       <ion-menu-toggle>
         <ion-button>
@@ -15,53 +15,169 @@
   <div class="appearance-container">
     <div class="header-section">
       <h1 class="page-title">Identidade Visual</h1>
-      <p class="page-subtitle">Personalize a aparência. Dê a sua cara para o catálogo público e encante os seus clientes com um design Impeccable.</p>
+      @if (tenantType() === 'GLOBAL') {
+        <p class="page-subtitle">Personalize a aparência global. Dê a sua cara para a plataforma, menu e tela de login com um design Impeccable.</p>
+      } @else {
+        <p class="page-subtitle">Personalize a aparência do seu menu e painel administrativo com um design Impeccable.</p>
+      }
     </div>
 
     <div class="main-content">
-      <!-- MOCKUP PREVIEW (Esquerda) -->
+      <!-- PREVIEW SECTION (Esquerda) -->
       <div class="preview-section">
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          
-          <div class="phone-screen" [ngClass]="currentTheme()">
-            <div class="mockup-header" [style.background]="primaryColor()">
-              <div class="mockup-logo-area">
-                <img *ngIf="logoUrl()" [src]="logoUrl()" class="mockup-logo">
-                <span *ngIf="!logoUrl()" class="mockup-logo-text">LOGO</span>
-              </div>
-            </div>
+        <!-- ALTERNÂNCIA DE MOCKUPS DE PREVIEW (APENAS PARA O SUPER ADMIN GLOBAL) -->
+        @if (tenantType() === 'GLOBAL') {
+          <div class="preview-tabs-bar">
+            <button 
+              type="button" 
+              class="tab-btn" 
+              [class.active]="previewTab() === 'login'" 
+              (click)="previewTab.set('login')">
+              <ion-icon name="lock-closed-outline"></ion-icon> Tela de Login
+            </button>
+            <button 
+              type="button" 
+              class="tab-btn" 
+              [class.active]="previewTab() === 'dashboard'" 
+              (click)="previewTab.set('dashboard')">
+              <ion-icon name="grid-outline"></ion-icon> Menu & Painel
+            </button>
+          </div>
+        }
+
+        <!-- PREVIEW 1: TELA DE LOGIN REAL (SUPER ADMIN GLOBAL) -->
+        @if (tenantType() === 'GLOBAL' && previewTab() === 'login') {
+          <div class="phone-mockup">
+            <div class="phone-notch"></div>
             
-            <div class="mockup-body" [style.background-image]="backgroundUrl() ? 'url(' + backgroundUrl() + ')' : 'none'">
-              <div class="mockup-card">
-                <div class="mockup-card-title">Vendas</div>
-                <div class="mockup-card-value">R$ 5k</div>
-              </div>
-              
-              <div class="mockup-card">
-                <div class="mockup-card-title">Visitas</div>
-                <div class="mockup-card-value">24</div>
-              </div>
-              
-              <div class="mockup-list">
-                <div class="mockup-list-item">
-                  <div class="mockup-avatar"></div>
-                  <div class="mockup-lines">
-                    <div class="mockup-line"></div>
-                    <div class="mockup-line short"></div>
+            <div class="phone-screen" [ngClass]="currentTheme()">
+              <div class="hero-login-preview">
+                
+                <!-- HERO HEADER DO PREVIEW -->
+                <div class="hero-preview-header" [style.background-image]="backgroundUrl() ? 'linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.8)), url(' + backgroundUrl() + ')' : 'linear-gradient(rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.8)), url(/assets/icon/fundo.jpg)'">
+                  <div class="hero-brand">
+                    <div class="hero-logo-box">
+                      <img *ngIf="logoUrl()" [src]="logoUrl()" class="hero-logo-img">
+                      <img *ngIf="!logoUrl()" src="assets/icon/logo.jpg" class="hero-logo-img">
+                    </div>
+                    <div class="hero-brand-text">BRAVO<br><span>INSTALAÇÕES</span></div>
+                  </div>
+                  <div class="hero-title-preview">
+                    Serviços técnicos para sua casa, <br>
+                    <span [style.color]="primaryColor()">com agilidade e garantia.</span>
+                  </div>
+                  <div class="hero-desc-preview">
+                    Hidráulica, elétrica, serralheria e mais — solicite pelo app.
                   </div>
                 </div>
+
+                <!-- FLOATING FORM CARD DO PREVIEW -->
+                <div class="floating-preview-card">
+                  <div class="card-title">Acesse sua conta</div>
+
+                  <div class="preview-input">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <span>E-mail</span>
+                  </div>
+
+                  <div class="preview-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <span>Senha</span>
+                    <ion-icon name="eye-outline" class="preview-eye"></ion-icon>
+                  </div>
+
+                  <div class="preview-forgot">Esqueceu sua senha?</div>
+
+                  <div class="preview-submit-btn" [style.background]="primaryColor()">
+                    Entrar
+                  </div>
+
+                  <div class="preview-signup">Não tem uma conta? <strong>Inscrever-se</strong></div>
+                </div>
+
               </div>
             </div>
-            
-            <div class="mockup-tabbar">
-              <div class="mockup-tab"></div>
-              <div class="mockup-tab"></div>
-              <div class="mockup-tab"></div>
-              <div class="mockup-tab"></div>
+          </div>
+        }
+
+        <!-- PREVIEW 2: MENU & PAINEL (COMPANY OWNER OU SUPER ADMIN NA ABA PAINEL) -->
+        @if (tenantType() === 'COMPANY' || previewTab() === 'dashboard') {
+          <div class="phone-mockup desktop-mockup-frame">
+            <div class="phone-notch"></div>
+
+            <div class="phone-screen dashboard-mockup-screen">
+              <div class="dashboard-preview-container">
+                <!-- SIDEBAR ESQUERDA -->
+                <div class="dashboard-sidebar" [class.theme-dark-sidebar]="currentTheme() === 'dark'">
+                  <div class="sidebar-header">Painel Administrativo</div>
+                  <div class="sidebar-menu">
+                    <div class="sidebar-item active" [style.background]="currentTheme() === 'dark' ? 'rgba(var(--ion-color-primary-rgb), 0.2)' : 'rgba(var(--ion-color-primary-rgb), 0.12)'" [style.color]="primaryColor()">
+                      <ion-icon name="speedometer-outline" [style.color]="primaryColor()"></ion-icon> Dashboard
+                    </div>
+                    <div class="sidebar-item">
+                      <ion-icon name="construct-outline"></ion-icon> Operacional
+                    </div>
+                    <div class="sidebar-item">
+                      <ion-icon name="calendar-outline"></ion-icon> Agenda 365
+                    </div>
+                    <div class="sidebar-item">
+                      <ion-icon name="business-outline"></ion-icon> Unidades / Filiais
+                    </div>
+                    <div class="sidebar-item">
+                      <ion-icon name="build-outline"></ion-icon> Serviços
+                    </div>
+                    <div class="sidebar-item">
+                      <ion-icon name="people-outline"></ion-icon> Colaboradores
+                    </div>
+                    <div class="sidebar-item">
+                      <ion-icon name="settings-outline"></ion-icon> Configurações
+                    </div>
+                    <div class="sidebar-item logout">
+                      <ion-icon name="log-out-outline" color="danger"></ion-icon> Sair
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PAINEL DIREITA -->
+                <div class="dashboard-content">
+                  <div class="dash-top-bar">Dashboard</div>
+                  <div class="dash-cards-grid">
+                    <div class="dash-card">
+                      <div class="dash-lbl">Visitas</div>
+                      <div class="dash-num">24</div>
+                    </div>
+                    <div class="dash-card bg-green-tint">
+                      <div class="dash-lbl text-green">Concluídas</div>
+                      <div class="dash-num text-green">18</div>
+                    </div>
+                    <div class="dash-card">
+                      <div class="dash-lbl">Combustível</div>
+                      <div class="dash-num">R$ 1.2k</div>
+                    </div>
+                    <div class="dash-card">
+                      <div class="dash-lbl">Km Rodado</div>
+                      <div class="dash-num">340</div>
+                    </div>
+                  </div>
+                  <div class="dash-charts-row">
+                    <div class="dash-chart-card">
+                      <div class="chart-title">Desempenho</div>
+                      <div class="chart-bars-preview">
+                        <div class="bar bar-main" [style.background]="primaryColor()"></div>
+                        <div class="bar bar-sub"></div>
+                      </div>
+                    </div>
+                    <div class="dash-chart-card">
+                      <div class="chart-title">Status</div>
+                      <div class="chart-donut-preview" [style.border-top-color]="primaryColor()"></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
 
       <!-- CONTROLS (Direita) -->
@@ -69,8 +185,8 @@
         
         <!-- Logo Upload -->
         <div class="control-block">
-          <h3 class="block-title">Logo da Empresa</h3>
-          <p class="block-desc">Faça upload da logomarca que será exibida no topo do seu catálogo.</p>
+          <h3 class="block-title">Logo da Empresa / Sistema</h3>
+          <p class="block-desc">Faça upload da logomarca que será exibida no topo do menu.</p>
           <div class="upload-area">
             <div class="upload-preview" *ngIf="logoUrl()">
               <img [src]="logoUrl()">
@@ -88,30 +204,32 @@
           </div>
         </div>
 
-        <!-- Background Upload -->
-        <div class="control-block">
-          <h3 class="block-title">Imagem de Fundo</h3>
-          <p class="block-desc">Adicione uma imagem de fundo (background) para compor a apresentação dos produtos.</p>
-          <div class="upload-area">
-            <div class="upload-preview bg-preview" *ngIf="backgroundUrl()" [style.background-image]="'url(' + backgroundUrl() + ')'">
-              <ion-button fill="clear" color="danger" (click)="removeImage('background')">
-                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-              </ion-button>
-            </div>
-            <div class="upload-btn-wrapper" *ngIf="!backgroundUrl()">
-              <ion-button fill="outline" color="medium" class="upload-btn">
-                <ion-icon name="image-outline" slot="start"></ion-icon>
-                SELECIONAR FUNDO
-              </ion-button>
-              <input type="file" accept="image/*" (change)="onFileSelected($event, 'background')" />
+        <!-- Background Upload (Apenas para o Super Admin Global) -->
+        @if (tenantType() === 'GLOBAL') {
+          <div class="control-block">
+            <h3 class="block-title">Imagem de Fundo da Login</h3>
+            <p class="block-desc">Adicione uma imagem de fundo (background) para compor o cabeçalho da tela de login.</p>
+            <div class="upload-area">
+              <div class="upload-preview bg-preview" *ngIf="backgroundUrl()" [style.background-image]="'url(' + backgroundUrl() + ')'">
+                <ion-button fill="clear" color="danger" (click)="removeImage('background')">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+              <div class="upload-btn-wrapper" *ngIf="!backgroundUrl()">
+                <ion-button fill="outline" color="medium" class="upload-btn">
+                  <ion-icon name="image-outline" slot="start"></ion-icon>
+                  SELECIONAR FUNDO
+                </ion-button>
+                <input type="file" accept="image/*" (change)="onFileSelected($event, 'background')" />
+              </div>
             </div>
           </div>
-        </div>
+        }
 
         <!-- Theme Toggle -->
         <div class="control-block">
           <h3 class="block-title">Estilo de Fundo (Tema)</h3>
-          <p class="block-desc">Escolha a atmosfera do seu catálogo.</p>
+          <p class="block-desc">Escolha a atmosfera do menu e painel. O padrão default é Premium Branco.</p>
           <div class="theme-cards">
             <div class="theme-card light-card" 
                  [class.active]="currentTheme() === 'light'"
@@ -123,7 +241,7 @@
                   <div class="mockup-item"></div>
                 </div>
               </div>
-              <div class="card-label">Premium Branco</div>
+              <div class="card-label">Premium Branco (Default)</div>
             </div>
             
             <div class="theme-card dark-card" 
@@ -144,7 +262,7 @@
         <!-- Primary Color -->
         <div class="control-block">
           <h3 class="block-title">Cor Principal</h3>
-          <p class="block-desc">Esta cor será usada em botões, destaques e ícones de ação.</p>
+          <p class="block-desc">Esta cor será usada nos itens ativos do menu, botões e ícones de ação do seu painel.</p>
           
           <div class="color-picker-container">
             <div class="color-circles">
@@ -166,6 +284,14 @@
               Cor Selecionada: <strong>{{ primaryColor() | uppercase }}</strong>
             </div>
           </div>
+        </div>
+
+        <!-- BOTÃO SALVAR ALTERAÇÕES (PAINEL DE CONTROLE) -->
+        <div class="action-block">
+          <ion-button expand="block" class="main-save-btn" (click)="saveAppearance()" [disabled]="isLoading()">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            {{ isLoading() ? 'SALVANDO ALTERAÇÕES...' : 'SALVAR ALTERAÇÕES' }}
+          </ion-button>
         </div>
 
       </div>
