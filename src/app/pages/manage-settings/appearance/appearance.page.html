@@ -186,10 +186,10 @@
         <!-- Logo Upload -->
         <div class="control-block">
           <h3 class="block-title">Logo da Empresa / Sistema</h3>
-          <p class="block-desc">Faça upload da logomarca que será exibida no topo do menu.</p>
+          <p class="block-desc">Faça upload da logomarca que será exibida no topo do menu e da tela de login.</p>
           <div class="upload-area">
             <div class="upload-preview" *ngIf="logoUrl()">
-              <img [src]="logoUrl()">
+              <img [src]="logoUrl()" class="preview-img-fill">
               <ion-button fill="clear" color="danger" (click)="removeImage('logo')">
                 <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
               </ion-button>
@@ -210,7 +210,8 @@
             <h3 class="block-title">Imagem de Fundo da Login</h3>
             <p class="block-desc">Adicione uma imagem de fundo (background) para compor o cabeçalho da tela de login.</p>
             <div class="upload-area">
-              <div class="upload-preview bg-preview" *ngIf="backgroundUrl()" [style.background-image]="'url(' + backgroundUrl() + ')'">
+              <div class="upload-preview bg-preview" *ngIf="backgroundUrl()">
+                <img [src]="backgroundUrl()" class="preview-img-fill">
                 <ion-button fill="clear" color="danger" (click)="removeImage('background')">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
@@ -234,7 +235,7 @@
             <div class="theme-card light-card" 
                  [class.active]="currentTheme() === 'light'"
                  (click)="setTheme('light')">
-              <div class="card-mockup">
+              <div class="card-mockup light-mockup">
                 <div class="mockup-header"></div>
                 <div class="mockup-body">
                   <div class="mockup-item"></div>
@@ -247,7 +248,7 @@
             <div class="theme-card dark-card" 
                  [class.active]="currentTheme() === 'dark'"
                  (click)="setTheme('dark')">
-              <div class="card-mockup">
+              <div class="card-mockup dark-mockup">
                 <div class="mockup-header"></div>
                 <div class="mockup-body">
                   <div class="mockup-item"></div>

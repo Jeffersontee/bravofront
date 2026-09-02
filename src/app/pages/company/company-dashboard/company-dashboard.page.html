@@ -1,176 +1,288 @@
-<ion-content class="custom-dark-content">
-  <!-- BANNER DE FALHA DE CONEXÃO -->
-  @if (hasConnectionError()) {
-    <div class="connection-error-banner">
-      <div class="error-header">
-        <ion-icon name="wifi-outline" class="error-icon"></ion-icon>
-        <div class="error-info">
-          <h3>Falha de Conexão com o Servidor</h3>
-          <p>Não foi possível conectar ao backend. Verifique se o servidor está online ou sua conexão com a internet.</p>
+@if (isDashboardView()) {
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title class="page-header-title">Dashboard {{ (company()?.name | uppercase) || 'EMPRESA' }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="retryLoad()" title="Atualizar Métricas">
+          <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="dashboard-content">
+    <div class="dashboard-container">
+      @if (isLoading()) {
+        <div class="loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p class="loading-state__text">Carregando métricas da empresa...</p>
         </div>
-      </div>
-      <button class="retry-btn" (click)="retryLoad()">
-        <ion-icon name="refresh-outline"></ion-icon> Tentar Novamente
-      </button>
-    </div>
-  }
+      }
 
-  <!-- Header -->
-  <div class="dashboard-header">
-    <!-- MOBILE TOP BAR (BOTÃO DE MENU COM ÁREA DE TOQUE GRANDE E SEM SOBREPOR TEXTO) -->
-    <div class="mobile-header-bar ion-hide-lg-up">
-      <div class="menu-btn-container">
-        <ion-menu-button class="dashboard-menu-btn"></ion-menu-button>
-      </div>
-      <span class="mobile-system-tag">BRAVO INSTALAÇÕES</span>
-    </div>
+      @if (!isLoading()) {
+        <!-- KPI CARDS GRID (2 COLUNAS NO MOBILE, 4 NO DESKTOP IGUAL SUPER DASHBOARD) -->
+        <section class="kpi-grid">
+          <div class="kpi-card kpi-card--companies">
+            <div class="kpi-card__header">
+              <div class="kpi-icon kpi-icon--companies">
+                <ion-icon name="business-outline"></ion-icon>
+              </div>
+              <span class="kpi-sub">{{ units().length }} cadastradas</span>
+            </div>
+            <div class="kpi-card__body">
+              <span class="kpi-value">{{ units().length }}</span>
+              <span class="kpi-label">Unidades / Filiais</span>
+            </div>
+          </div>
 
-    <div class="header-content-wrapper">
-      <div class="header-titles">
-        <h6 class="subtitle ion-hide-lg-down">BRAVO INSTALAÇÕES - MANUTENÇÃO PREDIAL E INDUSTRIAL</h6>
-        <h1 class="title">PAINEL {{ (company()?.name | uppercase) || (isLoading() ? 'CARREGANDO...' : 'EMPRESA') }}</h1>
-        <p class="description">Controle de visitas técnicas nas unidades — 365 dias, categorias padronizadas de serviço e status de campo em tempo real.</p>
-      </div>
-      <div class="header-actions">
-        <button class="btn-new-visit" (click)="openCreateVisitModal()">
-          <ion-icon name="add-circle-outline"></ion-icon>
-          NOVA SOLICITAÇÃO
+          <div class="kpi-card kpi-card--orders">
+            <div class="kpi-card__header">
+              <div class="kpi-icon kpi-icon--orders">
+                <ion-icon name="clipboard-outline"></ion-icon>
+              </div>
+              <span class="kpi-sub">{{ stats().pendentes }} pendentes</span>
+            </div>
+            <div class="kpi-card__body">
+              <span class="kpi-value">{{ stats().total }}</span>
+              <span class="kpi-label">Ordens de Serviço</span>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-card--completed">
+            <div class="kpi-card__header">
+              <div class="kpi-icon kpi-icon--completed">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </div>
+              <span class="kpi-sub">{{ stats().percent }}% taxa</span>
+            </div>
+            <div class="kpi-card__body">
+              <span class="kpi-value">{{ stats().concluidas }}</span>
+              <span class="kpi-label">Concluídas</span>
+            </div>
+          </div>
+
+          <div class="kpi-card kpi-card--users">
+            <div class="kpi-card__header">
+              <div class="kpi-icon kpi-icon--users">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <span class="kpi-sub">Aguardando</span>
+            </div>
+            <div class="kpi-card__body">
+              <span class="kpi-value">{{ stats().pendentes }}</span>
+              <span class="kpi-label">Pendentes</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHARTS ROW 1 -->
+        <section class="charts-row">
+          <div class="chart-card chart-card--wide">
+            <h3 class="chart-title">Ordens por Mês</h3>
+            <div class="chart-wrapper">
+              <canvas #monthlyChartCanvas></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card chart-card--narrow">
+            <h3 class="chart-title">Serviços Habilitados</h3>
+            <div class="chart-wrapper">
+              <canvas #servicesChartCanvas></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHARTS ROW 2 (FULL WIDTH) -->
+        <section class="charts-row">
+          <div class="chart-card chart-card--full">
+            <h3 class="chart-title">Ordens por Status</h3>
+            <div class="chart-wrapper chart-wrapper--horizontal">
+              <canvas #statusChartCanvas></canvas>
+            </div>
+          </div>
+        </section>
+      }
+    </div>
+  </ion-content>
+}
+
+@if (!isDashboardView()) {
+  <ion-content class="custom-dark-content">
+    <!-- BANNER DE FALHA DE CONEXÃO -->
+    @if (hasConnectionError()) {
+      <div class="connection-error-banner">
+        <div class="error-header">
+          <ion-icon name="wifi-outline" class="error-icon"></ion-icon>
+          <div class="error-info">
+            <h3>Falha de Conexão com o Servidor</h3>
+            <p>Não foi possível conectar ao backend. Verifique se o servidor está online ou sua conexão com a internet.</p>
+          </div>
+        </div>
+        <button class="retry-btn" (click)="retryLoad()">
+          <ion-icon name="refresh-outline"></ion-icon> Tentar Novamente
         </button>
-        <div class="header-stats">
-          <div class="stat-line">{{ units().length }} UNIDADES NA ROTA</div>
-          <div class="stat-line">DADOS SALVOS NESTE NAVEGADOR</div>
+      </div>
+    }
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <!-- MOBILE TOP BAR (BOTÃO DE MENU COM ÁREA DE TOQUE GRANDE E SEM SOBREPOR TEXTO) -->
+      <div class="mobile-header-bar ion-hide-lg-up">
+        <div class="menu-btn-container">
+          <ion-menu-button class="dashboard-menu-btn"></ion-menu-button>
         </div>
+        <span class="mobile-system-tag">BRAVO INSTALAÇÕES</span>
       </div>
-    </div>
-  </div>
 
-  @if (isLoading()) {
-    <div class="loading-bar-wrapper">
-      <ion-spinner name="crescent" color="warning"></ion-spinner>
-      <span>Carregando solicitações e unidades...</span>
-    </div>
-  }
-
-  <!-- KPI Cards Row (2 Colunas no Mobile / 6 no Desktop conforme PRODUCT.md) -->
-  <div class="kpi-row">
-    <div class="kpi-card">
-      <div class="kpi-label">VISITAS NO ANO</div>
-      <div class="kpi-value">{{ stats().total }}</div>
-    </div>
-    <div class="kpi-card bg-green-tint">
-      <div class="kpi-label text-green">CONCLUÍDAS</div>
-      <div class="kpi-value text-green">{{ stats().concluidas }} <span class="kpi-sub">/ {{ stats().total }}</span></div>
-    </div>
-    <div class="kpi-card bg-red-tint">
-      <div class="kpi-label text-red">PENDENTES</div>
-      <div class="kpi-value text-red">{{ stats().pendentes }}</div>
-    </div>
-    <div class="kpi-card bg-yellow-tint">
-      <div class="kpi-label text-yellow">% CONCLUSÃO</div>
-      <div class="kpi-value text-yellow">{{ stats().percent }}%</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">COMBUSTÍVEL (R$)</div>
-      <div class="kpi-value">{{ stats().fuel | number:'1.2-2' }}</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">KM RODADO</div>
-      <div class="kpi-value">{{ stats().km | number:'1.1-1' }}</div>
-    </div>
-  </div>
-
-  <!-- Legend -->
-  <div class="legend-row">
-    <div class="tags-container">
-      @for (service of services(); track service._id; let idx = $index) {
-        <span class="legend-item" [ngClass]="legendColors[idx % legendColors.length]">{{ service.name | uppercase }}</span>
-      } @empty {
-        <span class="legend-item bg-grey">NENHUM SERVIÇO CADASTRADO</span>
-      }
-    </div>
-  </div>
-
-  <!-- Filters -->
-  <div class="filters-row">
-    <div class="filter-group">
-      <label>PERÍODO</label>
-      <app-global-date-filter></app-global-date-filter>
-    </div>
-    <div class="filter-group">
-      <label>UNIDADE</label>
-      <div class="select-wrapper">
-        <select [ngModel]="filterUnit()" (ngModelChange)="filterUnit.set($event)">
-          <option value="Todas">Todas</option>
-          @for (unit of units(); track unit._id) {
-            <option [value]="unit._id">{{ unit.name }}</option>
-          }
-        </select>
-      </div>
-    </div>
-    <div class="filter-group">
-      <label>CATEGORIA</label>
-      <div class="select-wrapper">
-        <select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event)">
-          <option value="Todas">Todas</option>
-          <option value="ELÉTRICA">ELÉTRICA</option>
-          <option value="HIDRÁULICA/CIVIL">HIDRÁULICA/CIVIL</option>
-          <option value="SERRALHERIA">SERRALHERIA</option>
-        </select>
-      </div>
-    </div>
-    <div class="filter-group">
-      <label>STATUS</label>
-      <div class="select-wrapper">
-        <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
-          <option value="Todos">Todos</option>
-          <option value="AGENDADO">AGENDADO</option>
-          <option value="PENDENTE">PENDENTE</option>
-          <option value="EM_DESLOCAMENTO">EM DESLOCAMENTO</option>
-          <option value="CHECK_IN">CHECK IN</option>
-          <option value="EM_EXECUCAO">EM EXECUÇÃO</option>
-          <option value="CONCLUIDO">CONCLUÍDO</option>
-          <option value="CANCELADO">CANCELADO</option>
-        </select>
-      </div>
-    </div>
-    <div class="filter-group flex-grow">
-      <label>BUSCAR UNIDADE</label>
-      <div class="search-wrap">
-        <input type="text" placeholder="ex: Jabaquara" [ngModel]="filterSearch()" (ngModelChange)="filterSearch.set($event)" />
-        <button class="clear-btn" (click)="clearFilters()">LIMPAR FILTROS</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Table -->
-  <div class="table-container">
-    <div class="table-header">
-      <div class="month-title">VISITAS GERAIS</div>
-      <div class="pagination">{{ filteredOrders().length }} de {{ serviceOrders().length }} solicitações</div>
-    </div>
-    
-    <div class="table-body">
-      @for (order of filteredOrders(); track order._id) {
-        <div class="table-row" (click)="openEditVisitModal(order)">
-          <div class="col-date">{{ order.scheduled_date ? (order.scheduled_date | date:'dd/MM') : '--/--' }}</div>
-          <div class="col-day">{{ order.scheduled_date ? (order.scheduled_date | date:'EEEE') : 'N/A' }}</div>
-          <div class="col-unit">
-            {{ getUnitName(order.unit_id) }} 
-            <span [innerHTML]="getServiceBadge(order.service_id)"></span>
-          </div>
-          <div class="col-status">
-            <span class="badge" [ngClass]="{
-              'badge-pending': order.current_status !== 'CONCLUIDO',
-              'badge-success': order.current_status === 'CONCLUIDO'
-            }">{{ order.current_status }}</span>
+      <div class="header-content-wrapper">
+        <div class="header-titles">
+          <h6 class="subtitle ion-hide-lg-down">BRAVO INSTALAÇÕES - MANUTENÇÃO PREDIAL E INDUSTRIAL</h6>
+          <h1 class="title">PAINEL {{ (company()?.name | uppercase) || (isLoading() ? 'CARREGANDO...' : 'EMPRESA') }}</h1>
+          <p class="description">Controle de visitas técnicas nas unidades — 365 dias, categorias padronizadas de serviço e status de campo em tempo real.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-new-visit" (click)="openCreateVisitModal()">
+            <ion-icon name="add-circle-outline"></ion-icon>
+            NOVA SOLICITAÇÃO
+          </button>
+          <div class="header-stats">
+            <div class="stat-line">{{ units().length }} UNIDADES NA ROTA</div>
+            <div class="stat-line">DADOS SALVOS NESTE NAVEGADOR</div>
           </div>
         </div>
-      } @empty {
-        <div class="empty-state">
-          Nenhuma solicitação encontrada com os filtros atuais.
-        </div>
-      }
+      </div>
     </div>
-  </div>
 
-</ion-content>
+    @if (isLoading()) {
+      <div class="loading-bar-wrapper">
+        <ion-spinner name="crescent" color="warning"></ion-spinner>
+        <span>Carregando solicitações e unidades...</span>
+      </div>
+    }
+
+    <!-- KPI Cards Row -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">VISITAS NO ANO</div>
+        <div class="kpi-value">{{ stats().total }}</div>
+      </div>
+      <div class="kpi-card bg-green-tint">
+        <div class="kpi-label text-green">CONCLUÍDAS</div>
+        <div class="kpi-value text-green">{{ stats().concluidas }} <span class="kpi-sub">/ {{ stats().total }}</span></div>
+      </div>
+      <div class="kpi-card bg-red-tint">
+        <div class="kpi-label text-red">PENDENTES</div>
+        <div class="kpi-value text-red">{{ stats().pendentes }}</div>
+      </div>
+      <div class="kpi-card bg-yellow-tint">
+        <div class="kpi-label text-yellow">% CONCLUSÃO</div>
+        <div class="kpi-value text-yellow">{{ stats().percent }}%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">COMBUSTÍVEL (R$)</div>
+        <div class="kpi-value">{{ stats().fuel | number:'1.2-2' }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">KM RODADO</div>
+        <div class="kpi-value">{{ stats().km | number:'1.1-1' }}</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend-row">
+      <div class="tags-container">
+        @for (service of services(); track service._id; let idx = $index) {
+          <span class="legend-item" [ngClass]="legendColors[idx % legendColors.length]">{{ service.name | uppercase }}</span>
+        } @empty {
+          <span class="legend-item bg-grey">NENHUM SERVIÇO CADASTRADO</span>
+        }
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>PERÍODO</label>
+        <app-global-date-filter></app-global-date-filter>
+      </div>
+      <div class="filter-group">
+        <label>UNIDADE</label>
+        <div class="select-wrapper">
+          <select [ngModel]="filterUnit()" (ngModelChange)="filterUnit.set($event)">
+            <option value="Todas">Todas</option>
+            @for (unit of units(); track unit._id) {
+              <option [value]="unit._id">{{ unit.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>CATEGORIA</label>
+        <div class="select-wrapper">
+          <select [ngModel]="filterCategory()" (ngModelChange)="filterCategory.set($event)">
+            <option value="Todas">Todas</option>
+            <option value="ELÉTRICA">ELÉTRICA</option>
+            <option value="HIDRÁULICA/CIVIL">HIDRÁULICA/CIVIL</option>
+            <option value="SERRALHERIA">SERRALHERIA</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>STATUS</label>
+        <div class="select-wrapper">
+          <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+            <option value="Todos">Todos</option>
+            <option value="AGENDADO">AGENDADO</option>
+            <option value="PENDENTE">PENDENTE</option>
+            <option value="EM_DESLOCAMENTO">EM DESLOCAMENTO</option>
+            <option value="CHECK_IN">CHECK IN</option>
+            <option value="EM_EXECUCAO">EM EXECUÇÃO</option>
+            <option value="CONCLUIDO">CONCLUÍDO</option>
+            <option value="CANCELADO">CANCELADO</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-group flex-grow">
+        <label>BUSCAR UNIDADE</label>
+        <div class="search-wrap">
+          <input type="text" placeholder="ex: Jabaquara" [ngModel]="filterSearch()" (ngModelChange)="filterSearch.set($event)" />
+          <button class="clear-btn" (click)="clearFilters()">LIMPAR FILTROS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="month-title">VISITAS GERAIS</div>
+        <div class="pagination">{{ filteredOrders().length }} de {{ serviceOrders().length }} solicitações</div>
+      </div>
+      
+      <div class="table-body">
+        @for (order of filteredOrders(); track order._id) {
+          <div class="table-row" (click)="openEditVisitModal(order)">
+            <div class="col-date">{{ order.scheduled_date ? (order.scheduled_date | date:'dd/MM') : '--/--' }}</div>
+            <div class="col-day">{{ order.scheduled_date ? (order.scheduled_date | date:'EEEE') : 'N/A' }}</div>
+            <div class="col-unit">
+              {{ getUnitName(order.unit_id) }} 
+              <span [innerHTML]="getServiceBadge(order.service_id)"></span>
+            </div>
+            <div class="col-status">
+              <span class="badge" [ngClass]="{
+                'badge-pending': order.current_status !== 'CONCLUIDO',
+                'badge-success': order.current_status === 'CONCLUIDO'
+              }">{{ order.current_status }}</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            Nenhuma solicitação encontrada com os filtros atuais.
+          </div>
+        }
+      </div>
+    </div>
+  </ion-content>
+}

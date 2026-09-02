@@ -3,7 +3,16 @@ import { Routes } from '@angular/router';
 export const companyRoutes: Routes = [
   {
     path: 'dashboard',
-    loadComponent: () => import('./dashboard/dashboard.page').then(m => m.DashboardPage)
+    loadComponent: () => import('./company-dashboard/company-dashboard.page').then(m => m.CompanyDashboardPage)
+  },
+  {
+    path: 'painel',
+    loadComponent: () => import('./company-dashboard/company-dashboard.page').then(m => m.CompanyDashboardPage)
+  },
+  {
+    path: 'admin-dashboard',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
   },
   {
     path: 'kpis',
@@ -20,7 +29,7 @@ export const companyRoutes: Routes = [
   },
   {
     path: 'companies',
-    redirectTo: 'dashboard', // O Dashboard é a lista de empresas
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   },
   {
@@ -37,8 +46,12 @@ export const companyRoutes: Routes = [
   },
 
   {
+    path: 'companies/:id/painel',
+    loadComponent: () => import('./company-dashboard/company-dashboard.page').then(m => m.CompanyDashboardPage)
+  },
+  {
     path: 'companies/:id/dashboard',
-    loadComponent: () => import('./company-dashboard/company-dashboard.page').then( m => m.CompanyDashboardPage)
+    loadComponent: () => import('./company-dashboard/company-dashboard.page').then(m => m.CompanyDashboardPage)
   },
   {
     path: 'companies/:id/agenda',
@@ -47,19 +60,19 @@ export const companyRoutes: Routes = [
 
   {
     path: 'companies/:id/catalog',
-    loadComponent: () => import('./catalog/catalog.page').then( m => m.CatalogPage)
+    loadComponent: () => import('./catalog/catalog.page').then(m => m.CatalogPage)
   },
   {
     path: 'companies/:id/units',
-    loadComponent: () => import('./unit/unit.page').then( m => m.UnitPage)
+    loadComponent: () => import('./unit/unit.page').then(m => m.UnitPage)
   },
   {
     path: 'companies/:id/units/create',
-    loadComponent: () => import('./unit/unit.page').then( m => m.UnitPage)
+    loadComponent: () => import('./unit/unit.page').then(m => m.UnitPage)
   },
   {
     path: 'companies/:id/units/edit/:unitId',
-    loadComponent: () => import('./unit/unit.page').then( m => m.UnitPage)
+    loadComponent: () => import('./unit/unit.page').then(m => m.UnitPage)
   },
   {
     path: 'help',

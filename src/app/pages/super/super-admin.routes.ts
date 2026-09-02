@@ -38,6 +38,10 @@ export const superAdminRoutes: Routes = [
     loadComponent: () => import('./companies/company-form/company-form.component').then(m => m.CompanyFormComponent)
   },
   {
+    path: 'companies/:id/painel',
+    loadComponent: () => import('../company/company-dashboard/company-dashboard.page').then(m => m.CompanyDashboardPage)
+  },
+  {
     path: 'companies/:id/dashboard',
     loadComponent: () => import('../company/company-dashboard/company-dashboard.page').then(m => m.CompanyDashboardPage)
   },
