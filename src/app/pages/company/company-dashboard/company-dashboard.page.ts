@@ -1,9 +1,13 @@
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, ModalController, IonMenuButton, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, ModalController, IonMenuButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addCircleOutline } from 'ionicons/icons';
+import { 
+  addCircleOutline, wifiOutline, refreshOutline, 
+  alertCircleOutline, searchOutline, calendarOutline,
+  businessOutline
+} from 'ionicons/icons';
 import { VisitModalComponent } from 'src/app/components/visit-modal/visit-modal.component';
 import { GlobalDateFilterComponent } from 'src/app/components/global-date-filter/global-date-filter.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,7 +23,7 @@ import { forkJoin } from 'rxjs';
   templateUrl: './company-dashboard.page.html',
   styleUrls: ['./company-dashboard.page.scss'],
   standalone: true,
-  imports: [IonIcon, IonContent, CommonModule, FormsModule, IonMenuButton, GlobalDateFilterComponent]
+  imports: [IonIcon, IonContent, IonSpinner, CommonModule, FormsModule, IonMenuButton, GlobalDateFilterComponent]
 })
 export class CompanyDashboardPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -36,6 +40,9 @@ export class CompanyDashboardPage implements OnInit {
   public services = signal<ServiceItem[]>([]);
   public units = signal<Unit[]>([]);
   public serviceOrders = signal<ServiceOrder[]>([]);
+
+  public isLoading = signal<boolean>(false);
+  public hasConnectionError = signal<boolean>(false);
 
   // Filters
   public filterUnit = signal<string>('Todas');
@@ -65,8 +72,6 @@ export class CompanyDashboardPage implements OnInit {
 
     if (fCat !== 'Todas') {
       orders = orders.filter(o => {
-        // assuming service_id has category if populated, else this might be tricky without populated data
-        // For simplicity, we just filter by string if it's there
         const sId = typeof o.service_id === 'object' ? (o.service_id as any).category : o.service_id;
         return sId === fCat;
       });
@@ -101,9 +106,13 @@ export class CompanyDashboardPage implements OnInit {
   });
 
   constructor() {
-    addIcons({ addCircleOutline });
+    addIcons({ 
+      addCircleOutline, wifiOutline, refreshOutline, 
+      alertCircleOutline, searchOutline, calendarOutline,
+      businessOutline
+    });
+    
     effect(() => {
-      // Reagir às mudanças no DateFilterService
       const start = this.dateFilterService.startDate();
       const end = this.dateFilterService.endDate();
       const id = this.companyId();
@@ -122,6 +131,9 @@ export class CompanyDashboardPage implements OnInit {
   }
 
   loadCompanyData(companyId: string) {
+    this.isLoading.set(true);
+    this.hasConnectionError.set(false);
+
     forkJoin({
       company: this.companyService.getCompanyById(companyId),
       services: this.serviceService.getServices(),
@@ -133,25 +145,41 @@ export class CompanyDashboardPage implements OnInit {
       })
     }).subscribe({
       next: (res) => {
-        if (res.company.success) {
+        this.isLoading.set(false);
+        this.hasConnectionError.set(false);
+
+        if (res.company?.success) {
           const comp = res.company.data;
           this.company.set(comp);
           
-          if (res.services.success) {
+          if (res.services?.success) {
             const activeServiceIds = comp.services || [];
             const filtered = (res.services.data || []).filter(s => activeServiceIds.includes(s._id!));
             this.services.set(filtered);
           }
         }
-        if (res.units.success) this.units.set(res.units.data);
-        if (res.orders.success) this.serviceOrders.set(res.orders.data);
+        if (res.units?.success) this.units.set(res.units.data || []);
+        if (res.orders?.success) this.serviceOrders.set(res.orders.data || []);
       },
       error: (err) => {
         console.error('Erro ao carregar dados da empresa:', err);
-        // Redireciona para o dashboard principal se a empresa não for encontrada
-        this.router.navigate(['/company/dashboard']);
+        this.isLoading.set(false);
+
+        if (err.status === 404) {
+          // Redireciona APENAS se a empresa não for encontrada no servidor (404)
+          this.router.navigate(['/company/dashboard']);
+        } else {
+          // Para falhas de conexão (status 0) ou erros temporários, PERMANECE na página e exibe banner com botão de tentar novamente
+          this.hasConnectionError.set(true);
+        }
       }
     });
+  }
+
+  retryLoad() {
+    if (this.companyId()) {
+      this.loadCompanyData(this.companyId());
+    }
   }
 
   getUnitName(unitId: string | any): string {

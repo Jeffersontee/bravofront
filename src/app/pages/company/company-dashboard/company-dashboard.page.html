@@ -1,27 +1,57 @@
 <ion-content class="custom-dark-content">
-  <!-- Header -->
-  <div class="dashboard-header" style="position: relative;">
-    <div class="mobile-menu-btn ion-hide-lg-up" style="position: absolute; top: 10px; left: 20px; z-index: 10;">
-      <ion-menu-button color="tertiary"></ion-menu-button>
-    </div>
-    <div class="header-titles">
-      <h6 class="subtitle">BRAVO INSTALAÇÕES - MANUTENÇÃO PREDIAL E INDUSTRIAL</h6>
-      <h1 class="title">PAINEL {{ (company()?.name | uppercase) || 'CARREGANDO...' }}</h1>
-      <p class="description">Controle de visitas técnicas nas unidades — 365 dias, categorias padronizadas de serviço e status de campo em tempo real.</p>
-    </div>
-    <div class="header-actions">
-      <button class="btn-new-visit" (click)="openCreateVisitModal()">
-        <ion-icon name="add-circle-outline"></ion-icon>
-        NOVA SOLICITAÇÃO
+  <!-- BANNER DE FALHA DE CONEXÃO -->
+  @if (hasConnectionError()) {
+    <div class="connection-error-banner">
+      <div class="error-header">
+        <ion-icon name="wifi-outline" class="error-icon"></ion-icon>
+        <div class="error-info">
+          <h3>Falha de Conexão com o Servidor</h3>
+          <p>Não foi possível conectar ao backend. Verifique se o servidor está online ou sua conexão com a internet.</p>
+        </div>
+      </div>
+      <button class="retry-btn" (click)="retryLoad()">
+        <ion-icon name="refresh-outline"></ion-icon> Tentar Novamente
       </button>
-      <div class="header-stats">
-        <div class="stat-line">{{ units().length }} UNIDADES NA ROTA</div>
-        <div class="stat-line">DADOS SALVOS NESTE NAVEGADOR</div>
+    </div>
+  }
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <!-- MOBILE TOP BAR (BOTÃO DE MENU COM ÁREA DE TOQUE GRANDE E SEM SOBREPOR TEXTO) -->
+    <div class="mobile-header-bar ion-hide-lg-up">
+      <div class="menu-btn-container">
+        <ion-menu-button class="dashboard-menu-btn"></ion-menu-button>
+      </div>
+      <span class="mobile-system-tag">BRAVO INSTALAÇÕES</span>
+    </div>
+
+    <div class="header-content-wrapper">
+      <div class="header-titles">
+        <h6 class="subtitle ion-hide-lg-down">BRAVO INSTALAÇÕES - MANUTENÇÃO PREDIAL E INDUSTRIAL</h6>
+        <h1 class="title">PAINEL {{ (company()?.name | uppercase) || (isLoading() ? 'CARREGANDO...' : 'EMPRESA') }}</h1>
+        <p class="description">Controle de visitas técnicas nas unidades — 365 dias, categorias padronizadas de serviço e status de campo em tempo real.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-new-visit" (click)="openCreateVisitModal()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          NOVA SOLICITAÇÃO
+        </button>
+        <div class="header-stats">
+          <div class="stat-line">{{ units().length }} UNIDADES NA ROTA</div>
+          <div class="stat-line">DADOS SALVOS NESTE NAVEGADOR</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- KPI Cards Row -->
+  @if (isLoading()) {
+    <div class="loading-bar-wrapper">
+      <ion-spinner name="crescent" color="warning"></ion-spinner>
+      <span>Carregando solicitações e unidades...</span>
+    </div>
+  }
+
+  <!-- KPI Cards Row (2 Colunas no Mobile / 6 no Desktop conforme PRODUCT.md) -->
   <div class="kpi-row">
     <div class="kpi-card">
       <div class="kpi-label">VISITAS NO ANO</div>

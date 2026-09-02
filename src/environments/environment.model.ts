@@ -7,14 +7,12 @@ export interface Environment {
   firebaseAPIKey: string;
   razorpay: {
     key_id: string;
-    key_secret: string;
   };
   stripe: {
     publishableKey: string;
   };
   mercadoPago: {
     public_key: string;
-    accessToken: string;
   };
   firebaseConfig: {
     apiKey: string;

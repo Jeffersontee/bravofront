@@ -3,242 +3,322 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/super-admin/companies"></ion-back-button>
     </ion-buttons>
-    <ion-title class="page-header-title">{{ isEditMode() ? 'Editar Empresa' : 'Nova Empresa' }}</ion-title>
+    <ion-title class="page-header-title">
+      {{ isEditMode() ? 'Editar Empresa' : 'Cadastrar Empresa' }}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding company-form-content">
   <div class="form-container">
-    
-    <!-- TITULO E DESCRICAO DA PAGINA -->
+
+    <!-- CABECALHO DA PAGINA -->
     <div class="form-header">
-      <h1 class="form-header__title">{{ isEditMode() ? 'Editar Empresa Parceira' : 'Cadastrar Nova Empresa' }}</h1>
+      <h1 class="form-header__title">
+        {{ isEditMode() ? 'Edição de Empresa Parceira' : 'Nova Empresa Parceira' }}
+      </h1>
       <p class="form-header__subtitle">
-        {{ isEditMode() ? 'Atualize os dados cadastrais, módulos autorizados e usuários associados.' : 'Preencha os campos abaixo para registrar um novo estabelecimento parceiro.' }}
+        {{ isEditMode() ? 'Atualize as informações cadastrais e acessos da empresa.' : 'Preencha os dados da empresa e crie a conta de acesso do responsável.' }}
       </p>
     </div>
 
-    @if (isLoading()) {
+    @if (isLoading() && isEditMode()) {
       <div class="loading-state">
         <ion-spinner color="primary"></ion-spinner>
         <p class="loading-state__text">Carregando dados da empresa...</p>
       </div>
     }
 
-    @if (!isLoading()) {
+    @if (!isLoading() || !isEditMode()) {
       <form [formGroup]="form" (ngSubmit)="save()">
         
-        <!-- CARD 1: DADOS CADASTRAIS -->
+        <!-- CARD: DADOS DA EMPRESA -->
         <div class="form-card">
           <div class="form-card__header">
             <ion-icon name="business-outline" class="form-card__icon"></ion-icon>
-            <h2 class="form-card__title">Informações Principais</h2>
+            <h2 class="form-card__title">Informações da Empresa</h2>
           </div>
 
-          <div class="form-card__body">
-            <div class="form-grid">
-              <div class="form-grid__col form-grid__col--full">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">Nome Razão Social / Fantasia *</ion-label>
-                  <ion-input formControlName="name" placeholder="Ex: Adega Distribuidora Ltda"></ion-input>
-                </ion-item>
+          <div class="form-grid">
+            <div class="form-grid__col">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">Razão Social / Nome da Empresa *</ion-label>
+                <ion-input formControlName="name" placeholder="Ex: Bravo Serviços de Instalação LTDA"></ion-input>
+              </ion-item>
+            </div>
+
+            <div class="form-grid__col">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">CNPJ *</ion-label>
+                <ion-input formControlName="cnpj" placeholder="00.000.000/0000-00"></ion-input>
+              </ion-item>
+            </div>
+
+            <div class="form-grid__col">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">Nome Fantasia / Apelido</ion-label>
+                <ion-input formControlName="short_name" placeholder="Ex: Bravo Matriz"></ion-input>
+              </ion-item>
+            </div>
+
+            <div class="form-grid__col">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">Nome do Responsável / Dono</ion-label>
+                <ion-input formControlName="owner_name" placeholder="Ex: João da Silva"></ion-input>
+              </ion-item>
+            </div>
+
+            <div class="form-grid__col">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">E-mail do Responsável (Login) *</ion-label>
+                <ion-input formControlName="email" type="email" placeholder="contato@empresa.com.br"></ion-input>
+              </ion-item>
+            </div>
+
+            <div class="form-grid__col">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">Telefone de Contato</ion-label>
+                <ion-input formControlName="phone" type="tel" placeholder="(11) 99999-9999"></ion-input>
+              </ion-item>
+            </div>
+
+            <!-- CAMPOS DE SENHA CONFORME O DESIGN DO SIGNUP -->
+            @if (!isEditMode()) {
+              <div class="form-grid__col">
+                <div class="password-input-group">
+                  <ion-item lines="none" class="custom-input-item">
+                    <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
+                    <ion-label position="floating">Senha de Acesso *</ion-label>
+                    <ion-input 
+                      [type]="passwordHidden() ? 'password' : 'text'" 
+                      formControlName="password" 
+                      placeholder="Mínimo 8 caracteres">
+                    </ion-input>
+                    <button 
+                      type="button" 
+                      slot="end" 
+                      class="eye-btn" 
+                      (click)="passwordHidden.set(!passwordHidden())" 
+                      title="Alternar visibilidade">
+                      <ion-icon [name]="passwordHidden() ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                    </button>
+                  </ion-item>
+                </div>
               </div>
 
               <div class="form-grid__col">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">CNPJ *</ion-label>
-                  <ion-input formControlName="cnpj" placeholder="00.000.000/0000-00"></ion-input>
-                </ion-item>
+                <div class="password-input-group">
+                  <ion-item lines="none" class="custom-input-item">
+                    <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
+                    <ion-label position="floating">Confirmar Senha *</ion-label>
+                    <ion-input 
+                      [type]="confirmPasswordHidden() ? 'password' : 'text'" 
+                      formControlName="confirmPassword" 
+                      placeholder="Repita a senha">
+                    </ion-input>
+                    <button 
+                      type="button" 
+                      slot="end" 
+                      class="eye-btn" 
+                      (click)="confirmPasswordHidden.set(!confirmPasswordHidden())" 
+                      title="Alternar visibilidade">
+                      <ion-icon [name]="confirmPasswordHidden() ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                    </button>
+                  </ion-item>
+                </div>
               </div>
+            }
 
-              <div class="form-grid__col">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">E-mail de Contato *</ion-label>
-                  <ion-input type="email" formControlName="email" placeholder="contato@empresa.com.br"></ion-input>
-                </ion-item>
-              </div>
-
-              <div class="form-grid__col">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">Nome do Dono / Responsável</ion-label>
-                  <ion-input formControlName="owner_name" placeholder="Ex: João da Silva"></ion-input>
-                </ion-item>
-              </div>
-
-              <div class="form-grid__col">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">Nome Curto (Slug)</ion-label>
-                  <ion-input formControlName="short_name" placeholder="Ex: adegadojoao"></ion-input>
-                </ion-item>
-              </div>
+            <div class="form-grid__col form-grid__col--full">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">Descrição / Observações</ion-label>
+                <ion-input formControlName="description" placeholder="Informações adicionais sobre a empresa"></ion-input>
+              </ion-item>
             </div>
           </div>
         </div>
 
-        <!-- CARD 2: MÓDULOS E SERVIÇOS -->
+        <!-- CARD: SERVIÇOS AUTORIZADOS E STATUS -->
         <div class="form-card">
           <div class="form-card__header">
             <ion-icon name="cube-outline" class="form-card__icon"></ion-icon>
-            <h2 class="form-card__title">Serviços e Status no Sistema</h2>
+            <h2 class="form-card__title">Serviços e Status</h2>
           </div>
 
-          <div class="form-card__body">
-            <div class="form-grid">
-              <div class="form-grid__col form-grid__col--full">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">Serviços e Módulos Autorizados</ion-label>
-                  <ion-select formControlName="services" [multiple]="true" placeholder="Selecione os serviços que esta empresa pode acessar...">
-                    @for (service of globalServices(); track service._id) {
-                      <ion-select-option [value]="service._id">{{ service.name }}</ion-select-option>
-                    }
-                  </ion-select>
-                </ion-item>
-              </div>
+          <div class="form-grid">
+            <div class="form-grid__col form-grid__col--full">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-label position="floating">Módulos de Serviços Autorizados</ion-label>
+                <ion-select formControlName="services" [multiple]="true" placeholder="Selecione os serviços ativados para esta empresa">
+                  @for (svc of globalServices(); track svc._id) {
+                    <ion-select-option [value]="svc._id">{{ svc.name }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            </div>
 
-              <div class="form-grid__col form-grid__col--full">
-                <ion-item lines="none" class="custom-input-item">
-                  <ion-label position="stacked">Descrição / Notas Internas</ion-label>
-                  <ion-input formControlName="description" placeholder="Anotações técnicas ou observações de contrato..."></ion-input>
-                </ion-item>
-              </div>
-
-              <div class="form-grid__col form-grid__col--full">
-                <div class="toggle-box">
-                  <div class="toggle-box__info">
-                    <span class="toggle-box__title">Empresa Ativa no Sistema</span>
-                    <span class="toggle-box__desc">Permite login de funcionários e acesso aos serviços contratados.</span>
-                  </div>
-                  <ion-toggle formControlName="active"></ion-toggle>
+            <div class="form-grid__col form-grid__col--full">
+              <div class="toggle-box">
+                <div class="toggle-box__info">
+                  <span class="toggle-box__title">Empresa Ativa no Sistema</span>
+                  <span class="toggle-box__desc">Empresas ativas podem fazer login e operar no ecossistema</span>
                 </div>
+                <ion-toggle formControlName="active" color="primary"></ion-toggle>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- BOTOES DE ACAO -->
+        <!-- ACOES DO FORMULARIO -->
         <div class="form-actions">
-          <ion-button expand="block" type="submit" color="primary" class="btn-submit" [disabled]="form.invalid || isLoading()">
+          <ion-button type="submit" expand="block" color="primary" [disabled]="form.invalid || isLoading()" class="btn-submit">
             @if (isLoading()) {
               <ion-spinner name="crescent" slot="start"></ion-spinner>
-            } @else {
-              <ion-icon name="save-outline" slot="start"></ion-icon>
             }
-            {{ isEditMode() ? 'Salvar Alterações' : 'Criar Empresa Parceira' }}
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            {{ isLoading() ? 'Salvando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Empresa') }}
           </ion-button>
         </div>
       </form>
 
-      <!-- GERENCIAMENTO DE USUÁRIOS VINCULADOS (MODO EDIÇÃO) -->
+      <!-- SEÇÃO DE USUÁRIOS VINCULADOS (MODO EDIÇÃO) -->
       @if (isEditMode()) {
         <div class="users-section">
           <div class="users-section__header">
             <div>
-              <h2 class="users-section__title">Usuários Vinculados</h2>
-              <p class="users-section__subtitle">Contas com permissão para operar nesta empresa parceira.</p>
+              <h3 class="users-section__title">Usuários de Acesso</h3>
+              <p class="users-section__subtitle">Gerencie as contas de donos, administradores e operadores desta empresa.</p>
             </div>
-            <ion-button size="small" [fill]="showUserForm() ? 'outline' : 'solid'" [color]="showUserForm() ? 'medium' : 'success'" (click)="toggleUserForm()">
+            <ion-button fill="outline" color="primary" size="small" (click)="toggleUserForm()">
               <ion-icon [name]="showUserForm() ? 'close-circle-outline' : 'person-add-outline'" slot="start"></ion-icon>
-              {{ showUserForm() ? 'Cancelar' : 'Adicionar Usuário' }}
+              {{ showUserForm() ? 'Cancelar' : 'Vincular Usuário' }}
             </ion-button>
           </div>
 
-          <!-- FORMULÁRIO DE ADIÇÃO DE USUÁRIO -->
           @if (showUserForm()) {
             <div class="form-card user-form-card">
+              <div class="user-form-card__banner">
+                <p class="user-form-card__hint">Cadastre uma nova conta vinculada diretamente a esta empresa.</p>
+              </div>
               <form [formGroup]="userForm" (ngSubmit)="assignUser()">
-                <div class="user-form-card__banner">
-                  <p class="user-form-card__hint">
-                    Informe o e-mail do usuário. Se a conta já existir no sistema, ela será associada à empresa. Caso contrário, um novo perfil será cadastrado.
-                  </p>
-                </div>
-
                 <div class="form-grid">
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="stacked">E-mail do Usuário *</ion-label>
-                      <ion-input type="email" formControlName="email" placeholder="usuario@empresa.com"></ion-input>
+                      <ion-label position="floating">Nome do Usuário *</ion-label>
+                      <ion-input formControlName="name" placeholder="Nome Completo"></ion-input>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="stacked">Nome Completo *</ion-label>
-                      <ion-input formControlName="name" placeholder="Ex: Carlos Eduardo"></ion-input>
+                      <ion-label position="floating">E-mail (Login) *</ion-label>
+                      <ion-input formControlName="email" type="email" placeholder="usuario@empresa.com"></ion-input>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="stacked">Nível de Acesso *</ion-label>
-                      <ion-select formControlName="type" interface="popover">
+                      <ion-label position="floating">Cargo / Perfil *</ion-label>
+                      <ion-select formControlName="type">
                         <ion-select-option value="company_owner">Dono / Administrador da Empresa</ion-select-option>
-                        <ion-select-option value="admin">Gerente / Operador</ion-select-option>
-                        <ion-select-option value="collaborator">Colaborador / Campo</ion-select-option>
+                        <ion-select-option value="admin">Operador de Suporte</ion-select-option>
                       </ion-select>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="stacked">Telefone</ion-label>
-                      <ion-input formControlName="phone" placeholder="(00) 00000-0000"></ion-input>
+                      <ion-label position="floating">Telefone</ion-label>
+                      <ion-input formControlName="phone" type="tel" placeholder="(11) 99999-9999"></ion-input>
                     </ion-item>
                   </div>
 
-                  <div class="form-grid__col form-grid__col--full">
-                    <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="stacked">Senha de Acesso (Necessário se for novo cadastro)</ion-label>
-                      <ion-input type="password" formControlName="password" placeholder="••••••••"></ion-input>
-                    </ion-item>
+                  <div class="form-grid__col">
+                    <div class="password-input-group">
+                      <ion-item lines="none" class="custom-input-item">
+                        <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
+                        <ion-label position="floating">Senha de Acesso</ion-label>
+                        <ion-input 
+                          [type]="userPasswordHidden() ? 'password' : 'text'" 
+                          formControlName="password" 
+                          placeholder="Mínimo 8 caracteres">
+                        </ion-input>
+                        <button 
+                          type="button" 
+                          slot="end" 
+                          class="eye-btn" 
+                          (click)="userPasswordHidden.set(!userPasswordHidden())" 
+                          title="Alternar visibilidade">
+                          <ion-icon [name]="userPasswordHidden() ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                        </button>
+                      </ion-item>
+                    </div>
+                  </div>
+
+                  <div class="form-grid__col">
+                    <div class="password-input-group">
+                      <ion-item lines="none" class="custom-input-item">
+                        <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
+                        <ion-label position="floating">Confirmar Senha</ion-label>
+                        <ion-input 
+                          [type]="userConfirmPasswordHidden() ? 'password' : 'text'" 
+                          formControlName="confirmPassword" 
+                          placeholder="Repita a senha">
+                        </ion-input>
+                        <button 
+                          type="button" 
+                          slot="end" 
+                          class="eye-btn" 
+                          (click)="userConfirmPasswordHidden.set(!userConfirmPasswordHidden())" 
+                          title="Alternar visibilidade">
+                          <ion-icon [name]="userConfirmPasswordHidden() ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                        </button>
+                      </ion-item>
+                    </div>
                   </div>
                 </div>
 
                 <div class="form-actions mt-3">
-                  <ion-button expand="block" type="submit" color="success" class="btn-submit" [disabled]="userForm.invalid || isUsersLoading()">
+                  <ion-button type="submit" color="success" size="small" [disabled]="userForm.invalid || isUsersLoading()">
                     @if (isUsersLoading()) {
                       <ion-spinner name="crescent" slot="start"></ion-spinner>
-                    } @else {
-                      <ion-icon name="person-add-outline" slot="start"></ion-icon>
                     }
-                    Vincular / Criar Conta de Usuário
+                    Salvar e Vincular
                   </ion-button>
                 </div>
               </form>
             </div>
           }
 
-          <!-- LISTA DE USUÁRIOS VINCULADOS -->
-          @if (!isUsersLoading() && companyUsers().length > 0) {
-            <div class="user-list">
-              @for (user of companyUsers(); track user._id) {
-                <div class="user-list-item">
-                  <div class="user-list-item__avatar">
-                    <ion-icon name="person-outline"></ion-icon>
-                  </div>
-                  <div class="user-list-item__content">
-                    <h3 class="user-list-item__name">{{ user.name }}</h3>
-                    <p class="user-list-item__email">{{ user.email }}</p>
-                  </div>
-                  <div class="user-list-item__actions">
-                    <ion-badge color="primary" class="role-badge">{{ user.type }}</ion-badge>
-                    <ion-button fill="clear" color="danger" size="small" (click)="removeUser(user._id)" title="Desvincular usuário">
-                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                    </ion-button>
-                  </div>
+          <div class="user-list">
+            @for (usr of companyUsers(); track usr._id) {
+              <div class="user-list-item">
+                <div class="user-list-item__avatar">
+                  <ion-icon name="person-outline"></ion-icon>
                 </div>
-              }
-            </div>
-          }
-
-          @if (!isUsersLoading() && companyUsers().length === 0 && !showUserForm()) {
-            <div class="empty-state">
-              <div class="empty-state__icon">
-                <ion-icon name="person-outline"></ion-icon>
+                <div class="user-list-item__content">
+                  <h4 class="user-list-item__name">{{ usr.name }}</h4>
+                  <p class="user-list-item__email">{{ usr.email }}</p>
+                </div>
+                <div class="user-list-item__actions">
+                  <span class="role-badge">{{ usr.type === 'company_owner' ? 'Dono' : 'Operador' }}</span>
+                  <ion-button fill="clear" color="danger" size="small" (click)="removeUser(usr._id)">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
               </div>
-              <h3 class="empty-state__title">Nenhum usuário vinculado</h3>
-              <p class="empty-state__text">Esta empresa ainda não possui administradores ou operadores cadastrados.</p>
-            </div>
-          }
+            }
+
+            @if (companyUsers().length === 0 && !isUsersLoading()) {
+              <div class="empty-state">
+                <div class="empty-state__icon">
+                  <ion-icon name="person-outline"></ion-icon>
+                </div>
+                <h4 class="empty-state__title">Nenhum usuário vinculado</h4>
+                <p class="empty-state__text">Esta empresa ainda não possui contas de donos ou operadores vinculados.</p>
+              </div>
+            }
+          </div>
         </div>
       }
     }

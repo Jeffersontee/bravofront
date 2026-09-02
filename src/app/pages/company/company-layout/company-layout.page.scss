@@ -1,24 +1,38 @@
-ion-split-pane {
-  --border: none;
+// Bravo Design Tokens (Company Layout - Dynamic Theme Support)
+:host {
+  display: block;
+  font-family: var(--font-family, 'Outfit', sans-serif);
 }
 
-$bravo-dark: #1a1a1a;
-$bravo-yellow: var(--ion-color-primary);
+ion-split-pane {
+  --border: none;
+  --side-width: 260px;
+  --side-min-width: 260px;
+  --side-max-width: 260px;
+}
 
+/* ==========================================
+   DEFAULT: PREMIUM BRANCO (Fundo Branco, Fontes Cinza e Cor Principal no Ativo)
+   ========================================== */
 .bravo-menu-header {
-  --background: #{$bravo-dark};
-  --color: #{$bravo-yellow};
+  --background: #ffffff !important;
+  background: #ffffff !important;
+  --color: var(--ion-color-primary, #f59e0b) !important;
   position: relative;
-  
+  min-height: 56px;
+  border-bottom: 1px solid #e2e8f0;
+
   .bravo-menu-title {
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: var(--font-family, 'Outfit', sans-serif);
     font-weight: 800;
-    font-size: 16px;
-    letter-spacing: 0.5px;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+    color: #1e293b !important;
   }
 
   .toggle-btn {
-    --color: #{$bravo-yellow};
+    --color: var(--ion-color-primary, #f59e0b) !important;
+    font-size: 1.2rem;
   }
 
   .stripe-border {
@@ -27,21 +41,246 @@ $bravo-yellow: var(--ion-color-primary);
     left: 0;
     width: 100%;
     height: 4px;
-    background: $bravo-yellow;
+    background: var(--ion-color-primary, #f59e0b);
   }
 }
 
 ion-menu {
-  --background: #f8f9fa;
+  --background: #ffffff !important;
+  --color: #1e293b !important;
   --width: 260px;
-  transition: width 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-right: 1px solid #e2e8f0;
+
+  ion-content {
+    --background: #ffffff !important;
+    --color: #1e293b !important;
+    background: #ffffff !important;
+  }
+
+  ion-list {
+    background: #ffffff !important;
+    --background: #ffffff !important;
+    padding: 8px 0;
+  }
 }
 
+.menu-item {
+  margin: 4px 8px;
+  border-radius: 12px;
+  --background: #ffffff !important;
+  --color: #475569 !important;
+  font-family: var(--font-family, 'Outfit', sans-serif);
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  ion-icon {
+    font-size: 1.35rem;
+    color: #64748b !important;
+    transition: color 0.2s ease;
+  }
+
+  ion-label {
+    color: #475569 !important;
+    font-weight: 500;
+  }
+
+  &:hover {
+    --background: #f1f5f9 !important;
+    --color: #0f172a !important;
+
+    ion-icon {
+      color: #0f172a !important;
+    }
+    ion-label {
+      color: #0f172a !important;
+    }
+  }
+}
+
+.menu-item.selected,
+.menu-item--open {
+  --background: rgba(var(--ion-color-primary-rgb, 245, 158, 11), 0.12) !important;
+  --color: var(--ion-color-primary, #f59e0b) !important;
+  font-weight: 700;
+
+  ion-icon {
+    color: var(--ion-color-primary, #f59e0b) !important;
+  }
+
+  ion-label {
+    color: var(--ion-color-primary, #f59e0b) !important;
+    font-weight: 700;
+  }
+}
+
+.level-2 {
+  padding-left: 20px;
+  --background: #ffffff !important;
+  --color: #64748b !important;
+  font-size: 0.9rem;
+
+  ion-icon {
+    font-size: 1.15rem;
+    color: #94a3b8 !important;
+  }
+
+  ion-label {
+    color: #64748b !important;
+  }
+
+  &:hover {
+    --background: #f8fafc !important;
+
+    ion-label {
+      color: #0f172a !important;
+    }
+    ion-icon {
+      color: #0f172a !important;
+    }
+  }
+}
+
+.logout-item {
+  margin: 16px 8px;
+  border-radius: 12px;
+  --background: #ffffff !important;
+  font-family: var(--font-family, 'Outfit', sans-serif);
+  font-weight: 600;
+
+  ion-icon, ion-label {
+    color: #ef4444 !important;
+  }
+
+  &:hover {
+    --background: #fef2f2 !important;
+  }
+}
+
+.bravo-menu-footer {
+  --background: #ffffff !important;
+  background: #ffffff !important;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid #e2e8f0;
+
+  ion-list {
+    background: #ffffff !important;
+    --background: #ffffff !important;
+  }
+}
+
+/* ==========================================
+   PREMIUM ESCURO (Fundo Preto, Fontes Prata e Cor Principal no Ativo)
+   ========================================== */
+:host-context(body.theme-dark),
+body.theme-dark :host {
+
+  .bravo-menu-header {
+    --background: #141414 !important;
+    background: #141414 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .bravo-menu-title {
+      color: #ffffff !important;
+    }
+  }
+
+  ion-menu {
+    --background: #141414 !important;
+    --color: #ffffff !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+    ion-content {
+      --background: #141414 !important;
+      --color: #ffffff !important;
+      background: #141414 !important;
+    }
+
+    ion-list {
+      background: #141414 !important;
+      --background: #141414 !important;
+    }
+  }
+
+  .menu-item {
+    --background: #141414 !important;
+    --color: #cbd5e1 !important;
+
+    ion-icon {
+      color: #94a3b8 !important;
+    }
+
+    ion-label {
+      color: #cbd5e1 !important;
+    }
+
+    &:hover {
+      --background: rgba(255, 255, 255, 0.08) !important;
+      --color: #ffffff !important;
+
+      ion-icon, ion-label {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .menu-item.selected,
+  .menu-item--open {
+    --background: rgba(var(--ion-color-primary-rgb, 245, 158, 11), 0.2) !important;
+    --color: var(--ion-color-primary, #f59e0b) !important;
+
+    ion-icon, ion-label {
+      color: var(--ion-color-primary, #f59e0b) !important;
+    }
+  }
+
+  .level-2 {
+    --background: #141414 !important;
+    --color: #94a3b8 !important;
+
+    ion-icon {
+      color: #64748b !important;
+    }
+
+    ion-label {
+      color: #94a3b8 !important;
+    }
+
+    &:hover {
+      --background: rgba(255, 255, 255, 0.06) !important;
+
+      ion-icon, ion-label {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .logout-item {
+    --background: #141414 !important;
+
+    &:hover {
+      --background: rgba(239, 68, 68, 0.15) !important;
+    }
+  }
+
+  .bravo-menu-footer {
+    --background: #141414 !important;
+    background: #141414 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+    ion-list {
+      background: #141414 !important;
+      --background: #141414 !important;
+    }
+  }
+}
+
+/* RESPONSIVIDADE DESKTOP RECOLHIDO */
 @media (min-width: 992px) {
   ion-split-pane.collapsed {
-    --side-width: 70px !important;
-    --side-min-width: 70px !important;
-    --side-max-width: 70px !important;
+    --side-width: 72px !important;
+    --side-min-width: 72px !important;
+    --side-max-width: 72px !important;
 
     .bravo-menu-header {
       ion-buttons {
@@ -57,7 +296,7 @@ ion-menu {
     }
 
     .menu-item, .logout-item {
-      margin: 4px 0 !important;
+      margin: 6px 0 !important;
       width: 100% !important;
       --padding-start: 0px !important;
       --padding-end: 0px !important;
@@ -91,49 +330,6 @@ ion-menu {
   }
 
   ion-split-pane.collapsed ion-menu {
-    --width: 70px;
+    --width: 72px;
   }
-}
-
-.menu-item {
-  margin: 4px 8px;
-  border-radius: 12px;
-  --background: transparent;
-  --color: #495057;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  
-  ion-icon {
-    font-size: 1.3rem;
-    color: #6c757d;
-  }
-}
-
-.menu-item.selected {
-  --background: rgba(var(--ion-color-primary-rgb), 0.1);
-  --color: #1a1a1a;
-  font-weight: 700;
-
-  ion-icon {
-    color: var(--ion-color-primary);
-  }
-}
-
-.level-2 {
-  padding-left: 20px;
-  --background: transparent;
-  font-size: 0.9rem;
-}
-
-.logout-item {
-  margin: 16px 8px;
-  border-radius: 12px;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 600;
-}
-
-.bravo-menu-footer {
-  --background: transparent;
-  padding-bottom: env(safe-area-inset-bottom);
-  border-top: 1px solid rgba(0,0,0,0.05);
 }

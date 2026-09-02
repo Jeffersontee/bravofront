@@ -1,33 +1,38 @@
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
-// Configuração do Firebase
-// NOTA: Estes valores devem ser substituídos pelas suas credenciais de produção
-const firebaseConfig = {
-    apiKey: 'YOUR_API_KEY',
-    authDomain: 'YOUR_AUTH_DOMAIN',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    appId: 'YOUR_APP_ID'
-};
+// Extrai as configurações passadas dinamicamente via query params a partir do environment.ts
+const params = new URLSearchParams(location.search);
+const apiKey = params.get('apiKey');
 
-try {
+if (apiKey && apiKey !== 'YOUR_API_KEY') {
+  const firebaseConfig = {
+    apiKey: apiKey,
+    authDomain: params.get('authDomain') || '',
+    projectId: params.get('projectId') || '',
+    storageBucket: params.get('storageBucket') || '',
+    messagingSenderId: params.get('messagingSenderId') || '',
+    appId: params.get('appId') || ''
+  };
+
+  try {
     firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
 
     messaging.onBackgroundMessage((payload) => {
-        console.log('[firebase-messaging-sw.js] Received background message ', payload);
+      console.log('[firebase-messaging-sw] Mensagem em segundo plano recebida:', payload);
 
-        const notificationTitle = payload.notification?.title || 'Nova Notificação';
-        const notificationOptions = {
-            body: payload.notification?.body || '',
-            icon: '/assets/icon/favicon.png',
-            data: payload.data,
-        };
+      const notificationTitle = payload.notification?.title || 'Nova Notificação';
+      const notificationOptions = {
+        body: payload.notification?.body || '',
+        icon: '/assets/icon/favicon.png'
+      };
 
-        self.registration.showNotification(notificationTitle, notificationOptions);
+      self.registration.showNotification(notificationTitle, notificationOptions);
     });
-} catch (error) {
-    console.error('Firebase SW Error: Configuração pendente ou inválida', error);
+  } catch (err) {
+    console.error('[firebase-messaging-sw] Erro ao inicializar Firebase no Service Worker:', err);
+  }
+} else {
+  console.log('[firebase-messaging-sw] Service Worker ativo. Aguardando credenciais válidas do Firebase no environment.');
 }

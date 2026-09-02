@@ -7,7 +7,8 @@ import {
   checkmarkCircleOutline, timeOutline, closeCircleOutline,
   menuOutline,
   helpCircleOutline,
-  personCircleOutline
+  personCircleOutline,
+  refreshOutline
 } from 'ionicons/icons';
 import { DashboardService, DashboardStats } from 'src/app/services/dashboard/dashboard.service';
 import {
@@ -60,7 +61,7 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
     addIcons({
       businessOutline, peopleOutline, clipboardOutline,
       checkmarkCircleOutline, timeOutline, closeCircleOutline,
-      menuOutline, helpCircleOutline, personCircleOutline, 
+      menuOutline, helpCircleOutline, personCircleOutline, refreshOutline
     });
   }
 
@@ -135,12 +136,12 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, font: { family: "'Outfit', sans-serif" } } },
+          legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, font: { family: "'Outfit', sans-serif", size: 11 } } },
           tooltip: { backgroundColor: '#1a1a1a', titleFont: { family: "'Outfit', sans-serif" }, bodyFont: { family: "'Outfit', sans-serif" } }
         },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif", size: 12 } } },
-          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: "'Outfit', sans-serif", size: 12 }, stepSize: 1 } }
+          x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 } } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 }, stepSize: 1 } }
         }
       }
     });
@@ -187,7 +188,7 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
         maintainAspectRatio: false,
         cutout: '60%',
         plugins: {
-          legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, font: { family: "'Outfit', sans-serif" } } },
+          legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, font: { family: "'Outfit', sans-serif", size: 11 } } },
           tooltip: { backgroundColor: '#1a1a1a', titleFont: { family: "'Outfit', sans-serif" }, bodyFont: { family: "'Outfit', sans-serif" } }
         }
       }
@@ -243,8 +244,8 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
           tooltip: { backgroundColor: '#1a1a1a', titleFont: { family: "'Outfit', sans-serif" }, bodyFont: { family: "'Outfit', sans-serif" } }
         },
         scales: {
-          x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: "'Outfit', sans-serif" }, stepSize: 1 } },
-          y: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif", size: 13 } } }
+          x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 }, stepSize: 1 } },
+          y: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 } } }
         }
       }
     });

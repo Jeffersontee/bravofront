@@ -4,7 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuToggle, IonButton, IonIcon, IonFooter } from '@ionic/angular/standalone';
 import { ThemeService, AppTheme, AppearanceData } from '../../../services/theme/theme.service';
 import { addIcons } from 'ionicons';
-import { menuOutline, cloudUploadOutline, trashOutline, checkmarkOutline, imageOutline, addOutline } from 'ionicons/icons';
+import { 
+  menuOutline, cloudUploadOutline, trashOutline, 
+  checkmarkOutline, imageOutline, addOutline,
+  mailOutline, lockClosedOutline, eyeOutline,
+  gridOutline, speedometerOutline, constructOutline,
+  calendarOutline, businessOutline, buildOutline,
+  peopleOutline, settingsOutline, logOutOutline
+} from 'ionicons/icons';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 
@@ -20,7 +27,6 @@ export class AppearancePage implements OnInit {
   private global = inject(GlobalService);
   private profileService = inject(ProfileService);
 
-  // Predefined color palette based on Adega Pinguins screenshot
   presetColors = [
     '#ffc409', // Yellow
     '#e11d48', // Red
@@ -36,33 +42,43 @@ export class AppearancePage implements OnInit {
   logoUrl = signal<string>('');
   backgroundUrl = signal<string>('');
   
+  previewTab = signal<'login' | 'dashboard'>('dashboard');
+  
   tenantType = signal<'GLOBAL' | 'COMPANY'>('GLOBAL');
   companyId = signal<string | undefined>(undefined);
   
   isLoading = signal<boolean>(false);
 
   constructor() {
-    addIcons({ menuOutline, cloudUploadOutline, trashOutline, checkmarkOutline, imageOutline, addOutline });
+    addIcons({ 
+      menuOutline, cloudUploadOutline, trashOutline, 
+      checkmarkOutline, imageOutline, addOutline,
+      mailOutline, lockClosedOutline, eyeOutline,
+      gridOutline, speedometerOutline, constructOutline,
+      calendarOutline, businessOutline, buildOutline,
+      peopleOutline, settingsOutline, logOutOutline
+    });
   }
 
   async ngOnInit() {
     this.global.showLoader('Carregando Aparência...');
     
-    // Identificar contexto (Global vs Company) baseando-se no perfil logado.
-    // O Super Admin configura o GLOBAL. O Company Owner configura o COMPANY.
     try {
       const user = await this.profileService.getProfile();
       if (user && user.type === 'company_owner' && user.company_id) {
         this.tenantType.set('COMPANY');
-        this.companyId.set(user.company_id);
+        const rawCompId = user.company_id as any;
+        const compId = typeof rawCompId === 'object' ? rawCompId._id : rawCompId;
+        this.companyId.set(compId);
+        this.previewTab.set('dashboard'); // Lojista só visualiza o Menu & Painel
       } else {
         this.tenantType.set('GLOBAL');
+        this.previewTab.set('login'); // Super Admin visualiza Tela de Login inicialmente
       }
 
-      // Fetch do banco de dados
       const appearance = await this.themeService.loadAppearance(this.tenantType(), this.companyId());
       if (appearance) {
-        this.currentTheme.set(appearance.theme);
+        this.currentTheme.set(appearance.theme || 'light');
         this.primaryColor.set(appearance.primary_color || '#1d4ed8');
         this.logoUrl.set(appearance.logo_url || '');
         this.backgroundUrl.set(appearance.background_url || '');
@@ -75,11 +91,9 @@ export class AppearancePage implements OnInit {
     }
   }
 
-  // File Upload Helper (converts to Base64 to save on DB easily)
   onFileSelected(event: any, type: 'logo' | 'background') {
     const file = event.target.files[0];
     if (file) {
-      // Validate file size (max 2MB)
       if (file.size > 2 * 1024 * 1024) {
         this.global.errorToast('A imagem não pode ter mais de 2MB.');
         return;
@@ -103,16 +117,14 @@ export class AppearancePage implements OnInit {
     if (type === 'background') this.backgroundUrl.set('');
   }
 
-  // Theme Toggles
   setTheme(theme: AppTheme) {
     this.currentTheme.set(theme);
-    this.themeService.setTheme(theme); // Live preview
+    this.themeService.setTheme(theme);
   }
 
-  // Color Pickers
   setColor(colorHex: string) {
     this.primaryColor.set(colorHex);
-    this.themeService.setPrimaryColor(colorHex); // Live preview
+    this.themeService.setPrimaryColor(colorHex);
   }
   
   onCustomColorChange(event: any) {
@@ -124,7 +136,6 @@ export class AppearancePage implements OnInit {
     return !this.presetColors.includes(this.primaryColor().toLowerCase());
   }
 
-  // Save to Backend
   async saveAppearance() {
     this.isLoading.set(true);
     try {
@@ -144,9 +155,10 @@ export class AppearancePage implements OnInit {
       } else {
         throw new Error('Falha ao salvar aparência');
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      this.global.errorToast('Ocorreu um erro ao salvar as alterações.');
+      const msg = e?.error?.message || e?.message || 'Ocorreu um erro ao salvar as alterações.';
+      this.global.errorToast(msg);
     } finally {
       this.isLoading.set(false);
     }

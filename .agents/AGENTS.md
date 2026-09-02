@@ -65,13 +65,11 @@
 - Submenus em menus laterais devem usar o estado `open` para controlar a visibilidade dos filhos.
 - **Comportamento de Seletores do Ionic:** Componentes `<ion-select>` podem reter dados em cache visual de renderização passiva se as coleções mudarem de tamanho abruptamente. Nesses cenários, indexe as coleções de suporte por linha no TypeScript (ex: `filteredSizesByRow[index]`) para forçar o Angular a renderizar novas referências de memória.
 - **Estilização:** Evitar estritamente o uso de estilos inline (`style="..."`) nos templates HTML. Toda a lógica visual deve ser consolidada no arquivo SCSS do componente, utilizando classes semânticas para garantir a separação de responsabilidades e facilitar a manutenção.
-- **Padrão Visual "Impeccable" (Light Theme):** Por padrão, toda nova UI construída deve seguir o tema claro moderno:
-  - Fundos de página/painéis em `#f8fafc` ou `#ffffff`.
-  - Tipografia de títulos forte, utilizando as fontes `Outfit` ou `Inter` com cores grafite (`#1e293b`). Subtítulos e textos auxiliares em `#64748b`.
-  - Bordas de componentes e divisórias sutis em `#e2e8f0`.
-  - Componentes interativos devem possuir bordas arredondadas (6px a 12px) e estados de `hover` premium (mudança sutil de background, leves sombras ou `transform: translateY(-1px)`).
-  - Evitar cores sólidas pesadas sem necessidade; usar variações tintadas (fundo claro + texto escuro da mesma matiz) para badges e KPIs.
-  - O design deve respirar com espaços abundantes (uso de `padding` de 16px, 24px, 32px), sem poluição visual.
+- **Padrão Visual "Impeccable" & Responsividade (Mobile & Desktop):**
+  - **Aparência e Identidade Visual (Obrigatório):** Todos os componentes e páginas DEVEM utilizar as variáveis CSS do sistema de tema (`var(--ion-color-primary)`, `var(--ion-card-background)`, `var(--ion-background-color)`, `var(--ion-text-color)`). É proibido hardcodear cores sólidas hexadecimais diretamente no SCSS sem suporte às variáveis do tema de Aparência (`AppearancePage`).
+  - **Responsividade Mobile (Grid 2 Colunas Justificadas):** Em telas menores (`< 992px`), os cards de métricas e KPIs DEVEM ser organizados em **2 colunas justificadas lado a lado** (`grid-template-columns: repeat(2, 1fr)` com `gap: 10px-12px`). É proibido empilhar cards em 1 única coluna vertical desproporcional.
+  - **Containers & Gráficos Sem Overflow:** Todos os containers de dashboard e gráficos devem ter `width: 100%; max-width: 100%; box-sizing: border-box; overflow-x: hidden;`. Elementos `<canvas>` de gráficos devem usar `maintainAspectRatio: false` e `max-width: 100% !important;`.
+  - **Desktop Ampliado (4 Colunas & Menu Responsivo):** Em telas desktop (`≥ 992px`), a grade expande para **4 colunas** (`repeat(4, 1fr)`), com ícones ampliados (`52px`), tipografia de métricas destacada (`2.5rem`) e menu lateral (`ion-split-pane`) com suporte a recolhimento suave (`isCollapsed` de 260px para 72px).
 
 ## 8. Notas de Debug Recentes
 - **Erro de reatividade no FormArray:** Resolvido ao mapear as listas de tamanhos de forma indexada (`filteredSizesByRow`) no TypeScript, disparando as atualizações através do hook de eventos `(ionChange)` do Tipo.

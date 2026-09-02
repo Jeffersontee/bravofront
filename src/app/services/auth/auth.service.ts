@@ -418,21 +418,22 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     }
   }
 
-  logoutUser(nav?: boolean) {
+  logoutUser(nav: boolean = true) {
     this.storage.removeStorage(Strings.TOKEN);
     this.storage.removeStorage(Strings.REFRESH_TOKEN);
     this.storage.removeStorage(Strings.USER_DATA);
     this.storage.removeStorage(Strings.USER_LOCATION);
     this.storage.removeStorage(Strings.USER_SOUND);
-    this.storage.removeStorage('hubs_pos_tables_state');
     this._token.set(null); // Atualiza o signal
     this._refreshToken.set(null); // Atualiza o signal
     this.addressService.clearAddress();
     this.profile.updateProfileData(null);
-    if(nav) this.router.navigateByUrl(Strings.LOGIN, { replaceUrl: true });
+    if (nav !== false) {
+      this.router.navigateByUrl(Strings.LOGIN, { replaceUrl: true });
+    }
   }
 
-  async logout(nav?: boolean) {
+  async logout(nav: boolean = true) {
     try {
       const refreshToken = await this.getRefreshToken();
       if (refreshToken) {
@@ -445,7 +446,7 @@ export class AuthService { // Removido o 'private' do _token e _refreshToken
     } catch (e) {
       console.error('Erro ao recuperar dados para logout:', e);
     } finally {
-      // Independente de sucesso ou erro na rede, limpamos os dados locais para quebrar o loop.
+      // Independente de sucesso ou erro na rede, limpamos os dados locais e redirecionamos.
       this.logoutUser(nav);
     }
   }
