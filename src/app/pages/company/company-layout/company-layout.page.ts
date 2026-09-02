@@ -147,7 +147,7 @@ export class CompanyLayoutPage implements OnInit {
       ]
     },
     { 
-      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: (companyId: string) => '/company/my-profile', permissionKey: 'ADMIN_ACCOUNT'
+      title: 'Meu Perfil', stringKey: 'ADMIN_ACCOUNT', icon: 'person-circle-outline', url: (companyId: string) => '/company/profile', permissionKey: 'ADMIN_ACCOUNT'
     },
     { 
       title: 'Ajuda', 

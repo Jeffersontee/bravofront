@@ -153,6 +153,156 @@ ion-toolbar.bravo-page-header {
   overflow-y: auto;
 }
 
+/* MOCKUP 2: TELA HOME DO CLIENTE */
+.home-preview-screen {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: #f4f5f8;
+}
+
+.hero-home-preview {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.hero-user-greeting {
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+
+  .greeting-sub {
+    font-size: 10px;
+    opacity: 0.85;
+  }
+
+  .greeting-name {
+    font-size: 15px;
+    font-weight: 800;
+  }
+}
+
+.hero-address-preview {
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-mockup-body {
+  margin-top: 0;
+  position: relative;
+  z-index: 10;
+  padding: 12px 12px 20px 12px;
+}
+
+.mockup-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+
+  &.mt-10 {
+    margin-top: 12px;
+  }
+}
+
+.mockup-order-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .order-icon-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .order-details-box {
+    display: flex;
+    flex-direction: column;
+
+    .order-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .order-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .status-badge-orange {
+        background: #fef3c7;
+        color: #d97706;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 8px;
+      }
+
+      .price-lbl {
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.mockup-service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  .service-pill-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+
+    .service-pill-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+  }
+}
+
 .hero-preview-header {
   background-size: cover;
   background-position: center;

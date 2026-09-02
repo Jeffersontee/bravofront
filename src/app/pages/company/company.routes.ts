@@ -83,7 +83,12 @@ export const companyRoutes: Routes = [
     loadComponent: () => import('../manage-settings/appearance/appearance.page').then(m => m.AppearancePage)
   },
   {
-    path: 'my-profile',
+    path: 'profile',
     loadComponent: () => import('../account/account.page').then(m => m.AccountPage)
+  },
+  {
+    path: 'my-profile',
+    redirectTo: 'profile',
+    pathMatch: 'full'
   }
 ];

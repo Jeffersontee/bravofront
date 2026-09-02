@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
@@ -11,6 +12,7 @@ import {
   refreshOutline
 } from 'ionicons/icons';
 import { DashboardService, DashboardStats } from 'src/app/services/dashboard/dashboard.service';
+import { CompanyService, Company } from 'src/app/services/company/company.service';
 import {
   Chart,
   BarController,
@@ -41,7 +43,7 @@ Chart.register(
   templateUrl: './super-dashboard.page.html',
   styleUrls: ['./super-dashboard.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule]
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class SuperDashboardPage implements OnInit, AfterViewInit {
   @ViewChild('ordersChart') ordersChartRef!: ElementRef<HTMLCanvasElement>;
@@ -49,9 +51,12 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
   @ViewChild('statusChart') statusChartRef!: ElementRef<HTMLCanvasElement>;
 
   private dashboardService = inject(DashboardService);
+  private companyService = inject(CompanyService);
 
   isLoading = signal(true);
   stats = signal<DashboardStats | null>(null);
+  companies = signal<Company[]>([]);
+  selectedCompanyId = signal<string>('ALL');
 
   private ordersChart: Chart | null = null;
   private subscriptionsChart: Chart | null = null;
@@ -66,6 +71,7 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.loadCompanies();
     this.loadStats();
   }
 
@@ -73,9 +79,25 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
     // Os gráficos serão criados depois que os dados carregarem
   }
 
-  private loadStats() {
+  loadCompanies() {
+    this.companyService.getCompanies().subscribe({
+      next: (res: any) => {
+        if (res?.success && res?.data) {
+          this.companies.set(res.data);
+        }
+      },
+      error: (err) => console.error('Erro ao carregar lista de empresas para filtro:', err)
+    });
+  }
+
+  onCompanyChange(companyId: string) {
+    this.selectedCompanyId.set(companyId);
+    this.loadStats();
+  }
+
+  loadStats() {
     this.isLoading.set(true);
-    this.dashboardService.getStats().subscribe({
+    this.dashboardService.getStats(this.selectedCompanyId()).subscribe({
       next: (res) => {
         this.stats.set(res.data);
         this.isLoading.set(false);

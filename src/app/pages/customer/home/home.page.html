@@ -1,72 +1,78 @@
-<ion-content [fullscreen]="true" class="ion-padding-bottom">
+<ion-content [fullscreen]="true" class="ion-padding-bottom bg-neutral">
   
   <!-- Modo de visualização normal: Grade de Serviços -->
   <div *ngIf="!selectedCategory(); else requestFormTemplate">
     
-    <!-- Header Azul Navy customizado (Conforme Claude/Imagem) -->
-    <div class="app-header">
-      <div class="header-top">
-        <div>
-          <span class="welcome-sub">Olá, bem-vindo</span>
+    <!-- Hero Header Dinâmico com Fundo e Logo da Tela de Login -->
+    <div 
+      class="hero-header" 
+      [style.background-image]="themeService.currentAppearance()?.background_url ? 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(' + themeService.currentAppearance()?.background_url + ')' : 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(/assets/icon/fundo.jpg)'"
+    >
+      <div class="brand-container">
+        <div class="brand-logo">
+          <img [src]="themeService.currentAppearance()?.logo_url || 'assets/icon/logo.jpg'" alt="Logo da Empresa" class="brand-img" />
+        </div>
+        <div class="welcome-box">
+          <span class="welcome-sub">Olá, bem-vindo(a)</span>
           <h2 class="welcome-title">{{ customerName() }}</h2>
         </div>
-        <div class="brand-wrapper">
-          <div class="logo-box">
-            <ion-icon name="construct"></ion-icon>
-          </div>
-          <span class="brand-name">BRAVO<br><span>INSTALAÇÕES</span></span>
-        </div>
       </div>
       
-      <!-- Caixa de endereço fictícia -->
+      <!-- Caixa de Endereço em Glassmorphism -->
       <div class="address-bar">
-        <ion-icon name="location-outline"></ion-icon>
-        <span>{{ customerAddress() }}</span>
+        <ion-icon name="location-outline" class="address-icon"></ion-icon>
+        <span class="address-text">{{ customerAddress() }}</span>
       </div>
     </div>
 
-    <!-- Seção 'Em andamento' conforme a Imagem -->
-    <div *ngIf="activeOrders().length > 0; else noActiveOrders" class="section-container">
-      <h3 class="section-title">Em andamento</h3>
-      
-      <div *ngFor="let order of activeOrders()" (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
-        <div class="order-info-container">
-          <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" class="order-icon-wrapper">
-            <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
-          </div>
-          <div>
-            <h4 class="order-title">{{ order.category }}</h4>
-            <div class="order-status-row">
-              <span class="status-tag-active">
-                {{ order.status }}
-              </span>
-              <span class="order-est-price">
-                R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span> est.</span>
-              </span>
+    <!-- Wrapper Flutuante dos Conteúdos -->
+    <div class="main-content-wrapper">
+
+      <!-- Seção 'Em andamento' -->
+      <div *ngIf="activeOrders().length > 0; else noActiveOrders" class="section-container">
+        <div class="section-header-row">
+          <h3 class="section-title">Em andamento</h3>
+          <span class="section-badge-count">{{ activeOrders().length }} {{ activeOrders().length === 1 ? 'solicitação' : 'solicitações' }}</span>
+        </div>
+        
+        <div *ngFor="let order of activeOrders()" (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
+          <div class="order-info-container">
+            <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" class="order-icon-wrapper">
+              <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
+            </div>
+            <div class="order-main-details">
+              <h4 class="order-title">{{ order.category }}</h4>
+              <div class="order-status-row">
+                <span class="status-tag-active">
+                  {{ order.status }}
+                </span>
+                <span class="order-est-price">
+                  R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span class="est-label"> est.</span>
+                </span>
+              </div>
             </div>
           </div>
+          <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
         </div>
-        <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
       </div>
-    </div>
 
-    <ng-template #noActiveOrders>
-      <div class="section-container">
-        <h3 class="section-title">Em andamento</h3>
-        <div class="bravo-card empty-state-card">
-          <div class="empty-icon-wrapper">
-            <ion-icon name="document-text-outline"></ion-icon>
+      <ng-template #noActiveOrders>
+        <div class="section-container">
+          <h3 class="section-title">Em andamento</h3>
+          <div class="bravo-card empty-state-card">
+            <div class="empty-icon-wrapper">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <h4>Nenhum serviço em andamento</h4>
+            <p>Quando você solicitar um serviço, o acompanhamento aparecerá aqui.</p>
           </div>
-          <h4>Nenhum serviço em andamento</h4>
-          <p>Quando você solicitar um serviço, o acompanhamento aparecerá aqui.</p>
         </div>
-      </div>
-    </ng-template>
+      </ng-template>
 
-    <!-- Título de Seleção -->
-    <div class="section-container with-bottom">
-      <h3 class="section-title">Selecione o serviço desejado</h3>
-    </div>
+      <!-- Seção de Seleção de Serviços -->
+      <div class="section-container with-bottom">
+        <h3 class="section-title">Selecione o serviço desejado</h3>
+      </div>
 
     <!-- Grade de Serviços (Semelhante ao print do Claude) -->
     <ion-grid class="services-grid">
@@ -76,12 +82,16 @@
         </ion-col>
       </ion-row>
     </ion-grid>
+    </div> <!-- /main-content-wrapper -->
 
   </div>
 
   <!-- Template do formulário de solicitação -->
   <ng-template #requestFormTemplate>
-    <div class="app-header">
+    <div 
+      class="hero-header form-hero-header"
+      [style.background-image]="themeService.currentAppearance()?.background_url ? 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(' + themeService.currentAppearance()?.background_url + ')' : 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(/assets/icon/fundo.jpg)'"
+    >
       <div class="form-back-header">
         <button (click)="cancelSelection()" class="back-btn">
           <ion-icon name="chevron-back-outline"></ion-icon>
