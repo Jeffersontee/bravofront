@@ -1,0 +1,324 @@
+:host {
+  display: block;
+  font-family: var(--font-family, 'Outfit', sans-serif);
+}
+
+.company-form-content {
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+.form-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding-bottom: 32px;
+}
+
+/* ==========================================================================
+   CABECALHO DO FORMULARIO
+   ========================================================================== */
+.form-header {
+  margin-bottom: 24px;
+
+  &__title {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.875rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 4px 0 0 0;
+  }
+}
+
+/* ==========================================================================
+   ESTADO DE CARREGAMENTO
+   ========================================================================== */
+.loading-state {
+  text-align: center;
+  padding: 48px 16px;
+
+  &__text {
+    color: var(--ion-color-step-600, #64748b);
+    margin-top: 12px;
+    font-size: 0.95rem;
+  }
+}
+
+/* ==========================================================================
+   CARDS DE FORMULARIO
+   ========================================================================== */
+.form-card {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 14px;
+  border: 1px solid var(--ion-color-light, rgba(0, 0, 0, 0.06));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  padding: 20px;
+  margin-bottom: 20px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ion-color-step-100, #f1f5f9);
+  }
+
+  &__icon {
+    font-size: 22px;
+    color: var(--ion-color-primary, #1d4ed8);
+  }
+
+  &__title {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0;
+  }
+}
+
+/* ==========================================================================
+   GRID DE CAMPOS E INPUTS
+   ========================================================================== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__col {
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.custom-input-item {
+  --background: var(--ion-color-step-50, #f8fafc);
+  --border-radius: 10px;
+  --min-height: 52px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--ion-color-step-200, #e2e8f0);
+
+  ion-label {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ion-color-step-700, #475569);
+    margin-bottom: 4px;
+  }
+
+  ion-input, ion-select {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.95rem;
+    color: var(--ion-text-color, #1e293b);
+  }
+}
+
+.toggle-box {
+  background: var(--ion-color-step-50, #f8fafc);
+  border: 1px solid var(--ion-color-step-200, #e2e8f0);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__title {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #1e293b);
+  }
+
+  &__desc {
+    font-size: 0.8rem;
+    color: var(--ion-color-step-600, #64748b);
+  }
+}
+
+.form-actions {
+  margin-top: 24px;
+}
+
+.btn-submit {
+  --border-radius: 10px;
+  --min-height: 48px;
+  font-family: var(--font-family, 'Outfit', sans-serif);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   SECAO DE USUARIOS VINCULADOS
+   ========================================================================== */
+.users-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--ion-color-step-300, #cbd5e1);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  &__title {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.85rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 2px 0 0 0;
+  }
+}
+
+.user-form-card {
+  border-color: var(--ion-color-primary, #1d4ed8);
+  
+  &__banner {
+    background: rgba(29, 78, 216, 0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+  }
+
+  &__hint {
+    font-size: 0.82rem;
+    color: var(--ion-color-primary, #1d4ed8);
+    margin: 0;
+  }
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-list-item {
+  background: var(--ion-card-background, #ffffff);
+  border: 1px solid var(--ion-color-light, rgba(0, 0, 0, 0.05));
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--ion-color-step-100, #f1f5f9);
+    color: var(--ion-color-primary, #1d4ed8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0;
+  }
+
+  &__email {
+    font-size: 0.82rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.role-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* ==========================================================================
+   ESTADO VAZIO DE USUARIOS
+   ========================================================================== */
+.empty-state {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 14px;
+  padding: 32px 16px;
+  text-align: center;
+  border: 1px solid var(--ion-color-light, rgba(0, 0, 0, 0.06));
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--ion-color-step-100, #f1f5f9);
+    color: var(--ion-color-step-500, #94a3b8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  &__title {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 4px 0;
+  }
+
+  &__text {
+    font-size: 0.85rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+  }
+}

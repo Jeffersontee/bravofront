@@ -2,8 +2,7 @@ import { Component, OnInit, inject, input, output, signal, effect, computed, unt
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
-  IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, 
-  IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar, IonTextarea 
+  IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar, IonTextarea 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -23,8 +22,7 @@ import { getPriorityFromGUT, getGUTFromPriority, PriorityLevel } from 'src/app/u
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
-    IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, 
-    IonButton, IonIcon, IonContent, IonItemDivider, IonSpinner, IonProgressBar, IonTextarea
+    IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonButton, IonIcon, IonItemDivider, IonSpinner, IonProgressBar, IonTextarea
   ]
 })
 export class ServiceOrderFormComponent implements OnInit {

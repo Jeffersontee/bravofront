@@ -7,10 +7,8 @@ import {
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
-import { 
-  constructOutline, flashOutline, waterOutline, listOutline, 
-  addCircleOutline, statsChartOutline, cashOutline, gridOutline 
-} from 'ionicons/icons';
+import { listOutline, addCircleOutline, statsChartOutline, cashOutline, gridOutline } from 'ionicons/icons';
+import { registerServiceIcons } from 'src/app/utils/service-icons';
 import { Router } from '@angular/router';
 
 @Component({
@@ -36,10 +34,8 @@ export class ServicePanelComponent implements OnInit {
   avgPrice = signal<number>(0);
 
   constructor() {
-    addIcons({ 
-      constructOutline, flashOutline, waterOutline, listOutline, 
-      addCircleOutline, statsChartOutline, cashOutline, gridOutline 
-    });
+    registerServiceIcons();
+    addIcons({ listOutline, addCircleOutline, statsChartOutline, cashOutline, gridOutline });
   }
 
   ngOnInit() {

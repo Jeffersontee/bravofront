@@ -5,16 +5,14 @@ import { ActivatedRoute } from '@angular/router';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton,
   IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonToggle, IonLabel,
-  IonSpinner, IonList, IonItem, IonIcon
+  IonSpinner, IonIcon
 } from '@ionic/angular/standalone';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
-import { 
-  layersOutline, buildOutline, checkmarkCircleOutline, 
-  closeCircleOutline, settingsOutline, waterOutline, flashOutline
-} from 'ionicons/icons';
+import { layersOutline, checkmarkCircleOutline, closeCircleOutline, settingsOutline } from 'ionicons/icons';
+import { registerServiceIcons } from 'src/app/utils/service-icons';
 
 interface CatalogServiceItem extends ServiceItem {
   isActive: boolean;
@@ -44,10 +42,8 @@ export class CatalogPage implements OnInit {
   isLoading = signal<boolean>(true);
 
   constructor() {
-    addIcons({ 
-      layersOutline, buildOutline, checkmarkCircleOutline, 
-      closeCircleOutline, settingsOutline, waterOutline, flashOutline 
-    });
+    registerServiceIcons();
+    addIcons({ layersOutline, checkmarkCircleOutline, closeCircleOutline, settingsOutline });
   }
 
   ngOnInit() {

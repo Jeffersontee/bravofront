@@ -1,0 +1,111 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/signup" color="light" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Termos & Privacidade</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding bg-neutral">
+  <div class="terms-container">
+    
+    <!-- Hero Title -->
+    <div class="hero-section text-center mb-4">
+      <h1 class="page-title">Documentos Legais</h1>
+      <p class="text-muted">Bravo Instalações & Adega Pinguins • Atualizado em Janeiro de 2026</p>
+    </div>
+
+    <!-- Segment Selector -->
+    <ion-segment [value]="activeTab()" (ionChange)="segmentChanged($event)" class="bravo-segment mb-4">
+      <ion-segment-button value="terms">
+        <ion-label>Termos de Uso</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="privacy">
+        <ion-label>Política de Privacidade</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Conteúdo: TERMOS DE USO -->
+    @if (activeTab() === 'terms') {
+      <ion-card class="legal-card">
+        <ion-card-content class="legal-body">
+          <h2>1. Aceitação dos Termos</h2>
+          <p>
+            Ao criar uma conta ou utilizar a plataforma **Bravo Instalações / Adega Pinguins**, você concorda integralmente com estes Termos de Uso. Caso não concorde com qualquer disposição aqui prevista, solicitamos que não utilize nossos serviços.
+          </p>
+
+          <h2>2. Descrição dos Serviços</h2>
+          <p>
+            A plataforma oferece soluções tecnológicas para gestão de serviços, ordens de trabalho, catálogo de produtos, atendimento a clientes e automação operacional para instalações e adegas.
+          </p>
+
+          <h2>3. Cadastro e Responsabilidade de Conta</h2>
+          <p>
+            O usuário é responsável por manter a confidencialidade de suas credenciais de acesso (e-mail e senha) e por todas as atividades realizadas em sua conta. Informações falsas ou incompletas sujeitam o usuário à suspensão do acesso.
+          </p>
+
+          <h2>4. Uso Adequado da Plataforma</h2>
+          <p>
+            É vedado utilizar a plataforma para atividades ilícitas, violar direitos de terceiros, tentar acessar áreas restritas do sistema sem autorização ou introduzir códigos maliciosos.
+          </p>
+
+          <h2>5. Alterações dos Termos</h2>
+          <p>
+            Reservamo-nos o direito de atualizar estes termos periodicamente. Alterações significativas serão notificadas através dos canais de atendimento ou mediante aviso no aplicativo.
+          </p>
+
+          <h2>6. Foro e Legislação Aplicável</h2>
+          <p>
+            Estes Termos são regidos pela legislação da República Federativa do Brasil. Fica eleito o foro da comarca da sede da empresa para dirimir quaisquer controvérsias.
+          </p>
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- Conteúdo: POLÍTICA DE PRIVACIDADE -->
+    @if (activeTab() === 'privacy') {
+      <ion-card class="legal-card">
+        <ion-card-content class="legal-body">
+          <h2>1. Coleta de Dados Pessoais (LGPD)</h2>
+          <p>
+            Em conformidade com a **Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018)**, coletamos apenas os dados estritamente necessários para a operação dos serviços, tais como: nome completo, e-mail, telefone, CPF/CNPJ e endereço de atendimento.
+          </p>
+
+          <h2>2. Finalidade do Tratamento de Dados</h2>
+          <p>
+            Os dados coletados são utilizados exclusivamente para:
+          </p>
+          <ul>
+            <li>Autenticação e gestão da conta do usuário;</li>
+            <li>Emissão de Ordens de Serviço, agendamentos e faturas;</li>
+            <li>Comunicação de notificações operacionais (e-mail, WhatsApp, Push);</li>
+            <li>Cumprimento de obrigações legais e regulatórias.</li>
+          </ul>
+
+          <h2>3. Compartilhamento e Segurança</h2>
+          <p>
+            Seus dados pessoais não serão vendidos ou comercializados. O compartilhamento ocorre apenas com prestadores de serviço indispensáveis para a operação (gateways de pagamento, serviços de e-mail e armazenamento em nuvem com criptografia).
+          </p>
+
+          <h2>4. Direitos do Titular dos Dados</h2>
+          <p>
+            Você tem direito a:
+          </p>
+          <ul>
+            <li>Confirmar a existência de tratamento e acessar seus dados;</li>
+            <li>Solicitar a correção de dados incompletos ou inexatos;</li>
+            <li>Solicitar a portabilidade dos dados para outro fornecedor;</li>
+            <li>Solicitar a eliminação/anonimização dos dados pessoais, ressalvadas as hipóteses de guarda legal (Art. 16 da LGPD).</li>
+          </ul>
+
+          <h2>5. Retenção de Dados e Contato do Encarregado (DPO)</h2>
+          <p>
+            Os dados são retidos durante a vigência do contrato ou conforme exigido pela legislação tributária e fiscal brasileira. Dúvidas sobre privacidade podem ser encaminhadas ao nosso suporte de atendimento.
+          </p>
+        </ion-card-content>
+      </ion-card>
+    }
+
+  </div>
+</ion-content>

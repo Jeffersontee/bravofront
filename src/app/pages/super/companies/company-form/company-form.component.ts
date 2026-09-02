@@ -2,8 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
-  IonList, IonItem, IonInput, IonTextarea, IonLabel, IonToggle, IonButton, 
-  IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption 
+  IonList, IonItem, IonInput, IonLabel, IonToggle, IonButton, 
+  IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption,
+  IonIcon, IonBadge
 } from '@ionic/angular/standalone';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,16 +12,33 @@ import { CompanyService } from 'src/app/services/company/company.service';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { Strings } from 'src/app/enum/strings';
+import { addIcons } from 'ionicons';
+import { 
+  businessOutline, 
+  personOutline, 
+  mailOutline, 
+  cardOutline, 
+  documentTextOutline, 
+  cubeOutline, 
+  addOutline, 
+  trashOutline, 
+  saveOutline, 
+  personAddOutline, 
+  shieldCheckmarkOutline, 
+  keyOutline 
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-company-form',
   templateUrl: './company-form.component.html',
+  styleUrls: ['./company-form.component.scss'],
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule,
     IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
-    IonList, IonItem, IonInput, IonTextarea, IonLabel, IonToggle, IonButton, 
-    IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption
+    IonList, IonItem, IonInput, IonLabel, IonToggle, IonButton, 
+    IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption,
+    IonIcon, IonBadge
   ]
 })
 export class CompanyFormComponent implements OnInit {
@@ -40,6 +58,23 @@ export class CompanyFormComponent implements OnInit {
   public companyUsers = signal<any[]>([]);
   public showUserForm = signal(false);
   public globalServices = signal<ServiceItem[]>([]);
+
+  constructor() {
+    addIcons({ 
+      businessOutline, 
+      personOutline, 
+      mailOutline, 
+      cardOutline, 
+      documentTextOutline, 
+      cubeOutline, 
+      addOutline, 
+      trashOutline, 
+      saveOutline, 
+      personAddOutline, 
+      shieldCheckmarkOutline, 
+      keyOutline 
+    });
+  }
 
   ngOnInit() {
     this.form = this.fb.group({

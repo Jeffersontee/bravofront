@@ -1,11 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { 
-  flashOutline, hammerOutline, waterOutline, constructOutline, 
-  wifiOutline, shieldCheckmarkOutline 
-} from 'ionicons/icons';
+import { registerServiceIcons } from 'src/app/utils/service-icons';
 
 export interface ServiceCategory {
   id: string;
@@ -31,10 +27,7 @@ export class CardServicesComponent {
   public select = output<void>();
 
   constructor() {
-    addIcons({ 
-      flashOutline, hammerOutline, waterOutline, constructOutline, 
-      wifiOutline, shieldCheckmarkOutline 
-    });
+    registerServiceIcons();
   }
 
   public onCardClick() {

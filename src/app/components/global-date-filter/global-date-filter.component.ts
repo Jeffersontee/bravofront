@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonIcon, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonDatetime, IonLabel, IonFooter } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonDatetime, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { calendarOutline, closeOutline, checkmarkOutline, arrowForwardOutline, arrowDownOutline } from 'ionicons/icons';
 import { DateFilterService } from 'src/app/services/date-filter/date-filter.service';
@@ -11,7 +11,7 @@ import { DateFilterService } from 'src/app/services/date-filter/date-filter.serv
   templateUrl: './global-date-filter.component.html',
   styleUrls: ['./global-date-filter.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonButton, IonIcon, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonDatetime, IonLabel, IonFooter]
+  imports: [CommonModule, FormsModule, IonButton, IonIcon, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonDatetime, IonFooter]
 })
 export class GlobalDateFilterComponent {
   private dateFilterService = inject(DateFilterService);

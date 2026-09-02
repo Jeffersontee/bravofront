@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, 
-  IonIcon, IonLabel, IonItem, IonGrid, IonRow, IonCol, IonCard, 
-  IonCardContent, IonList, IonBadge, ModalController, ToastController,
+  IonIcon, IonGrid, IonRow, IonCol, ModalController, ToastController,
   IonTextarea, IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -25,8 +24,7 @@ import { Strings } from 'src/app/enum/strings';
   imports: [
     CommonModule, FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, 
-    IonIcon, IonLabel, IonItem, IonGrid, IonRow, IonCol, IonCard, 
-    IonCardContent, IonList, IonBadge, IonTextarea, IonSpinner
+    IonIcon, IonGrid, IonRow, IonCol, IonTextarea, IonSpinner
   ]
 })
 export class ServiceOrderReportModalComponent implements OnInit {

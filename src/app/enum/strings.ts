@@ -6,6 +6,8 @@ export enum Strings {
   LOGIN = '/login',
   SIGNUP = '/signup',
   PROFILE = '/profile',
+  TERMS = '/terms',
+  PRIVACY = '/privacy',
   ADMIN = '/company', // Base para o admin lojista
 
   // Super_admin

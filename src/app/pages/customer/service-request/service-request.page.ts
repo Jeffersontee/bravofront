@@ -5,8 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonBackButton, Io
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
-import { addIcons } from 'ionicons';
-import { flashOutline, waterOutline, constructOutline, hardwareChipOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { registerServiceIcons } from 'src/app/utils/service-icons';
 
 @Component({
   selector: 'app-service-request',
@@ -27,7 +26,7 @@ export class ServiceRequestPage implements OnInit {
   isLoading = signal<boolean>(false);
 
   constructor() {
-    addIcons({ flashOutline, waterOutline, constructOutline, hardwareChipOutline, shieldCheckmarkOutline });
+    registerServiceIcons();
   }
 
   ngOnInit() {

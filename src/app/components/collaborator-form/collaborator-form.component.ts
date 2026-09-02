@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
   IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, 
-  IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar 
+  IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline, businessOutline } from 'ionicons/icons';
 import { Collaborator } from 'src/app/services/collaborator/collaborator.service';
+import { CompanyService, Company } from 'src/app/services/company/company.service';
 
 @Component({
   selector: 'app-collaborator-form',
@@ -17,7 +18,7 @@ import { Collaborator } from 'src/app/services/collaborator/collaborator.service
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, 
-    IonButton, IonIcon, IonContent, IonItemDivider, IonSpinner, IonProgressBar
+    IonButton, IonIcon, IonItemDivider, IonSpinner, IonProgressBar
   ]
 })
 export class CollaboratorFormComponent implements OnInit {
@@ -29,10 +30,12 @@ export class CollaboratorFormComponent implements OnInit {
   save = output<Partial<Collaborator>>();
 
   private fb = inject(FormBuilder);
+  private companyService = inject(CompanyService);
 
   collaboratorForm!: FormGroup;
   formReady = signal<boolean>(false);
   formChanged = signal<boolean>(false);
+  companies = signal<Company[]>([]);
 
   roles = [
     { value: 'técnico', label: 'Técnico' },
@@ -48,7 +51,7 @@ export class CollaboratorFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline });
+    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline, businessOutline });
 
     effect(() => {
       if (!this.formReady() || !this.collaboratorForm) return;
@@ -93,6 +96,7 @@ export class CollaboratorFormComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
+    this.loadCompanies();
 
     if (this.collaboratorForm) {
       this.collaboratorForm.valueChanges.subscribe(() => {
@@ -103,6 +107,17 @@ export class CollaboratorFormComponent implements OnInit {
     }
   }
 
+  private loadCompanies() {
+    this.companyService.getCompanies().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.companies.set(res.data || []);
+        }
+      },
+      error: (err) => console.error('Erro ao carregar empresas:', err)
+    });
+  }
+
   private initForm() {
     this.collaboratorForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
@@ -110,6 +125,7 @@ export class CollaboratorFormComponent implements OnInit {
       phone: [''],
       password: ['', this.isEditMode() ? [] : [Validators.required, Validators.minLength(6)]],
       role: ['', Validators.required],
+      company_id: [''],
       specialties: [[]],
       active: [true]
     });
@@ -144,6 +160,7 @@ export class CollaboratorFormComponent implements OnInit {
       email: data.email || '',
       phone: this.applyPhoneMask(data.phone || ''),
       role: data.role || '',
+      company_id: rawData.company_id?._id || rawData.company_id || '',
       specialties: rawData.technician_profile?.specialties || [],
       active: data.status === 'active'
     });
@@ -163,6 +180,7 @@ export class CollaboratorFormComponent implements OnInit {
       email: formValue.email?.trim().toLowerCase() || '',
       phone: (formValue.phone || '').replace(/\D/g, ''),
       role: formValue.role,
+      company_id: formValue.company_id || null,
       status: formValue.active ? 'active' : 'inactive'
     };
 

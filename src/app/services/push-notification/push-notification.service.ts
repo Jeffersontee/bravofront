@@ -21,14 +21,14 @@ export class PushNotificationService {
   async init() {
     if (this.initialized) return;
     try {
-      if (environment.firebaseConfig && environment.firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+      if (environment.firebaseConfig && environment.firebaseConfig.apiKey && environment.firebaseConfig.apiKey !== 'YOUR_API_KEY') {
         this.app = initializeApp(environment.firebaseConfig);
         this.messaging = getMessaging(this.app);
         this.initialized = true;
         this.requestPermission();
         this.listenForMessages();
       } else {
-        console.warn('PushNotificationService: Firebase config is not set (using placeholders).');
+        console.log('[PushNotificationService] Notificações Push Firebase desativadas em ambiente local (utilizando credenciais placeholder).');
       }
     } catch (e) {
       console.error('Error initializing PushNotificationService:', e);

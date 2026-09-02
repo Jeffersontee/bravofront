@@ -155,10 +155,28 @@
           <p class="errorMsg" style="font-size: 13px; margin-top: -10px; margin-bottom: 16px;">* As senhas não conferem.</p>
         </ion-text>
 
+        <!-- Checkbox de Consentimento LGPD -->
+        <div class="consent-wrapper mb-3">
+          <label class="consent-label">
+            <input
+              type="checkbox"
+              name="privacy_accepted"
+              ngModel
+              #privacyAcceptedCtrl="ngModel"
+              required
+              class="consent-checkbox">
+            <span class="consent-text">
+              Li e concordo com os 
+              <a [routerLink]="[Strings.TERMS]" target="_blank" class="legal-link">Termos de Uso</a> e a 
+              <a [routerLink]="[Strings.PRIVACY]" target="_blank" class="legal-link">Política de Privacidade</a>.
+            </span>
+          </label>
+        </div>
+
         <button 
           *ngIf="!isLoading" 
-          [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value)"
-          [class.active-btn]="f1.valid && (c_passwordCtrl.value == passwordCtrl.value)"
+          [disabled]="!f1.valid || (c_passwordCtrl.value != passwordCtrl.value) || !privacyAcceptedCtrl.value"
+          [class.active-btn]="f1.valid && (c_passwordCtrl.value == passwordCtrl.value) && privacyAcceptedCtrl.value"
           type="submit" 
           class="bravo-submit-btn">
           Inscrever-se

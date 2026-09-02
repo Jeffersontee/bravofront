@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonIcon, IonToggle, ModalController, IonSpinner } from '@ionic/angular/standalone';
+import { IonIcon, ModalController, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';
 import { Company } from 'src/app/services/company/company.service';
@@ -16,7 +16,7 @@ import { getPriorityFromGUT, getGUTFromPriority, PriorityLevel } from 'src/app/u
   templateUrl: './visit-modal.component.html',
   styleUrls: ['./visit-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonIcon, IonToggle, IonSpinner]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonIcon, IonSpinner]
 })
 export class VisitModalComponent implements OnInit {
   @Input() company!: Company;

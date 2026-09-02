@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButton, IonButtons, IonMenuButton } from '@ionic/angular/standalone';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { GlobalService } from 'src/app/services/global/global.service';
-import { addIcons } from 'ionicons';
-import { addCircleOutline, refreshOutline } from 'ionicons/icons';
+import { registerServiceIcons } from 'src/app/utils/service-icons';
 import { Router } from '@angular/router';
 
 @Component({
@@ -23,7 +22,7 @@ export class ServicesPage implements OnInit {
   isLoading = signal<boolean>(false);
 
   constructor() {
-    addIcons({ addCircleOutline, refreshOutline });
+    registerServiceIcons();
   }
 
   ngOnInit() {

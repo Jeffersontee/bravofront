@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
   IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, 
-  IonButton, IonIcon, IonSpinner, IonContent, IonItemDivider, IonProgressBar 
+  IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { person, mail, call, key, businessOutline, listOutline } from 'ionicons/icons';
@@ -20,7 +20,7 @@ import { ProfileService } from 'src/app/services/profile/profile.service';
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     IonList, IonItem, IonLabel, IonInput, IonSelect, IonSelectOption, IonToggle, 
-    IonButton, IonIcon, IonContent, IonItemDivider, IonSpinner, IonProgressBar
+    IonButton, IonIcon, IonItemDivider, IonSpinner, IonProgressBar
   ]
 })
 export class StaffFormComponent implements OnInit {
@@ -44,7 +44,8 @@ export class StaffFormComponent implements OnInit {
     { value: 'super_admin', label: 'Super Administrador' },
     { value: 'company_owner', label: 'Dono de Empresa' },
     { value: 'admin', label: 'Gerente / Operador' },
-    { value: 'collaborator', label: 'Colaborador / Campo' }
+    { value: 'collaborator', label: 'Colaborador / Campo' },
+    { value: 'user', label: 'Cliente Final (Consumidor)' }
   ];
 
   availablePermissions = AVAILABLE_PERMISSIONS;

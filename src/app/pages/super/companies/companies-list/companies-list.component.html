@@ -1,88 +1,227 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar color="secondary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Empresas / Clientes</ion-title>
+    <ion-title class="page-header-title">Empresas Parceiras</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="loadCompanies()">
+      <ion-button (click)="loadCompanies()" title="Atualizar Lista">
         <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-    <div>
-      <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0;">Gerenciamento de Empresas</h2>
-      <p class="text-muted small" style="margin: 4px 0 0;">Visualize e edite as empresas cadastradas no ecossistema.</p>
-    </div>
-    <div class="d-flex gap-2 align-items-center mt-2 mt-sm-0">
-      <div class="toggle-container">
-        <ion-button [fill]="viewMode() === 'list' ? 'solid' : 'outline'" size="small" (click)="viewMode.set('list')">
-          <ion-icon name="list-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-        <ion-button [fill]="viewMode() === 'card' ? 'solid' : 'outline'" size="small" (click)="viewMode.set('card')">
-          <ion-icon name="grid-outline" slot="icon-only"></ion-icon>
+<ion-content class="ion-padding companies-list-content">
+  <div class="panel-container">
+    
+    <!-- CABEÇALHO DA PÁGINA -->
+    <div class="panel-header">
+      <div class="panel-header__info">
+        <h1 class="panel-header__title">Gerenciamento de Empresas</h1>
+        <p class="panel-header__subtitle">Gerencie os estabelecimentos, dados cadastrais e acessos no ecossistema.</p>
+      </div>
+      <div class="panel-header__actions">
+        <div class="view-toggle-group">
+          <button 
+            type="button" 
+            class="view-toggle-btn" 
+            [class.active]="viewMode() === 'list'" 
+            (click)="viewMode.set('list')" 
+            title="Visualização em Lista">
+            <ion-icon name="list-outline"></ion-icon>
+          </button>
+          <button 
+            type="button" 
+            class="view-toggle-btn" 
+            [class.active]="viewMode() === 'card'" 
+            (click)="viewMode.set('card')" 
+            title="Visualização em Grade">
+            <ion-icon name="grid-outline"></ion-icon>
+          </button>
+        </div>
+        <ion-button (click)="goToCreate()" color="success" class="btn-create-company">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Nova Empresa
         </ion-button>
       </div>
-      <ion-button (click)="goToCreate()" color="success" size="small">
-        <ion-icon name="add-outline" slot="start"></ion-icon>
-        Nova Empresa
-      </ion-button>
     </div>
-  </div>
 
-  @if (isLoading) {
-    <div class="text-center ion-padding">
-      <ion-spinner></ion-spinner>
-      <p class="text-muted mt-2">Carregando empresas...</p>
-    </div>
-  }
-
-  @if (!isLoading && companies.length > 0) {
-    <!-- MODO LISTA -->
-    @if (viewMode() === 'list') {
-      <ion-list lines="inset" style="background: transparent;">
-        <ion-item *ngFor="let company of companies" button (click)="goToEdit(company._id!)" style="--background: #ffffff; margin-bottom: 8px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-          <ion-icon name="business-outline" slot="start" color="primary" style="font-size: 24px;"></ion-icon>
-          <ion-label>
-            <h2 style="font-family: 'Outfit', sans-serif; font-weight: 600;">{{ company.name }}</h2>
-            <p style="font-family: 'Outfit', sans-serif;">CNPJ: {{ company.cnpj }} | E-mail: {{ company.email }}</p>
-          </ion-label>
-          <ion-badge [color]="company.active ? 'success' : 'medium'" slot="end" style="font-family: 'Outfit', sans-serif; font-weight: 600;">
-            {{ company.active ? 'Ativo' : 'Inativo' }}
-          </ion-badge>
-        </ion-item>
-      </ion-list>
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner color="primary"></ion-spinner>
+        <p class="loading-state__text">Carregando empresas parceiras...</p>
+      </div>
     }
 
-    <!-- MODO CARD -->
-    @if (viewMode() === 'card') {
-      <div class="companies-grid">
-        @for (company of companies; track company._id) {
-          <div class="company-card" (click)="goToEdit(company._id!)">
-            <div class="company-card__header">
-              <ion-icon name="business-outline" class="company-card__icon"></ion-icon>
-              <span class="company-card__status" [class.active]="company.active">
-                {{ company.active ? 'Ativo' : 'Inativo' }}
-              </span>
-            </div>
-            <h3 class="company-card__name">{{ company.name }}</h3>
-            <p class="company-card__cnpj">CNPJ: {{ company.cnpj }}</p>
-            <p class="company-card__email">{{ company.email || 'Sem e-mail cadastrado' }}</p>
+    @if (!isLoading()) {
+      <!-- KPIs INTELIGENTES / DINÂMICOS -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-card--total">
+          <div class="kpi-card__icon">
+            <ion-icon name="business-outline"></ion-icon>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-card__value">{{ totalCount() }}</span>
+            <span class="kpi-card__label">Empresas Exibidas</span>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--active">
+          <div class="kpi-card__icon">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-card__value">{{ activeCount() }}</span>
+            <span class="kpi-card__label">Ativas no Sistema</span>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-card--inactive">
+          <div class="kpi-card__icon">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-card__value">{{ inactiveCount() }}</span>
+            <span class="kpi-card__label">Inativas / Suspensas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BARRA DE BUSCA E FILTROS -->
+      <div class="filter-card">
+        <div class="filter-card__grid">
+          <!-- BUSCA POR TEXTO -->
+          <div class="filter-card__field">
+            <ion-searchbar 
+              [value]="searchTerm()" 
+              (ionInput)="onSearchInput($event)" 
+              placeholder="Buscar por nome, CNPJ, e-mail ou dono..."
+              debounce="200"
+              class="custom-searchbar">
+            </ion-searchbar>
+          </div>
+
+          <!-- FILTRO POR STATUS -->
+          <div class="filter-card__field">
+            <ion-item lines="none" class="custom-select-item">
+              <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
+              <ion-select 
+                [value]="selectedStatusFilter()" 
+                label="Status da Empresa" 
+                labelPlacement="floating" 
+                (ionChange)="onStatusFilterChange($event.detail.value)" 
+                placeholder="Todos os Status">
+                <ion-select-option value="ALL">Todas as Empresas</ion-select-option>
+                <ion-select-option value="ACTIVE">Apenas Ativas</ion-select-option>
+                <ion-select-option value="INACTIVE">Apenas Inativas</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+        </div>
+
+        @if (selectedStatusFilter() !== 'ALL' || searchTerm()) {
+          <div class="filter-card__footer">
+            <span class="filter-card__summary">Filtro ativo: {{ totalCount() }} empresa(s) encontrada(s)</span>
+            <ion-button fill="clear" size="small" color="danger" (click)="clearFilters()" class="btn-clear-filter">
+              <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+              Limpar Filtros
+            </ion-button>
           </div>
         }
       </div>
-    }
-  }
 
-  @if (!isLoading && companies.length === 0) {
-    <ion-card>
-      <ion-card-content class="text-center">
-        <p>Nenhuma empresa cadastrada.</p>
-      </ion-card-content>
-    </ion-card>
-  }
+      <!-- SEÇÃO DE RESULTADOS -->
+      <div class="section-header">
+        <h2 class="section-header__title">Empresas Cadastradas</h2>
+        <span class="section-header__badge">{{ filteredCompanies().length }} estabelecimentos</span>
+      </div>
+
+      <!-- VISUALIZAÇÃO EM LISTA -->
+      @if (viewMode() === 'list') {
+        <div class="company-list">
+          @for (company of filteredCompanies(); track company._id) {
+            <div class="company-list-item" (click)="goToEdit(company._id!)">
+              <div class="company-list-item__avatar">
+                <ion-icon name="business-outline"></ion-icon>
+              </div>
+              <div class="company-list-item__content">
+                <div class="company-list-item__top">
+                  <h3 class="company-list-item__name">{{ company.name }}</h3>
+                  <ion-badge [color]="company.active ? 'success' : 'medium'" class="status-badge">
+                    {{ company.active ? 'Ativo' : 'Inativo' }}
+                  </ion-badge>
+                </div>
+                <div class="company-list-item__details">
+                  <span class="detail-item cnpj">
+                    <ion-icon name="card-outline"></ion-icon>
+                    CNPJ: {{ company.cnpj }}
+                  </span>
+                  <span class="detail-item email">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    {{ company.email || 'Sem e-mail' }}
+                  </span>
+                </div>
+              </div>
+              <div class="company-list-item__action">
+                <span class="edit-text">Editar</span>
+                <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- VISUALIZAÇÃO EM CARDS / GRADE -->
+      @if (viewMode() === 'card') {
+        <div class="company-grid">
+          @for (company of filteredCompanies(); track company._id) {
+            <div class="company-card" (click)="goToEdit(company._id!)">
+              <div class="company-card__header">
+                <div class="company-card__avatar">
+                  <ion-icon name="business-outline"></ion-icon>
+                </div>
+                <ion-badge [color]="company.active ? 'success' : 'medium'" class="status-badge">
+                  {{ company.active ? 'Ativo' : 'Inativo' }}
+                </ion-badge>
+              </div>
+
+              <div class="company-card__body">
+                <h3 class="company-card__name">{{ company.name }}</h3>
+                <p class="company-card__cnpj">CNPJ: {{ company.cnpj }}</p>
+                <p class="company-card__email">{{ company.email || 'Sem e-mail cadastrado' }}</p>
+              </div>
+
+              <div class="company-card__footer">
+                <span class="company-card__owner">
+                  Responsável: {{ company.owner_name || 'Não informado' }}
+                </span>
+                <span class="edit-link">
+                  Editar
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ESTADO VAZIO -->
+      @if (filteredCompanies().length === 0) {
+        <div class="empty-state">
+          <div class="empty-state__icon">
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+          <h3 class="empty-state__title">Nenhuma empresa encontrada</h3>
+          <p class="empty-state__text">Não encontramos empresas que correspondam aos filtros aplicados.</p>
+          @if (selectedStatusFilter() !== 'ALL' || searchTerm()) {
+            <ion-button fill="outline" color="primary" size="small" (click)="clearFilters()" class="empty-state__btn">
+              Limpar Filtros de Busca
+            </ion-button>
+          }
+        </div>
+      }
+    }
+
+  </div>
 </ion-content>

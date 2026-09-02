@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -6,7 +6,21 @@ import { CollaboratorService, Collaborator } from 'src/app/services/collaborator
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { addIcons } from 'ionicons';
-import { briefcaseOutline, peopleOutline, shieldCheckmarkOutline, searchOutline, businessOutline } from 'ionicons/icons';
+import { 
+  briefcaseOutline, 
+  peopleOutline, 
+  shieldCheckmarkOutline, 
+  searchOutline, 
+  businessOutline, 
+  closeCircleOutline, 
+  refreshOutline,
+  gridOutline,
+  listOutline,
+  addOutline,
+  personOutline,
+  mailOutline,
+  chevronForwardOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-collaborator-panel',
@@ -24,14 +38,65 @@ export class CollaboratorPanelComponent implements OnInit {
   collaborators = signal<Collaborator[]>([]);
   companies = signal<Company[]>([]);
   selectedCompanyId = signal<string>('');
+  searchTerm = signal<string>('');
   isLoading = signal(true);
+  viewMode = signal<'list' | 'card'>('list');
 
-  activeCount = signal(0);
-  inactiveCount = signal(0);
-  technicianCount = signal(0);
+  // Lista Filtrada Inteligente
+  filteredCollaborators = computed(() => {
+    const list = this.collaborators();
+    const companyId = this.selectedCompanyId();
+    const search = this.searchTerm().trim().toLowerCase();
+
+    return list.filter(c => {
+      if (companyId) {
+        const cId = typeof c.company_id === 'object' ? (c.company_id as any)?._id : c.company_id;
+        if (cId !== companyId) return false;
+      }
+
+      if (search) {
+        const name = c.name?.toLowerCase() || '';
+        const email = c.email?.toLowerCase() || '';
+        const role = c.role?.toLowerCase() || '';
+        const phone = c.phone?.toLowerCase() || '';
+        const companyName = (typeof c.company_id === 'object' ? (c.company_id as any)?.name : '')?.toLowerCase() || '';
+
+        return name.includes(search) ||
+               email.includes(search) ||
+               role.includes(search) ||
+               phone.includes(search) ||
+               companyName.includes(search);
+      }
+
+      return true;
+    });
+  });
+
+  // KPIs Dinâmicos e Inteligentes baseados na lista filtrada
+  totalCount = computed(() => this.filteredCollaborators().length);
+  activeCount = computed(() => this.filteredCollaborators().filter(c => c.status === 'active').length);
+  inactiveCount = computed(() => this.filteredCollaborators().filter(c => c.status !== 'active').length);
+  technicianCount = computed(() => this.filteredCollaborators().filter(c => {
+    const role = c.role?.toLowerCase() || '';
+    return role.includes('técnico') || role.includes('technician') || role === 'tech';
+  }).length);
 
   constructor() {
-    addIcons({ briefcaseOutline, peopleOutline, shieldCheckmarkOutline, searchOutline, businessOutline });
+    addIcons({ 
+      briefcaseOutline, 
+      peopleOutline, 
+      shieldCheckmarkOutline, 
+      searchOutline, 
+      businessOutline, 
+      closeCircleOutline, 
+      refreshOutline,
+      gridOutline,
+      listOutline,
+      addOutline,
+      personOutline,
+      mailOutline,
+      chevronForwardOutline
+    });
   }
 
   ngOnInit() {
@@ -42,12 +107,12 @@ export class CollaboratorPanelComponent implements OnInit {
     this.isLoading.set(true);
     this.companyService.getCompanies().subscribe({
       next: (compRes) => {
-        this.companies.set(compRes.data);
+        this.companies.set(compRes.data || []);
         this.loadCollaborators();
       },
       error: () => {
-        this.global.errorToast('Erro ao carregar dados');
-        this.isLoading.set(false);
+        this.global.errorToast('Erro ao carregar empresas');
+        this.loadCollaborators();
       }
     });
   }
@@ -55,33 +120,31 @@ export class CollaboratorPanelComponent implements OnInit {
   loadCollaborators() {
     this.collaboratorService.getCollaborators().subscribe({
       next: (res) => {
-        this.collaborators.set(res.data);
-        this.calculateStats(res.data);
+        this.collaborators.set(res.data || []);
         this.isLoading.set(false);
       },
       error: () => {
+        this.global.errorToast('Erro ao carregar colaboradores');
         this.isLoading.set(false);
       }
     });
   }
 
-  calculateStats(list: Collaborator[]) {
-    this.activeCount.set(list.filter(c => c.status === 'active').length);
-    this.inactiveCount.set(list.filter(c => c.status !== 'active').length);
-    this.technicianCount.set(list.filter(c => c.role === 'technician' || c.role === 'técnico').length);
-  }
-
-  get filteredCollaborators(): Collaborator[] {
-    const companyId = this.selectedCompanyId();
-    if (!companyId) return this.collaborators();
-    return this.collaborators().filter(c => {
-      const cId = typeof c.company_id === 'object' ? (c.company_id as any)?._id : c.company_id;
-      return cId === companyId;
-    });
-  }
-
   filterByCompany(event: any) {
     this.selectedCompanyId.set(event.detail.value || '');
+  }
+
+  onSearchInput(event: any) {
+    this.searchTerm.set(event.detail.value || '');
+  }
+
+  clearFilters() {
+    this.selectedCompanyId.set('');
+    this.searchTerm.set('');
+  }
+
+  goToCreate() {
+    this.router.navigateByUrl('/super-admin/collaborators/create');
   }
 
   goToEdit(id: string) {
