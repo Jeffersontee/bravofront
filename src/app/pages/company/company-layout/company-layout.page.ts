@@ -66,13 +66,14 @@ export class CompanyLayoutPage implements OnInit {
       title: 'Dashboard',
       icon: 'speedometer-outline',
       permissionKey: 'SUPER_DASHBOARD',
-      url: (companyId: string) => `/company/companies/${companyId}/dashboard`
+      url: (companyId: string) => `/company/dashboard`
     },
     {
       title: 'Minha Empresa',
       icon: 'storefront-outline',
       permissionKey: 'SUPER_COMPANIES_PANEL',
       children: [
+        { title: 'Painel da Empresa', icon: 'speedometer-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/painel` },
         { title: 'Dados da Empresa', icon: 'document-text-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/edit/${companyId}` },
         { title: 'Unidades / Filiais', icon: 'business-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/units` },
         { title: 'Catálogo de Serviços', icon: 'layers-outline', permissionKey: 'SUPER_SERVICES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/catalog` }

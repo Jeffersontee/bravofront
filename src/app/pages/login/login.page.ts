@@ -1,9 +1,9 @@
-import { Component, inject, signal, ViewChild, OnDestroy } from '@angular/core';
+import { Component, inject, signal, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { 
-  IonContent, IonIcon, IonModal, IonText
+  IonContent, IonIcon, IonModal
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -25,11 +25,11 @@ import { Strings } from 'src/app/enum/strings';
     CommonModule, FormsModule, IonContent, IonIcon, IonModal, RouterLink, ResetPasswordComponent
   ]
 })
-export class LoginPage implements OnDestroy {
+export class LoginPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private global = inject(GlobalService);
-  private themeService = inject(ThemeService);
+  public themeService = inject(ThemeService);
 
   // Inputs controlados via signals
   public emailInput = signal<string>('');
@@ -52,9 +52,9 @@ export class LoginPage implements OnDestroy {
     addIcons({ mailOutline, lockClosedOutline, construct, key, mail, eyeOffOutline, eyeOutline });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.checkIfLoggedIn();
-    this.themeService.loadAppearance('GLOBAL');
+    await this.themeService.loadAppearance('GLOBAL');
   }
 
   async checkIfLoggedIn() {

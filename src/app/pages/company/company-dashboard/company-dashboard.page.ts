@@ -1,12 +1,16 @@
-import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, ModalController, IonMenuButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
+import { 
+  IonContent, ModalController, IonMenuButton, IonIcon, IonSpinner,
+  IonHeader, IonToolbar, IonTitle, IonButtons, IonButton
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   addCircleOutline, wifiOutline, refreshOutline, 
   alertCircleOutline, searchOutline, calendarOutline,
-  businessOutline
+  businessOutline, clipboardOutline, checkmarkCircleOutline,
+  timeOutline, trendingUpOutline, peopleOutline
 } from 'ionicons/icons';
 import { VisitModalComponent } from 'src/app/components/visit-modal/visit-modal.component';
 import { GlobalDateFilterComponent } from 'src/app/components/global-date-filter/global-date-filter.component';
@@ -16,14 +20,37 @@ import { ServiceService, ServiceItem } from 'src/app/services/service/service.se
 import { UnitService, Unit } from 'src/app/services/unit/unit.service';
 import { ServiceOrderService, ServiceOrder } from 'src/app/services/service-order/service-order.service';
 import { DateFilterService } from 'src/app/services/date-filter/date-filter.service';
+import { ProfileService } from 'src/app/services/profile/profile.service';
 import { forkJoin } from 'rxjs';
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  DoughnutController,
+  ArcElement
+} from 'chart.js';
+
+Chart.register(
+  BarController, BarElement,
+  DoughnutController, ArcElement,
+  CategoryScale, LinearScale,
+  Tooltip, Legend
+);
 
 @Component({
   selector: 'app-company-dashboard',
   templateUrl: './company-dashboard.page.html',
   styleUrls: ['./company-dashboard.page.scss'],
   standalone: true,
-  imports: [IonIcon, IonContent, IonSpinner, CommonModule, FormsModule, IonMenuButton, GlobalDateFilterComponent]
+  imports: [
+    IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
+    IonIcon, IonContent, IonSpinner, CommonModule, FormsModule, 
+    IonMenuButton, GlobalDateFilterComponent
+  ]
 })
 export class CompanyDashboardPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -34,6 +61,15 @@ export class CompanyDashboardPage implements OnInit {
   private modalCtrl = inject(ModalController);
   private router = inject(Router);
   public dateFilterService = inject(DateFilterService);
+  private profileService = inject(ProfileService);
+
+  @ViewChild('monthlyChartCanvas') monthlyChartRef!: ElementRef;
+  @ViewChild('servicesChartCanvas') servicesChartRef!: ElementRef;
+  @ViewChild('statusChartCanvas') statusChartRef!: ElementRef;
+
+  private monthlyChart: Chart | null = null;
+  private servicesChart: Chart | null = null;
+  private statusChart: Chart | null = null;
 
   public companyId = signal<string>('');
   public company = signal<Company | null>(null);
@@ -43,6 +79,7 @@ export class CompanyDashboardPage implements OnInit {
 
   public isLoading = signal<boolean>(false);
   public hasConnectionError = signal<boolean>(false);
+  public isDashboardView = signal<boolean>(false);
 
   // Filters
   public filterUnit = signal<string>('Todas');
@@ -109,7 +146,8 @@ export class CompanyDashboardPage implements OnInit {
     addIcons({ 
       addCircleOutline, wifiOutline, refreshOutline, 
       alertCircleOutline, searchOutline, calendarOutline,
-      businessOutline
+      businessOutline, clipboardOutline, checkmarkCircleOutline,
+      timeOutline, trendingUpOutline, peopleOutline
     });
     
     effect(() => {
@@ -122,8 +160,19 @@ export class CompanyDashboardPage implements OnInit {
     }, { allowSignalWrites: true });
   }
 
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+  async ngOnInit() {
+    this.isDashboardView.set(this.router.url.includes('/dashboard'));
+    let id = this.route.snapshot.paramMap.get('id');
+    if (!id) {
+      try {
+        const user = await this.profileService.getProfile();
+        if (user && user.company_id) {
+          id = user.company_id;
+        }
+      } catch (e) {
+        console.error('Erro ao buscar perfil do usuário no dashboard:', e);
+      }
+    }
     if (id) {
       this.companyId.set(id);
       this.loadCompanyData(id);
@@ -131,6 +180,7 @@ export class CompanyDashboardPage implements OnInit {
   }
 
   loadCompanyData(companyId: string) {
+    this.isDashboardView.set(this.router.url.includes('/dashboard'));
     this.isLoading.set(true);
     this.hasConnectionError.set(false);
 
@@ -159,18 +209,194 @@ export class CompanyDashboardPage implements OnInit {
           }
         }
         if (res.units?.success) this.units.set(res.units.data || []);
-        if (res.orders?.success) this.serviceOrders.set(res.orders.data || []);
+        if (res.orders?.success) {
+          const ordersList = res.orders.data || [];
+          this.serviceOrders.set(ordersList);
+          if (this.isDashboardView()) {
+            setTimeout(() => this.renderCharts(ordersList), 100);
+          }
+        }
       },
       error: (err) => {
         console.error('Erro ao carregar dados da empresa:', err);
         this.isLoading.set(false);
 
         if (err.status === 404) {
-          // Redireciona APENAS se a empresa não for encontrada no servidor (404)
           this.router.navigate(['/company/dashboard']);
         } else {
-          // Para falhas de conexão (status 0) ou erros temporários, PERMANECE na página e exibe banner com botão de tentar novamente
           this.hasConnectionError.set(true);
+        }
+      }
+    });
+  }
+
+  private renderCharts(orders: ServiceOrder[]) {
+    if (!this.isDashboardView()) return;
+    this.renderMonthlyChart(orders);
+    this.renderServicesChart(orders);
+    this.renderStatusChart(orders);
+  }
+
+  private renderServicesChart(orders: ServiceOrder[]) {
+    if (!this.servicesChartRef) return;
+    const ctx = this.servicesChartRef.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const counts: Record<string, number> = {};
+    orders.forEach(o => {
+      let name = 'Outros';
+      if (typeof o.service_id === 'object' && o.service_id) {
+        name = (o.service_id as any).name || (o.service_id as any).category || 'Outros';
+      } else {
+        const s = this.services().find(srv => srv._id === o.service_id);
+        if (s) name = s.name;
+      }
+      counts[name] = (counts[name] || 0) + 1;
+    });
+
+    const labels = Object.keys(counts);
+    const values = Object.values(counts);
+    const colors = ['#16a34a', '#ffc409', '#2563eb', '#7c3aed', '#dc2626', '#64748b'];
+
+    if (this.servicesChart) this.servicesChart.destroy();
+
+    this.servicesChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels.length > 0 ? labels : ['Sem ordens'],
+        datasets: [{
+          data: values.length > 0 ? values : [1],
+          backgroundColor: labels.length > 0 ? colors.slice(0, labels.length) : ['#cbd5e1'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true, font: { family: "'Outfit', sans-serif", size: 11 } } },
+          tooltip: { backgroundColor: '#1a1a1a', titleFont: { family: "'Outfit', sans-serif" }, bodyFont: { family: "'Outfit', sans-serif" } }
+        }
+      }
+    });
+  }
+
+  private renderMonthlyChart(orders: ServiceOrder[]) {
+    if (!this.monthlyChartRef) return;
+    const ctx = this.monthlyChartRef.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    // Agrupa ordens por mês
+    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const totalByMonth = new Array(12).fill(0);
+    const completedByMonth = new Array(12).fill(0);
+
+    orders.forEach(o => {
+      if (o.scheduled_date) {
+        const d = new Date(o.scheduled_date);
+        const m = d.getMonth();
+        if (m >= 0 && m < 12) {
+          totalByMonth[m]++;
+          if (o.current_status === 'CONCLUIDO') {
+            completedByMonth[m]++;
+          }
+        }
+      }
+    });
+
+    if (this.monthlyChart) this.monthlyChart.destroy();
+
+    this.monthlyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: monthNames,
+        datasets: [
+          {
+            label: 'Total de Ordens',
+            data: totalByMonth,
+            backgroundColor: '#ffc409',
+            borderRadius: 6
+          },
+          {
+            label: 'Concluídas',
+            data: completedByMonth,
+            backgroundColor: '#16a34a',
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { family: "'Outfit', sans-serif", size: 11 } } },
+          tooltip: { backgroundColor: '#1a1a1a', titleFont: { family: "'Outfit', sans-serif" }, bodyFont: { family: "'Outfit', sans-serif" } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 } } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 }, stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  private renderStatusChart(orders: ServiceOrder[]) {
+    if (!this.statusChartRef) return;
+    const ctx = this.statusChartRef.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const statusCounts: Record<string, number> = {
+      'CONCLUIDO': 0,
+      'AGENDADO': 0,
+      'EM_EXECUCAO': 0,
+      'SOLICITADO': 0,
+      'EM_DESLOCAMENTO': 0,
+      'CANCELADO': 0
+    };
+
+    orders.forEach(o => {
+      const st = o.current_status || 'SOLICITADO';
+      statusCounts[st] = (statusCounts[st] || 0) + 1;
+    });
+
+    const labels = ['Concluído', 'Agendado', 'Em Execução', 'Solicitado', 'Em Deslocamento', 'Cancelado'];
+    const values = [
+      statusCounts['CONCLUIDO'],
+      statusCounts['AGENDADO'],
+      statusCounts['EM_EXECUCAO'],
+      statusCounts['SOLICITADO'],
+      statusCounts['EM_DESLOCAMENTO'],
+      statusCounts['CANCELADO']
+    ];
+    const colors = ['#16a34a', '#2563eb', '#ffc409', '#64748b', '#7c3aed', '#dc2626'];
+
+    if (this.statusChart) this.statusChart.destroy();
+
+    this.statusChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Quantidade',
+          data: values,
+          backgroundColor: colors,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#1a1a1a', titleFont: { family: "'Outfit', sans-serif" }, bodyFont: { family: "'Outfit', sans-serif" } }
+        },
+        scales: {
+          x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 }, stepSize: 1 } },
+          y: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif", size: 11 } } }
         }
       }
     });

@@ -1,15 +1,18 @@
 <ion-content [fullscreen]="true" class="bg-neutral">
-  <!-- Cabeçalho Escuro (Hero Header) -->
-  <div class="hero-header">
+  <!-- Cabeçalho Escuro (Hero Header com Fundo e Logo Dinâmicos) -->
+  <div 
+    class="hero-header" 
+    [style.background-image]="themeService.currentAppearance()?.background_url ? 'linear-gradient(rgba(26, 26, 26, 0.75), rgba(26, 26, 26, 0.85)), url(' + themeService.currentAppearance()?.background_url + ')' : 'linear-gradient(rgba(26, 26, 26, 0.75), rgba(26, 26, 26, 0.85)), url(/assets/icon/fundo.jpg)'"
+  >
     <div class="brand-container">
       <div class="brand-logo">
-        <img src="assets/icon/logo.jpg" alt="Bravo Logo" class="brand-img" />
+        <img [src]="themeService.currentAppearance()?.logo_url || 'assets/icon/logo.jpg'" alt="Bravo Logo" class="brand-img" />
       </div>
-      <span class="brand-text">BRAVO<br><span class="brand-subtext">INSTALAÇÕES</span></span>
+      <!-- <span class="brand-text">BRAVO<br><span class="brand-subtext">INSTALAÇÕES</span></span> -->
     </div>
 
     <h1 class="header-title">
-      Serviços técnicos para sua empresa e casa, <br>
+      Serviços técnicos para sua casa, <br>
       <span class="highlight-text">com agilidade e garantia.</span>
     </h1>
 

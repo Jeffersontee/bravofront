@@ -22,7 +22,7 @@ export class GlobalService {
     private modalCtrl: ModalController
   ) {
     addIcons({ homeOutline, briefcaseOutline, locationOutline, closeCircle, chevronDownOutline }); 
-   }
+  }
 
   /**
    * Remove o foco do elemento atual para evitar erros de aria-hidden
@@ -56,10 +56,12 @@ export class GlobalService {
   }
 
   async showToast(msg: string, color: string, position: any, duration = 3000) {
+    const isSuccess = color === 'success';
     const toast = await this.toastCtrl.create({
       message: msg,
       duration: duration,
-      color: color,
+      color: isSuccess ? undefined : color,
+      cssClass: isSuccess ? 'bravo-toast-success' : undefined,
       position: position
     });
     toast.present();
@@ -72,7 +74,6 @@ export class GlobalService {
   async showButtonToast(msg: string, position?: any) {
     this.blurActiveElement();
     const toast = await this.toastCtrl.create({
-      // header: 'Alert',
       message: msg,
       color: 'danger',
       position: position || 'bottom',
@@ -192,10 +193,8 @@ export class GlobalService {
   }
 
   async takePicture() {
-    //await Camera.requestPermissions();
     const image = await Camera.getPhoto({
       quality: 90,
-      // allowEditing: false,
       source: CameraSource.Prompt,
       width: 600,
       resultType: CameraResultType.Base64,
@@ -212,7 +211,6 @@ export class GlobalService {
     const mimeType = files[0].type;
     if(mimeType.match(/image\/*/) == null) return;
     const file = files[0];
-    // const filePath = 'restuarants/' + Date.now() + '_' + file.name;
     return file;
   }
 
@@ -241,14 +239,10 @@ export class GlobalService {
     return blob;
   }
 
-  /**
-   * Formata um valor numérico para a moeda local (BRL).
-   */
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
     }).format(value);
   }
-  
 }
