@@ -7,7 +7,26 @@
     
     <ion-item-divider class="section-divider">
       <ion-label>Dados Principais</ion-label>
+      <ion-button fill="clear" size="small" slot="end" class="help-toggle-btn" (click)="toggleHelpMainInfo()" aria-label="Ajuda sobre Dados Principais">
+        <ion-icon [name]="showHelpMainInfo() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span class="help-btn-text">Ajuda</span>
+      </ion-button>
     </ion-item-divider>
+
+    @if (showHelpMainInfo()) {
+      <div class="info-banner ion-margin-horizontal">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Dados Principais do Colaborador</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Nome Completo:</strong> Nome oficial do colaborador utilizado na emissão de Ordens de Serviço (OS) e relatórios.</li>
+          <li><strong>E-mail:</strong> Endereço de e-mail exclusivo utilizado pelo colaborador para login no aplicativo.</li>
+          <li><strong>Telefone:</strong> Contato telefônico para envio de alertas e chamados.</li>
+          <li><strong>Senha:</strong> Credencial de segurança inicial com no mínimo 6 caracteres.</li>
+        </ul>
+      </div>
+    }
 
     <ion-item>
       <ion-icon name="person" slot="start"></ion-icon>
@@ -42,7 +61,26 @@
 
     <ion-item-divider class="section-divider">
       <ion-label>Permissões</ion-label>
+      <ion-button fill="clear" size="small" slot="end" class="help-toggle-btn" (click)="toggleHelpPermissions()" aria-label="Ajuda sobre Permissões">
+        <ion-icon [name]="showHelpPermissions() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span class="help-btn-text">Ajuda</span>
+      </ion-button>
     </ion-item-divider>
+
+    @if (showHelpPermissions()) {
+      <div class="info-banner ion-margin-horizontal">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Permissões e Cargos</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Nível de Acesso / Cargo:</strong> Define se o colaborador é Técnico (executa OS), Supervisor (lidera equipe) ou Administrativo (suporte).</li>
+          <li><strong>Empresa / Vínculo:</strong> Vincula o profissional a uma empresa parceira específica ou ao Atendimento Geral (Global).</li>
+          <li><strong>Especialidades:</strong> Categorias técnicas em que o profissional possui certificação (Elétrica, Hidráulica/Civil, Serralheria).</li>
+          <li><strong>Colaborador Ativo:</strong> Chave de bloqueio do acesso do colaborador ao sistema.</li>
+        </ul>
+      </div>
+    }
 
     <ion-item>
       <ion-icon name="briefcase-outline" slot="start"></ion-icon>

@@ -92,7 +92,11 @@ export class HomePage implements OnInit {
   }
 
   public navigateToOrderDetails(orderId: string) {
-    this.router.navigate(['/customer/orders']);
+    if (orderId) {
+      this.router.navigate(['/customer/orders/details', orderId]);
+    } else {
+      this.router.navigate(['/customer/orders']);
+    }
   }
 
   // Categories fallback se backend ainda não tiver retornado

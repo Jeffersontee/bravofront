@@ -133,11 +133,22 @@ export class StaffListPageComponent implements OnInit {
     return labels.join(', ');
   }
 
-  getTypeLabel(type: string): string {
+  getTypeLabel(user: StaffUser | string): string {
+    if (typeof user === 'object' && user) {
+      if (user.role && user.role.trim() !== '') {
+        return user.role;
+      }
+      return this.getTypeLabelStr(user.type);
+    }
+    return this.getTypeLabelStr(user as string);
+  }
+
+  private getTypeLabelStr(type: string): string {
     switch (type) {
       case 'super_admin': return 'Super Admin';
       case 'company_owner': return 'Dono de Empresa';
-      case 'collaborator': return 'Técnico de Campo';
+      case 'collaborator': return 'Colaborador';
+      case 'super_staff': return 'Operador HQ';
       case 'admin': return 'Operador';
       case 'user': return 'Cliente';
       default: return type || 'Usuário';

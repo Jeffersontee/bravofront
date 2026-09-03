@@ -9,6 +9,7 @@ export interface StaffUser {
   email: string;
   phone?: string;
   type: string;
+  role?: string;
   status: string;
   company_id?: any;
   created_at?: string;

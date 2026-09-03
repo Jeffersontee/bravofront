@@ -6,7 +6,7 @@ import {
   IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { closeOutline, listOutline, saveOutline } from 'ionicons/icons';
+import { closeOutline, listOutline, saveOutline, helpCircle, helpCircleOutline, informationCircleOutline } from 'ionicons/icons';
 import { ServiceItem } from 'src/app/services/service/service.service';
 import { registerServiceIcons, SERVICE_AVAILABLE_ICONS } from 'src/app/utils/service-icons';
 
@@ -30,6 +30,18 @@ export class ServiceFormComponent implements OnInit {
   save = output<Partial<ServiceItem>>();
   cancel = output<void>();
 
+  // Help Banners Signals
+  showHelpServiceData = signal<boolean>(false);
+  showHelpAppearance = signal<boolean>(false);
+
+  toggleHelpServiceData() {
+    this.showHelpServiceData.set(!this.showHelpServiceData());
+  }
+
+  toggleHelpAppearance() {
+    this.showHelpAppearance.set(!this.showHelpAppearance());
+  }
+
   private fb = inject(FormBuilder);
 
   form!: FormGroup;
@@ -47,7 +59,7 @@ export class ServiceFormComponent implements OnInit {
 
   constructor() {
     registerServiceIcons();
-    addIcons({ closeOutline, listOutline, saveOutline });
+    addIcons({ closeOutline, listOutline, saveOutline, helpCircle, helpCircleOutline, informationCircleOutline });
 
     effect(() => {
       if (!this.formReady() || !this.form) return;
