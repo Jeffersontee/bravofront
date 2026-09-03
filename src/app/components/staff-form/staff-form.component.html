@@ -5,9 +5,27 @@
 <form [formGroup]="staffForm" (ngSubmit)="onSubmit()">
   <ion-list lines="inset" style="background: transparent;">
     
-    <ion-item-divider style="--background: transparent; margin-top: 10px;">
-      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">DADOS DE IDENTIDADE</ion-label>
+    <ion-item-divider class="section-divider">
+      <ion-label>DADOS DE IDENTIDADE</ion-label>
+      <ion-button fill="clear" size="small" slot="end" class="help-toggle-btn" (click)="toggleHelpIdentity()" aria-label="Ajuda sobre Dados de Identidade">
+        <ion-icon [name]="showHelpIdentity() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span class="help-btn-text">Ajuda</span>
+      </ion-button>
     </ion-item-divider>
+
+    @if (showHelpIdentity()) {
+      <div class="info-banner ion-margin-horizontal">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Dados de Identidade do Usuário</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Nome Completo:</strong> Nome responsável do usuário cadastrado no sistema.</li>
+          <li><strong>E-mail:</strong> Credencial primária de login para autenticação nos painéis.</li>
+          <li><strong>Telefone:</strong> Número de contato telefônico direto.</li>
+        </ul>
+      </div>
+    }
 
     <ion-item>
       <ion-icon name="person" slot="start" color="primary"></ion-icon>
@@ -24,9 +42,28 @@
       <ion-input label="Telefone" labelPlacement="stacked" formControlName="phone" placeholder="Ex: (11) 99999-9999" (ionInput)="onPhoneInput($event)"></ion-input>
     </ion-item>
 
-    <ion-item-divider style="--background: transparent; margin-top: 15px;">
-      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">CREDENCIAIS E PERMISSÕES</ion-label>
+    <ion-item-divider class="section-divider">
+      <ion-label>CREDENCIAIS E PERMISSÕES</ion-label>
+      <ion-button fill="clear" size="small" slot="end" class="help-toggle-btn" (click)="toggleHelpPermissions()" aria-label="Ajuda sobre Credenciais e Permissões">
+        <ion-icon [name]="showHelpPermissions() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span class="help-btn-text">Ajuda</span>
+      </ion-button>
     </ion-item-divider>
+
+    @if (showHelpPermissions()) {
+      <div class="info-banner ion-margin-horizontal">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Credenciais e Níveis de Acesso</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Senha de Acesso:</strong> Senha com mínimo de 6 caracteres (mantenha em branco para preservar a atual ao editar).</li>
+          <li><strong>Nível de Acesso:</strong> Papel de segurança (Super Admin, Dono de Empresa, Operador, Técnico de Campo, Cliente B2C).</li>
+          <li><strong>Empresa Associada:</strong> Associa este usuário a um estabelecimento/tenant específico.</li>
+          <li><strong>Módulos Liberados:</strong> Lista de menus aos quais este usuário terá acesso no painel.</li>
+        </ul>
+      </div>
+    }
 
     <ion-item>
       <ion-icon name="key" slot="start" color="primary"></ion-icon>

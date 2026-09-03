@@ -1,15 +1,36 @@
 <ion-header>
-  <ion-toolbar color="secondary">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Equipes / Cargos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="toggleHelp()" aria-label="Ajuda sobre Equipes e Cargos">
+        <ion-icon [name]="showHelp() ? 'help-circle' : 'help-circle-outline'" slot="start" color="primary"></ion-icon>
+        <span>Ajuda</span>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <div class="teams-container" style="max-width: 1200px; margin: 0 auto;">
-    
+
+    @if (showHelp()) {
+      <div class="info-banner" style="margin-bottom: 16px;">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Como funciona a divisão por Equipes / Cargos?</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Equipe Técnica:</strong> Agrupa todos os colaboradores com cargo <em>Técnico</em> (executores de instalações e manutenção de campo).</li>
+          <li><strong>Supervisores:</strong> Agrupa os colaboradores com cargo <em>Supervisor</em> (responsáveis pela liderança de equipe, inspeções e aprovações).</li>
+          <li><strong>Administrativo:</strong> Agrupa operadores com cargo <em>Administrativo / Operador</em> (suporte interno, agendamento e atendimento).</li>
+          <li><strong>Status em Tempo Real:</strong> Exibe a contagem total de membros por divisão e indica se a conta está <em>Ativa</em> ou <em>Inativa</em>.</li>
+        </ul>
+      </div>
+    }
+
     @if (isLoading()) {
       <div class="text-center ion-padding">
         <ion-spinner></ion-spinner>

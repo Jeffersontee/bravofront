@@ -7,7 +7,26 @@
     
     <ion-item-divider class="section-divider">
       <ion-label>Dados do Serviço</ion-label>
+      <ion-button fill="clear" size="small" slot="end" class="help-toggle-btn" (click)="toggleHelpServiceData()" aria-label="Ajuda sobre Dados do Serviço">
+        <ion-icon [name]="showHelpServiceData() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span class="help-btn-text">Ajuda</span>
+      </ion-button>
     </ion-item-divider>
+
+    @if (showHelpServiceData()) {
+      <div class="info-banner ion-margin-horizontal">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Dados do Serviço</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Nome do Serviço:</strong> Título oficial exibido aos clientes no catálogo e no chamado.</li>
+          <li><strong>Descrição:</strong> Resumo detalhado do escopo das atividades incluídas.</li>
+          <li><strong>Preço Base (R$):</strong> Valor inicial estimado ou fixo praticado para este atendimento.</li>
+          <li><strong>Categoria / Especialidade:</strong> Categoria técnica (Elétrica, Hidráulica/Civil, Serralheria, Geral), usada para filtrar técnicos qualificados na atribuição de OS.</li>
+        </ul>
+      </div>
+    }
 
     <ion-item>
       <ion-icon name="list-outline" slot="start"></ion-icon>
@@ -36,7 +55,24 @@
 
     <ion-item-divider class="section-divider">
       <ion-label>Aparência (Ícone no App)</ion-label>
+      <ion-button fill="clear" size="small" slot="end" class="help-toggle-btn" (click)="toggleHelpAppearance()" aria-label="Ajuda sobre Aparência">
+        <ion-icon [name]="showHelpAppearance() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span class="help-btn-text">Ajuda</span>
+      </ion-button>
     </ion-item-divider>
+
+    @if (showHelpAppearance()) {
+      <div class="info-banner ion-margin-horizontal">
+        <div class="info-banner-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Aparência e Visibilidade</strong>
+        </div>
+        <ul class="info-banner-list">
+          <li><strong>Ícone no App:</strong> Símbolo gráfico exibido nos cards do aplicativo e painéis.</li>
+          <li><strong>Serviço Ativo:</strong> Alterna se o serviço fica visível e disponível para novos agendamentos pelos clientes.</li>
+        </ul>
+      </div>
+    }
 
     <div class="icon-selector-container ion-padding">
       <p class="text-muted small mb-3">Escolha um ícone para representar visualmente este serviço:</p>

@@ -6,7 +6,7 @@ import {
   IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, businessOutline, listOutline } from 'ionicons/icons';
+import { person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline } from 'ionicons/icons';
 import { StaffUser } from 'src/app/services/staff/staff.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { AVAILABLE_PERMISSIONS } from 'src/app/enum/permissions';
@@ -30,6 +30,18 @@ export class StaffFormComponent implements OnInit {
   isLoading = input<boolean>(false);
   
   save = output<Partial<StaffUser>>();
+
+  // Help Banners Signals
+  showHelpIdentity = signal<boolean>(false);
+  showHelpPermissions = signal<boolean>(false);
+
+  toggleHelpIdentity() {
+    this.showHelpIdentity.set(!this.showHelpIdentity());
+  }
+
+  toggleHelpPermissions() {
+    this.showHelpPermissions.set(!this.showHelpPermissions());
+  }
 
   private fb = inject(FormBuilder);
   private companyService = inject(CompanyService);
@@ -58,7 +70,7 @@ export class StaffFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, businessOutline, listOutline });
+    addIcons({ person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline });
 
     effect(() => {
       if (!this.formReady() || !this.staffForm) return;

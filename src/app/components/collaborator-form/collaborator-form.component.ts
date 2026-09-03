@@ -6,7 +6,7 @@ import {
   IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline, businessOutline } from 'ionicons/icons';
+import { person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline, businessOutline, helpCircleOutline, helpCircle, informationCircleOutline } from 'ionicons/icons';
 import { Collaborator } from 'src/app/services/collaborator/collaborator.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 
@@ -28,6 +28,18 @@ export class CollaboratorFormComponent implements OnInit {
   isLoading = input<boolean>(false);
   
   save = output<Partial<Collaborator>>();
+
+  // Help Banners Signals
+  showHelpMainInfo = signal<boolean>(false);
+  showHelpPermissions = signal<boolean>(false);
+
+  toggleHelpMainInfo() {
+    this.showHelpMainInfo.set(!this.showHelpMainInfo());
+  }
+
+  toggleHelpPermissions() {
+    this.showHelpPermissions.set(!this.showHelpPermissions());
+  }
 
   private fb = inject(FormBuilder);
   private companyService = inject(CompanyService);
@@ -51,7 +63,7 @@ export class CollaboratorFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline, businessOutline });
+    addIcons({ person, mail, call, key, briefcaseOutline, constructOutline, eyeOutline, eyeOffOutline, businessOutline, helpCircleOutline, helpCircle, informationCircleOutline });
 
     effect(() => {
       if (!this.formReady() || !this.collaboratorForm) return;

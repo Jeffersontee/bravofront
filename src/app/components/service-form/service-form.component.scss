@@ -37,6 +37,64 @@ ion-item {
   font-size: 11px;
   letter-spacing: 0.8px;
   margin: 16px 0 8px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.help-toggle-btn {
+  --padding-start: 6px;
+  --padding-end: 8px;
+  height: 28px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+
+  .help-btn-text {
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 2px;
+  }
+}
+
+/* Info Banner Component Style */
+.info-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.06);
+
+  .info-banner-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #1e40af;
+
+    ion-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+  }
+
+  .info-banner-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #1e3a8a;
+
+    li {
+      margin-bottom: 4px;
+
+      strong {
+        color: #1e40af;
+      }
+    }
+  }
 }
 
 .toggle-item {
