@@ -1,4 +1,52 @@
 <div class="agenda-container">
+  <!-- BANNER INFORMATIVO DE CORES & STATUS (COLLAPSIBLE) -->
+  <div class="legend-card">
+    <div class="legend-header" (click)="toggleLegend()">
+      <div class="header-left">
+        <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+        <span class="legend-title">Guia de Cores & Status da Agenda</span>
+      </div>
+      <ion-button fill="clear" size="small" class="toggle-btn" (click)="$event.stopPropagation(); toggleLegend()">
+        <span class="toggle-text">{{ showLegend() ? 'Ocultar' : 'Ver Cores' }}</span>
+        <ion-icon slot="end" [name]="showLegend() ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+      </ion-button>
+    </div>
+
+    @if (showLegend()) {
+      <div class="legend-content">
+        <div class="legend-grid">
+          <div class="legend-item">
+            <span class="status-pill status-primary">Agendado</span>
+            <span class="item-desc">Serviço confirmado na data e horário.</span>
+          </div>
+          <div class="legend-item">
+            <span class="status-pill status-tertiary">Técnico a caminho</span>
+            <span class="item-desc">Deslocamento iniciado até a unidade.</span>
+          </div>
+          <div class="legend-item">
+            <span class="status-pill status-warning">Técnico no local / Em Execução</span>
+            <span class="item-desc">Check-in realizado e serviço em andamento.</span>
+          </div>
+          <div class="legend-item">
+            <span class="status-pill status-secondary">Aguardando Assinatura</span>
+            <span class="item-desc">Relatório pronto aguardando validação presencial.</span>
+          </div>
+          <div class="legend-item">
+            <span class="status-pill status-success">Concluído</span>
+            <span class="item-desc">OS finalizada e aprovada com sucesso.</span>
+          </div>
+          <div class="legend-item">
+            <span class="status-pill status-danger">Cancelado / Recusado</span>
+            <span class="item-desc">Atendimento cancelado ou impedido.</span>
+          </div>
+        </div>
+        <p class="legend-note">
+          💡 <strong>Dica:</strong> Clique em qualquer evento na grade para abrir a tela de detalhes completos da Ordem de Serviço.
+        </p>
+      </div>
+    }
+  </div>
+
   @if (isLoading()) {
     <div class="loading-state">
       <ion-spinner name="crescent"></ion-spinner>
