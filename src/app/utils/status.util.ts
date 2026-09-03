@@ -1,15 +1,15 @@
 export class StatusUtil {
   static getStatusColor(status: string): string {
     switch (status) {
-      case 'SOLICITADO': return 'medium';
+      case 'SOLICITADO': return 'secondary';
       case 'DATA_SUGERIDA': return 'warning';
       case 'PROPOSTO': return 'tertiary';
       case 'APROVADO': return 'success';
-      case 'AGENDADO': return 'medium';
+      case 'AGENDADO': return 'primary';
       case 'EM_DESLOCAMENTO': return 'tertiary';
       case 'CHECK_IN': return 'warning';
       case 'EM_EXECUCAO': return 'warning';
-      case 'RELATORIO_CHECKOUT': return 'tertiary';
+      case 'RELATORIO_CHECKOUT': return 'secondary';
       case 'CONCLUIDO': return 'success';
       case 'CANCELADO': return 'danger';
       case 'RECUSADO': return 'danger';

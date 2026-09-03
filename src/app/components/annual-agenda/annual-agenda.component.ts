@@ -14,6 +14,16 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
+import { addIcons } from 'ionicons';
+import { 
+  informationCircleOutline, 
+  helpCircleOutline, 
+  helpCircle, 
+  chevronDownOutline, 
+  chevronUpOutline, 
+  eyeOutline 
+} from 'ionicons/icons';
+
 @Component({
   selector: 'app-annual-agenda',
   templateUrl: './annual-agenda.component.html',
@@ -31,7 +41,8 @@ export class AnnualAgendaComponent implements OnInit {
   private cd = inject(ChangeDetectorRef);
   
   isLoading = signal<boolean>(false);
-  
+  showLegend = signal<boolean>(false);
+
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
@@ -50,14 +61,31 @@ export class AnnualAgendaComponent implements OnInit {
     slotMinTime: '00:00:00',
     slotMaxTime: '23:59:59',
     allDaySlot: false,
-    navLinks: true, // can click day/week names to navigate views
+    navLinks: true,
     editable: false,
     selectable: true,
+    eventDisplay: 'block',
+    eventTimeFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      meridiem: false
+    },
+    eventContent: this.renderEventContent.bind(this),
     events: [],
     eventClick: this.handleEventClick.bind(this)
   };
 
   constructor() {
+    addIcons({
+      informationCircleOutline,
+      helpCircleOutline,
+      helpCircle,
+      chevronDownOutline,
+      chevronUpOutline,
+      eyeOutline
+    });
+
     effect(() => {
       const selectedYear = this.year();
       const cId = this.companyId();
@@ -67,7 +95,47 @@ export class AnnualAgendaComponent implements OnInit {
     }, { allowSignalWrites: true });
   }
 
+  toggleLegend() {
+    this.showLegend.set(!this.showLegend());
+  }
+
   ngOnInit() {}
+
+  renderEventContent(arg: any) {
+    const props = arg.event.extendedProps || {};
+    const statusLabel = props.statusLabel || '';
+    const statusColor = props.statusColor || 'medium';
+    const serviceName = props.serviceName || arg.event.title;
+    const timeFormatted = props.timeFormatted || arg.timeText || '';
+    const locationName = props.locationName || '';
+
+    const isMonthView = arg.view.type === 'dayGridMonth';
+
+    if (isMonthView) {
+      return {
+        html: `
+          <div class="fc-custom-event-month" title="${serviceName} | ${locationName} (${statusLabel})">
+            <span class="status-pill status-${statusColor}">${statusLabel}</span>
+            <span class="event-time">${timeFormatted}</span>
+            <span class="event-title">${serviceName}</span>
+          </div>
+        `
+      };
+    }
+
+    return {
+      html: `
+        <div class="fc-custom-event-timegrid" title="${serviceName} | ${locationName}">
+          <div class="timegrid-header">
+            <span class="status-pill status-${statusColor}">${statusLabel}</span>
+            <span class="event-time">${timeFormatted}</span>
+          </div>
+          <div class="event-title">${serviceName}</div>
+          <div class="event-location">${locationName}</div>
+        </div>
+      `
+    };
+  }
 
   private async loadAgenda(year: number, companyId: string | null) {
     this.isLoading.set(true);
@@ -95,17 +163,28 @@ export class AnnualAgendaComponent implements OnInit {
               const startDate = new Date(order.scheduled_date as string);
               const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); // +1 hour
               
-              const hexColor = this.getCssVariableColor(this.getStatusColor(order.current_status));
+              const hours = String(startDate.getHours()).padStart(2, '0');
+              const minutes = String(startDate.getMinutes()).padStart(2, '0');
+              const timeFormatted = `${hours}:${minutes}`;
+
+              const statusColor = StatusUtil.getStatusColor(order.current_status);
+              const statusLabel = StatusUtil.getStatusLabel(order.current_status);
 
               return {
                 id: order._id,
                 title: `${serviceName} | ${locationName}`,
                 start: startDate,
                 end: endDate,
-                backgroundColor: hexColor,
-                borderColor: hexColor,
+                backgroundColor: 'transparent',
+                borderColor: 'transparent',
                 extendedProps: {
-                  orderId: order._id
+                  orderId: order._id,
+                  serviceName,
+                  locationName,
+                  timeFormatted,
+                  status: order.current_status,
+                  statusLabel,
+                  statusColor
                 }
               };
             });
