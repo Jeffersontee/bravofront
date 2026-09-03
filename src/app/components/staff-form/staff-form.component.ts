@@ -6,7 +6,7 @@ import {
   IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline } from 'ionicons/icons';
+import { person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline, briefcaseOutline } from 'ionicons/icons';
 import { StaffUser } from 'src/app/services/staff/staff.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { AVAILABLE_PERMISSIONS } from 'src/app/enum/permissions';
@@ -60,6 +60,12 @@ export class StaffFormComponent implements OnInit {
     { value: 'user', label: 'Cliente Final (Consumidor)' }
   ];
 
+  roles = [
+    { value: 'technician', label: 'Técnico de Campo' },
+    { value: 'operator', label: 'Operador / Recepção' },
+    { value: 'supervisor', label: 'Supervisor / Líder' }
+  ];
+
   availablePermissions = AVAILABLE_PERMISSIONS;
 
   hasChanges = computed(() => {
@@ -70,7 +76,7 @@ export class StaffFormComponent implements OnInit {
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline });
+    addIcons({ person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline, briefcaseOutline });
 
     effect(() => {
       if (!this.formReady() || !this.staffForm) return;
@@ -126,6 +132,7 @@ export class StaffFormComponent implements OnInit {
       phone: [''],
       password: ['', this.isEditMode() ? [] : [Validators.required, Validators.minLength(6)]],
       type: ['admin', Validators.required],
+      role: [''],
       company_id: [''],
       permissions: [[]],
       active: [true]
@@ -168,6 +175,7 @@ export class StaffFormComponent implements OnInit {
       email: data.email || '',
       phone: this.applyPhoneMask(data.phone || ''),
       type: data.type || 'admin',
+      role: data.role || (data.type === 'collaborator' ? 'technician' : ''),
       company_id: data.company_id?._id || data.company_id || '',
       permissions: data.permissions || [],
       active: data.status === 'active'
@@ -188,6 +196,7 @@ export class StaffFormComponent implements OnInit {
       email: formValue.email?.trim().toLowerCase() || '',
       phone: (formValue.phone || '').replace(/\D/g, ''),
       type: formValue.type,
+      role: formValue.role || undefined,
       company_id: formValue.company_id || null,
       permissions: formValue.permissions || [],
       status: formValue.active ? 'active' : 'inactive'

@@ -39,6 +39,7 @@ export class ServiceOrdersPage implements OnInit {
   searchQuery = signal<string>('');
   
   isLojista = signal<boolean>(false);
+  canCreateOrder = signal<boolean>(false);
   company = signal<any>(null);
   units = signal<any[]>([]);
   services = signal<any[]>([]);
@@ -78,37 +79,63 @@ export class ServiceOrdersPage implements OnInit {
       const filters: { company_id?: string; collaborator_id?: string; user_id?: string } = {};
 
       if (userData) {
+        const isOwner = userData.type === Strings.COMPANY_OWNER_TYPE || userData.type === 'company_owner';
+        const isSuper = userData.type === 'super_admin';
+        const isOperatorOrSupervisor = (userData.type === 'collaborator' || userData.type === 'admin') && (userData.role === 'operator' || userData.role === 'supervisor');
+        const hasCreatePermission = userData.permissions?.includes('SUPER_OPERATIONAL_ORDERS_CREATE') || userData.permissions?.includes('SUPER_OPERATIONAL_CREATE');
+
+        const canCreate = isOwner || isSuper || isOperatorOrSupervisor || hasCreatePermission;
+        this.canCreateOrder.set(canCreate);
+        this.isLojista.set(isOwner);
+
         if (userData.type === Strings.USER_TYPE || userData.type === 'user') {
           filters.user_id = userData._id;
-          this.isLojista.set(false);
-        } else if (userData.type === Strings.COMPANY_OWNER_TYPE) {
+        } else if (isOwner) {
           filters.company_id = userData.company_id;
-          this.isLojista.set(true);
-          const companyId = userData.company_id;
-
-          // Carrega dados para o modal de criação de OS
-          this.companyService.getCompanyById(companyId).subscribe((res: any) => {
-            if (res.success && res.data) {
-              this.company.set(res.data);
-              const activeServiceIds = res.data.services || [];
-              
-              this.serviceService.getServices().subscribe((srvRes: any) => {
-                if (srvRes.success) {
-                  this.services.set(srvRes.data.filter((s: any) => activeServiceIds.includes(s._id)));
-                }
-              });
-            }
-          });
-
-          this.unitService.getUnits().subscribe((res: any) => {
-            if (res.success) {
-              this.units.set(res.data.filter((u: any) => u.company_id === companyId || u.company_id?._id === companyId));
-            }
-          });
-
         } else if (userData.type === Strings.COLLABORATOR_TYPE || userData.type === 'collaborator') {
-          filters.collaborator_id = userData._id;
-          this.isLojista.set(false);
+          if (userData.role === 'operator' && userData.company_id) {
+            filters.company_id = userData.company_id;
+          } else {
+            filters.collaborator_id = userData._id;
+          }
+        }
+
+        // Carrega dados de empresa, unidades e serviços se o usuário tiver autorização para criar OS
+        if (canCreate) {
+          const companyId = userData.company_id;
+          if (companyId) {
+            this.companyService.getCompanyById(companyId).subscribe((res: any) => {
+              if (res.success && res.data) {
+                this.company.set(res.data);
+                const activeServiceIds = res.data.services || [];
+                
+                this.serviceService.getServices().subscribe((srvRes: any) => {
+                  if (srvRes.success) {
+                    this.services.set(srvRes.data.filter((s: any) => activeServiceIds.includes(s._id)));
+                  }
+                });
+              }
+            });
+
+            this.unitService.getUnits().subscribe((res: any) => {
+              if (res.success) {
+                this.units.set(res.data.filter((u: any) => u.company_id === companyId || u.company_id?._id === companyId));
+              }
+            });
+          } else {
+            // Global: Carrega todos os serviços e unidades
+            this.serviceService.getServices().subscribe((srvRes: any) => {
+              if (srvRes.success) {
+                this.services.set(srvRes.data || []);
+              }
+            });
+
+            this.unitService.getUnits().subscribe((res: any) => {
+              if (res.success) {
+                this.units.set(res.data || []);
+              }
+            });
+          }
         }
       }
 

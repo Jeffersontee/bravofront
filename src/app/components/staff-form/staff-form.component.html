@@ -79,6 +79,17 @@
       </ion-select>
     </ion-item>
 
+    @if (staffForm.get('type')?.value === 'collaborator' || staffForm.get('type')?.value === 'admin') {
+      <ion-item>
+        <ion-icon name="briefcase-outline" slot="start" color="primary"></ion-icon>
+        <ion-select label="Cargo / Função (Role) *" labelPlacement="stacked" formControlName="role" interface="popover" placeholder="Selecione o cargo">
+          @for (r of roles; track r.value) {
+            <ion-select-option [value]="r.value">{{ r.label }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    }
+
     @if (staffForm.get('type')?.value !== 'super_admin') {
       <ion-item>
         <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
