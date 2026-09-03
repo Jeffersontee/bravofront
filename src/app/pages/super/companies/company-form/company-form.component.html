@@ -18,7 +18,7 @@
         {{ isEditMode() ? 'Edição de Empresa Parceira' : 'Nova Empresa Parceira' }}
       </h1>
       <p class="form-header__subtitle">
-        {{ isEditMode() ? 'Atualize as informações cadastrais e acessos da empresa.' : 'Preencha os dados da empresa e crie a conta de acesso do responsável.' }}
+        {{ isEditMode() ? 'Atualize as informações cadastrais, serviços autorizados e acessos da empresa.' : 'Preencha os dados da empresa e crie a conta de acesso do responsável.' }}
       </p>
     </div>
 
@@ -42,54 +42,82 @@
           <div class="form-grid">
             <div class="form-grid__col">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">Razão Social / Nome da Empresa *</ion-label>
-                <ion-input formControlName="name" placeholder="Ex: Bravo Serviços de Instalação LTDA"></ion-input>
+                <ion-input 
+                  label="Razão Social / Nome da Empresa *" 
+                  labelPlacement="stacked" 
+                  formControlName="name" 
+                  placeholder="Ex: Bravo Serviços de Instalação LTDA">
+                </ion-input>
               </ion-item>
             </div>
 
             <div class="form-grid__col">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">CNPJ *</ion-label>
-                <ion-input formControlName="cnpj" placeholder="00.000.000/0000-00"></ion-input>
+                <ion-input 
+                  label="CNPJ *" 
+                  labelPlacement="stacked" 
+                  formControlName="cnpj" 
+                  placeholder="00.000.000/0000-00"
+                  (ionInput)="onCnpjInput($event)">
+                </ion-input>
               </ion-item>
             </div>
 
             <div class="form-grid__col">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">Nome Fantasia / Apelido</ion-label>
-                <ion-input formControlName="short_name" placeholder="Ex: Bravo Matriz"></ion-input>
+                <ion-input 
+                  label="Nome Fantasia / Apelido" 
+                  labelPlacement="stacked" 
+                  formControlName="short_name" 
+                  placeholder="Ex: Bravo Matriz">
+                </ion-input>
               </ion-item>
             </div>
 
             <div class="form-grid__col">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">Nome do Responsável / Dono</ion-label>
-                <ion-input formControlName="owner_name" placeholder="Ex: João da Silva"></ion-input>
+                <ion-input 
+                  label="Nome do Responsável / Dono" 
+                  labelPlacement="stacked" 
+                  formControlName="owner_name" 
+                  placeholder="Ex: João da Silva">
+                </ion-input>
               </ion-item>
             </div>
 
             <div class="form-grid__col">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">E-mail do Responsável (Login) *</ion-label>
-                <ion-input formControlName="email" type="email" placeholder="contato@empresa.com.br"></ion-input>
+                <ion-input 
+                  label="E-mail do Responsável (Login) *" 
+                  labelPlacement="stacked" 
+                  type="email" 
+                  formControlName="email" 
+                  placeholder="contato@empresa.com.br">
+                </ion-input>
               </ion-item>
             </div>
 
             <div class="form-grid__col">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">Telefone de Contato</ion-label>
-                <ion-input formControlName="phone" type="tel" placeholder="(11) 99999-9999"></ion-input>
+                <ion-input 
+                  label="Telefone de Contato" 
+                  labelPlacement="stacked" 
+                  type="tel" 
+                  formControlName="phone" 
+                  placeholder="(11) 99999-9999"
+                  (ionInput)="onPhoneInput($event)">
+                </ion-input>
               </ion-item>
             </div>
 
-            <!-- CAMPOS DE SENHA CONFORME O DESIGN DO SIGNUP -->
+            <!-- CAMPOS DE SENHA (CRIAÇÃO) -->
             @if (!isEditMode()) {
               <div class="form-grid__col">
                 <div class="password-input-group">
                   <ion-item lines="none" class="custom-input-item">
-                    <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
-                    <ion-label position="floating">Senha de Acesso *</ion-label>
                     <ion-input 
+                      label="Senha de Acesso *" 
+                      labelPlacement="stacked"
                       [type]="passwordHidden() ? 'password' : 'text'" 
                       formControlName="password" 
                       placeholder="Mínimo 8 caracteres">
@@ -109,9 +137,9 @@
               <div class="form-grid__col">
                 <div class="password-input-group">
                   <ion-item lines="none" class="custom-input-item">
-                    <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
-                    <ion-label position="floating">Confirmar Senha *</ion-label>
                     <ion-input 
+                      label="Confirmar Senha *" 
+                      labelPlacement="stacked"
                       [type]="confirmPasswordHidden() ? 'password' : 'text'" 
                       formControlName="confirmPassword" 
                       placeholder="Repita a senha">
@@ -131,8 +159,12 @@
 
             <div class="form-grid__col form-grid__col--full">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">Descrição / Observações</ion-label>
-                <ion-input formControlName="description" placeholder="Informações adicionais sobre a empresa"></ion-input>
+                <ion-input 
+                  label="Descrição / Observações" 
+                  labelPlacement="stacked" 
+                  formControlName="description" 
+                  placeholder="Informações adicionais sobre a empresa">
+                </ion-input>
               </ion-item>
             </div>
           </div>
@@ -148,8 +180,13 @@
           <div class="form-grid">
             <div class="form-grid__col form-grid__col--full">
               <ion-item lines="none" class="custom-input-item">
-                <ion-label position="floating">Módulos de Serviços Autorizados</ion-label>
-                <ion-select formControlName="services" [multiple]="true" placeholder="Selecione os serviços ativados para esta empresa">
+                <ion-select 
+                  label="Módulos de Serviços Autorizados" 
+                  labelPlacement="stacked"
+                  formControlName="services" 
+                  [multiple]="true" 
+                  interface="popover"
+                  placeholder="Selecione os serviços ativados para esta empresa">
                   @for (svc of globalServices(); track svc._id) {
                     <ion-select-option [value]="svc._id">{{ svc.name }}</ion-select-option>
                   }
@@ -169,9 +206,9 @@
           </div>
         </div>
 
-        <!-- ACOES DO FORMULARIO -->
+        <!-- AÇÕES DO FORMULÁRIO -->
         <div class="form-actions">
-          <ion-button type="submit" expand="block" color="primary" [disabled]="form.invalid || isLoading()" class="btn-submit">
+          <ion-button type="submit" color="primary" [disabled]="isLoading()" class="btn-submit">
             @if (isLoading()) {
               <ion-spinner name="crescent" slot="start"></ion-spinner>
             }
@@ -204,41 +241,60 @@
                 <div class="form-grid">
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="floating">Nome do Usuário *</ion-label>
-                      <ion-input formControlName="name" placeholder="Nome Completo"></ion-input>
+                      <ion-input 
+                        label="Nome do Usuário *" 
+                        labelPlacement="stacked" 
+                        formControlName="name" 
+                        placeholder="Nome Completo">
+                      </ion-input>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="floating">E-mail (Login) *</ion-label>
-                      <ion-input formControlName="email" type="email" placeholder="usuario@empresa.com"></ion-input>
+                      <ion-input 
+                        label="E-mail (Login) *" 
+                        labelPlacement="stacked" 
+                        type="email" 
+                        formControlName="email" 
+                        placeholder="usuario@empresa.com">
+                      </ion-input>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="floating">Cargo / Perfil *</ion-label>
-                      <ion-select formControlName="type">
+                      <ion-select 
+                        label="Tipo de Acesso *" 
+                        labelPlacement="stacked" 
+                        formControlName="type"
+                        interface="popover">
                         <ion-select-option value="company_owner">Dono / Administrador da Empresa</ion-select-option>
-                        <ion-select-option value="admin">Operador de Suporte</ion-select-option>
+                        <ion-select-option value="admin">Gerente / Operador</ion-select-option>
+                        <ion-select-option value="collaborator">Colaborador / Campo</ion-select-option>
                       </ion-select>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <ion-item lines="none" class="custom-input-item">
-                      <ion-label position="floating">Telefone</ion-label>
-                      <ion-input formControlName="phone" type="tel" placeholder="(11) 99999-9999"></ion-input>
+                      <ion-input 
+                        label="Telefone" 
+                        labelPlacement="stacked" 
+                        type="tel" 
+                        formControlName="phone" 
+                        placeholder="(11) 99999-9999"
+                        (ionInput)="onUserPhoneInput($event)">
+                      </ion-input>
                     </ion-item>
                   </div>
 
                   <div class="form-grid__col">
                     <div class="password-input-group">
                       <ion-item lines="none" class="custom-input-item">
-                        <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
-                        <ion-label position="floating">Senha de Acesso</ion-label>
                         <ion-input 
+                          label="Senha de Acesso" 
+                          labelPlacement="stacked"
                           [type]="userPasswordHidden() ? 'password' : 'text'" 
                           formControlName="password" 
                           placeholder="Mínimo 8 caracteres">
@@ -258,9 +314,9 @@
                   <div class="form-grid__col">
                     <div class="password-input-group">
                       <ion-item lines="none" class="custom-input-item">
-                        <ion-icon name="lock-closed-outline" slot="start" class="password-icon"></ion-icon>
-                        <ion-label position="floating">Confirmar Senha</ion-label>
                         <ion-input 
+                          label="Confirmar Senha" 
+                          labelPlacement="stacked"
                           [type]="userConfirmPasswordHidden() ? 'password' : 'text'" 
                           formControlName="confirmPassword" 
                           placeholder="Repita a senha">
@@ -301,8 +357,10 @@
                   <p class="user-list-item__email">{{ usr.email }}</p>
                 </div>
                 <div class="user-list-item__actions">
-                  <span class="role-badge">{{ usr.type === 'company_owner' ? 'Dono' : 'Operador' }}</span>
-                  <ion-button fill="clear" color="danger" size="small" (click)="removeUser(usr._id)">
+                  <span class="role-badge" [ngClass]="getUserRoleBadgeClass(usr)">
+                    {{ getUserRoleLabel(usr) }}
+                  </span>
+                  <ion-button fill="clear" color="danger" size="small" (click)="removeUser(usr._id, usr.name)">
                     <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 </div>

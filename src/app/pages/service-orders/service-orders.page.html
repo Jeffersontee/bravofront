@@ -12,7 +12,7 @@
     [orders]="orders()"
     [isLoading]="isLoading()"
     [role]="isLojista() ? 'company' : 'collaborator'"
-    [showCreateButton]="isLojista()"
+    [showCreateButton]="canCreateOrder()"
     createButtonText="Solicitar Serviço"
     pageTitle="Listagem de Ordens"
     pageSubtitle="Acompanhe suas solicitações e visitas técnicas em tempo real."

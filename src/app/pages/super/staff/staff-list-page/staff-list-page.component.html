@@ -124,8 +124,8 @@
         <div class="user-list">
           @for (user of filteredStaffList(); track user._id) {
             <div class="user-list-item" (click)="goToEdit(user._id!)">
-              <div class="user-list-item__avatar" [class]="'avatar--' + user.type">
-                <ion-icon [name]="getUserIcon(user.type)"></ion-icon>
+              <div class="user-list-item__avatar" [class]="'avatar--' + (user.role || user.type)">
+                <ion-icon [name]="getUserIcon(user)"></ion-icon>
               </div>
               <div class="user-list-item__content">
                 <div class="user-list-item__top">
@@ -143,7 +143,7 @@
                 </div>
               </div>
               <div class="user-list-item__type-col">
-                <ion-badge [color]="getTypeBadgeColor(user.type)" class="type-badge">
+                <ion-badge [color]="getTypeBadgeColor(user)" class="type-badge">
                   {{ getTypeLabel(user) }}
                 </ion-badge>
                 <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
@@ -159,8 +159,8 @@
           @for (user of filteredStaffList(); track user._id) {
             <div class="user-card" (click)="goToEdit(user._id!)">
               <div class="user-card__header">
-                <div class="user-card__avatar" [class]="'avatar--' + user.type">
-                  <ion-icon [name]="getUserIcon(user.type)"></ion-icon>
+                <div class="user-card__avatar" [class]="'avatar--' + (user.role || user.type)">
+                  <ion-icon [name]="getUserIcon(user)"></ion-icon>
                 </div>
                 <ion-badge [color]="user.status === 'active' ? 'success' : 'medium'" class="status-badge">
                   {{ user.status === 'active' ? 'Ativo' : 'Inativo' }}
@@ -177,7 +177,7 @@
               </div>
 
               <div class="user-card__footer">
-                <ion-badge [color]="getTypeBadgeColor(user.type)" class="type-badge">
+                <ion-badge [color]="getTypeBadgeColor(user)" class="type-badge">
                   {{ getTypeLabel(user) }}
                 </ion-badge>
                 <span class="edit-link">
