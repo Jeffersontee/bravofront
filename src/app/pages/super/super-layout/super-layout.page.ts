@@ -27,6 +27,7 @@ import { Strings } from 'src/app/enum/strings';
 interface MenuItem {
   title: string;
   url?: string | null;
+  queryParams?: any;
   icon: string;
   children?: MenuItem[];
   open?: boolean;
@@ -37,6 +38,7 @@ interface MenuConfig {
   stringKey?: keyof typeof Strings;
   icon: string;
   url?: string;
+  queryParams?: any;
   permissionKey?: string;
   children?: MenuConfig[];
 }
@@ -215,10 +217,24 @@ export class SuperLayoutPage implements OnInit {
         continue;
       }
 
+      let resolvedUrl: string | null = config.stringKey && Strings[config.stringKey] ? Strings[config.stringKey] : (config.url || null);
+      let queryParams: any = config.queryParams || null;
+
+      if (resolvedUrl && resolvedUrl.includes('?')) {
+        const [path, queryString] = resolvedUrl.split('?');
+        resolvedUrl = path;
+        const params = new URLSearchParams(queryString);
+        queryParams = queryParams || {};
+        params.forEach((value, key) => {
+          queryParams[key] = value;
+        });
+      }
+
       const item: MenuItem = {
         title: config.title,
         icon: config.icon,
-        url: config.stringKey && Strings[config.stringKey] ? Strings[config.stringKey] : (config.url || null),
+        url: resolvedUrl,
+        queryParams: queryParams,
         open: false
       };
 

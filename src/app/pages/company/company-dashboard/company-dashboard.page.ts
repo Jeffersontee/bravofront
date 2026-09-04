@@ -212,9 +212,13 @@ export class CompanyDashboardPage implements OnInit {
           this.company.set(comp);
           
           if (res.services?.success) {
-            const activeServiceIds = comp.services || [];
-            const filtered = (res.services.data || []).filter(s => activeServiceIds.includes(s._id!));
-            this.services.set(filtered);
+            const activeServiceIds = (comp.services || []).map((s: any) => typeof s === 'object' ? String(s._id || s.id) : String(s));
+            const allServices = res.services.data || [];
+            if (activeServiceIds.length > 0) {
+              this.services.set(allServices.filter(s => activeServiceIds.includes(String(s._id || (s as any).id))));
+            } else {
+              this.services.set(allServices.filter(s => !s.company_id || String(s.company_id) === String(companyId)));
+            }
           }
         }
         if (res.units?.success) this.units.set(res.units.data || []);

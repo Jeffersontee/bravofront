@@ -1,16 +1,17 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/super-admin/staff"></ion-back-button>
+      <ion-menu-button></ion-menu-button>
+      <ion-back-button [defaultHref]="backUrl()"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEditMode() ? 'Editar Usuário' : 'Novo Usuário' }}</ion-title>
+    <ion-title>{{ isEditMode() ? (isCompany() ? 'Editar Colaborador' : 'Editar Usuário') : (isCompany() ? 'Novo Colaborador' : 'Novo Usuário') }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="form-container" style="max-width: 600px; margin: 0 auto;">
-    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0 0 16px 16px;">
-      {{ isEditMode() ? 'Atualizar Dados do Usuário' : 'Formulário de Cadastro' }}
+  <div class="form-container">
+    <h2 class="page-title">
+      {{ isEditMode() ? (isCompany() ? 'Atualizar Dados do Colaborador' : 'Atualizar Dados do Usuário') : (isCompany() ? 'Cadastro de Colaborador' : 'Formulário de Cadastro') }}
     </h2>
     
     <app-staff-form
