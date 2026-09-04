@@ -150,11 +150,14 @@ export class ServiceOrderFormComponent implements OnInit {
       }
     });
 
-    // 2. Carregar colaboradores da empresa (e técnicos globais)
-    this.collaboratorService.getCollaborators().subscribe({
+    // 2. Carregar colaboradores da empresa
+    this.collaboratorService.getCollaborators(companyId).subscribe({
       next: (res: any) => {
         const allCollabs = res.data || [];
-        this.collaborators.set(allCollabs.filter((u: any) => u.company_id === companyId || u.company_id?._id === companyId || !u.company_id));
+        this.collaborators.set(allCollabs.filter((u: any) => {
+          if (u.type === 'super_staff' || u.type === 'super_admin') return false;
+          return u.company_id === companyId || u.company_id?._id === companyId;
+        }));
       }
     });
 

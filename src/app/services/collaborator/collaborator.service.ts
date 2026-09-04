@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 
@@ -9,6 +9,7 @@ export interface Collaborator {
   email: string;
   phone?: string;
   role: string;
+  type?: string;
   status: string;
   technician_profile?: {
     specialties?: string[];
@@ -25,8 +26,12 @@ export class CollaboratorService {
   private http = inject(HttpClient);
   private url = `${environment.serverUrl}collaborators`;
 
-  getCollaborators(): Observable<{ success: boolean; data: Collaborator[] }> {
-    return this.http.get<{ success: boolean; data: Collaborator[] }>(this.url);
+  getCollaborators(companyId?: string): Observable<{ success: boolean; data: Collaborator[] }> {
+    let params = new HttpParams();
+    if (companyId) {
+      params = params.set('company_id', companyId);
+    }
+    return this.http.get<{ success: boolean; data: Collaborator[] }>(this.url, { params });
   }
 
   getCollaboratorById(id: string): Observable<{ success: boolean; data: Collaborator }> {

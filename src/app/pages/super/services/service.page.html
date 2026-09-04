@@ -1,51 +1,220 @@
-<ion-header>
+<ion-header class="ion-no-border catalog-header">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Catálogo de Serviços</ion-title>
+    <ion-title class="page-header-title">Catálogo de Serviços</ion-title>
+
+    <!-- FILTRO MULTI-TENANT POR EMPRESA -->
+    <div class="company-select-wrapper" slot="end">
+      <ion-icon name="business-outline" class="select-icon"></ion-icon>
+      <select [ngModel]="selectedCompanyId()" (ngModelChange)="onCompanyChange($event)" class="company-select" aria-label="Filtrar por empresa">
+        <option value="ALL">Todas as Empresas</option>
+        @for (comp of companies(); track comp._id) {
+          <option [value]="comp._id">{{ comp.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- REFRESH & NOVO -->
     <ion-buttons slot="end">
-      <ion-button (click)="loadServices()">
-        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      <ion-button (click)="loadServices()" title="Atualizar Catálogo" [disabled]="isLoading()">
+        <ion-icon name="refresh-outline" slot="icon-only" [class.spin-anim]="isLoading()"></ion-icon>
+      </ion-button>
+      <ion-button (click)="goToCreate()" class="btn-header-add" fill="solid" color="primary">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        <span class="d-none d-sm-inline">Novo Serviço</span>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-  
-<ion-content class="ion-padding">
-  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-    <div>
-      <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0;">Serviços Disponíveis</h2>
-      <p class="text-muted small" style="margin: 4px 0 0;">Veja a lista de serviços padrão que os técnicos podem prestar.</p>
-    </div>
-    <ion-button (click)="goToCreate()" color="success" size="small" class="mt-2 mt-sm-0">
-      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-      Cadastrar Serviço
-    </ion-button>
-  </div>
 
-  <div class="services-grid">
-    @for (service of services(); track service._id) {
-      <div class="service-card" (click)="goToEdit(service)">
-        <div class="icon-container">
-          <ion-icon [name]="service.icon || 'build-outline'"></ion-icon>
+<ion-content class="catalog-content">
+  <div class="catalog-container">
+
+    <!-- TOP CONTROLS: SEARCH + SEGMENTS + VIEW TOGGLE -->
+    <div class="controls-card">
+      <div class="search-and-view-row">
+        <!-- BUSCA -->
+        <div class="custom-searchbox">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <input 
+            type="text" 
+            [value]="searchTerm()" 
+            (input)="onSearchInput($event)" 
+            placeholder="Buscar por serviço, descrição, categoria ou valor..."
+            class="search-input" />
+          @if (searchTerm()) {
+            <button class="btn-clear-search" (click)="searchTerm.set('')">
+              <ion-icon name="close-circle-outline"></ion-icon>
+            </button>
+          }
         </div>
-        <div class="service-info">
-          <h3>{{ service.name }}</h3>
-          <p>{{ service.description }}</p>
-          <div class="card-footer">
-            <span class="category-badge">{{ service.category }}</span>
-            <span class="price">a partir de R$ {{ service.price | number:'1.2-2' }}</span>
-          </div>
+
+        <!-- TOGGLE VIEW MODE (GRID / LIST) -->
+        <div class="view-toggle-group">
+          <button 
+            class="view-toggle-btn" 
+            [class.view-toggle-btn--active]="viewMode() === 'grid'"
+            (click)="viewMode.set('grid')"
+            title="Visualização em Grade">
+            <ion-icon name="grid-outline"></ion-icon>
+          </button>
+          <button 
+            class="view-toggle-btn" 
+            [class.view-toggle-btn--active]="viewMode() === 'list'"
+            (click)="viewMode.set('list')"
+            title="Visualização em Lista">
+            <ion-icon name="list-outline"></ion-icon>
+          </button>
         </div>
       </div>
-    } @empty {
-      @if (!isLoading()) {
-        <div class="empty-state">
-          <p>Nenhum serviço cadastrado.</p>
-          <ion-button fill="outline" size="small" (click)="goToCreate()">Cadastrar Primeiro Serviço</ion-button>
+
+      <!-- CATEGORY CHIPS SCROLLER -->
+      <div class="category-chips-scroller">
+        <button 
+          class="category-chip" 
+          [class.category-chip--active]="selectedCategory() === 'ALL'"
+          (click)="onCategorySelect('ALL')">
+          <span>Todos</span>
+          <span class="chip-count">{{ services().length }}</span>
+        </button>
+
+        @for (cat of availableCategories(); track cat) {
+          <button 
+            class="category-chip" 
+            [class.category-chip--active]="selectedCategory() === cat"
+            (click)="onCategorySelect(cat)">
+            <span>{{ cat }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- SUMMARY BAR -->
+    <div class="summary-bar">
+      <div class="summary-bar__left">
+        <span class="summary-pill">
+          <strong>{{ totalCount() }}</strong> {{ totalCount() === 1 ? 'serviço encontrado' : 'serviços encontrados' }}
+        </span>
+        @if (selectedCategory() !== 'ALL' || selectedCompanyId() !== 'ALL' || searchTerm()) {
+          <button class="btn-clear-filters" (click)="clearFilters()">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            <span>Limpar Filtros</span>
+          </button>
+        }
+      </div>
+
+      <div class="summary-bar__right">
+        <span class="price-avg-text">Preço Médio Base: <strong>R$ {{ avgPrice() | number:'1.2-2' }}</strong></span>
+      </div>
+    </div>
+
+    <!-- SKELETON LOADING -->
+    @if (isLoading()) {
+      <div class="services-showcase-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="service-showcase-card skeleton-card">
+            <div class="sk-header">
+              <ion-skeleton-text [animated]="true" class="sk-icon-box"></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true" class="sk-badge"></ion-skeleton-text>
+            </div>
+            <ion-skeleton-text [animated]="true" class="sk-title"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" class="sk-desc"></ion-skeleton-text>
+            <div class="sk-footer">
+              <ion-skeleton-text [animated]="true" class="sk-price"></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true" class="sk-btn"></ion-skeleton-text>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- CONTENT -->
+    @if (!isLoading()) {
+      @if (filteredServices().length === 0) {
+        <div class="empty-state-card">
+          <div class="empty-icon-wrap">
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+          <h3 class="empty-title">Nenhum Serviço Encontrado</h3>
+          <p class="empty-desc">Tente ajustar a busca ou limpar os filtros para visualizar mais itens do catálogo.</p>
+          <div class="empty-actions">
+            <button class="btn-action-outline" (click)="clearFilters()">
+              Limpar Filtros
+            </button>
+            <button class="btn-action-primary" (click)="goToCreate()">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Cadastrar Novo</span>
+            </button>
+          </div>
         </div>
+      } @else {
+        <!-- GRID VIEW -->
+        @if (viewMode() === 'grid') {
+          <div class="services-showcase-grid">
+            @for (service of filteredServices(); track service._id) {
+              <div class="service-showcase-card" (click)="goToEdit(service)">
+                <div class="service-showcase-card__header">
+                  <div class="service-icon-box">
+                    <ion-icon [name]="service.icon || 'construct-outline'"></ion-icon>
+                  </div>
+                  <span class="service-category-badge">{{ service.category || 'Geral' }}</span>
+                </div>
+
+                <div class="service-showcase-card__body">
+                  <h3 class="service-card-title">{{ service.name }}</h3>
+                  <p class="service-card-desc">{{ service.description || 'Sem descrição cadastrada.' }}</p>
+                </div>
+
+                <div class="service-showcase-card__footer">
+                  <div class="service-price-wrap">
+                    <span class="price-label">Preço Base</span>
+                    <span class="price-val">R$ {{ (service.price || 0) | number:'1.2-2' }}</span>
+                  </div>
+
+                  <button class="btn-edit-round" (click)="$event.stopPropagation(); goToEdit(service)" title="Editar Serviço">
+                    <ion-icon name="pencil-outline"></ion-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- LIST VIEW -->
+        @if (viewMode() === 'list') {
+          <div class="services-list-container">
+            @for (service of filteredServices(); track service._id) {
+              <div class="service-list-row" (click)="goToEdit(service)">
+                <div class="service-list-icon">
+                  <ion-icon [name]="service.icon || 'construct-outline'"></ion-icon>
+                </div>
+
+                <div class="service-list-main">
+                  <div class="service-list-title-row">
+                    <h3 class="service-list-name">{{ service.name }}</h3>
+                    <span class="service-category-badge">{{ service.category || 'Geral' }}</span>
+                  </div>
+                  <p class="service-list-desc">{{ service.description || 'Sem descrição informada.' }}</p>
+                </div>
+
+                <div class="service-list-price-wrap">
+                  <span class="price-label">Preço Base</span>
+                  <span class="price-val">R$ {{ (service.price || 0) | number:'1.2-2' }}</span>
+                </div>
+
+                <div class="service-list-action" (click)="$event.stopPropagation()">
+                  <button class="btn-edit-round" (click)="goToEdit(service)" title="Editar Serviço">
+                    <ion-icon name="pencil-outline"></ion-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
       }
     }
+
   </div>
 </ion-content>

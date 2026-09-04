@@ -1,110 +1,315 @@
 @if (isLoading()) {
-  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  <ion-progress-bar type="indeterminate" color="primary"></ion-progress-bar>
 }
 
-<form [formGroup]="unitForm" (ngSubmit)="onSubmit()">
-  <ion-list lines="none">
-    
-    <ion-item-divider class="section-divider">
-      <ion-label>Dados Principais</ion-label>
-    </ion-item-divider>
-
-    <ion-item>
-      <ion-icon name="business-outline" slot="start"></ion-icon>
-      <ion-input label="Nome da Unidade *" labelPlacement="floating" formControlName="name" placeholder="Ex: Loja Centro"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="document-text-outline" slot="start"></ion-icon>
-      <ion-input label="Identificador / Nome Curto" labelPlacement="floating" formControlName="short_name" placeholder="Ex: LOJA_CENTRO"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="document-text-outline" slot="start"></ion-icon>
-      <ion-input label="CNPJ da Filial" labelPlacement="floating" formControlName="cnpj" placeholder="Ex: 00.000.000/0000-00"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="call-outline" slot="start"></ion-icon>
-      <ion-input label="Telefone de Contato" labelPlacement="floating" formControlName="phone" placeholder="Ex: (11) 99999-9999"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="mail" slot="start"></ion-icon>
-      <ion-input type="email" label="E-mail da Filial" labelPlacement="floating" formControlName="email" placeholder="Ex: filial@empresa.com"></ion-input>
-    </ion-item>
-
-    <ion-item-divider class="section-divider">
-      <ion-label>Endereço</ion-label>
-    </ion-item-divider>
-
-    <div formGroupName="address">
-      <ion-item>
-        <ion-icon name="location-outline" slot="start"></ion-icon>
-        <ion-input label="CEP" labelPlacement="floating" formControlName="zipcode" type="tel"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input label="Rua / Logradouro" labelPlacement="floating" formControlName="street"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input label="Número" labelPlacement="floating" formControlName="number"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input label="Complemento" labelPlacement="floating" formControlName="complement"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input label="Bairro" labelPlacement="floating" formControlName="neighborhood"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input label="Cidade" labelPlacement="floating" formControlName="city"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input label="Estado (UF)" labelPlacement="floating" formControlName="state"></ion-input>
-      </ion-item>
-    </div>
-
-    <ion-item-divider class="section-divider">
-      <ion-label>Equipe / Acessos</ion-label>
-    </ion-item-divider>
-
-    <ion-item>
-      <ion-icon name="person" slot="start"></ion-icon>
-      <ion-select label="Gerente da Unidade" labelPlacement="floating" formControlName="manager_id" interface="action-sheet" placeholder="Selecione um gerente">
-        @for (collab of collaborators; track collab._id) {
-          <ion-select-option [value]="collab._id">{{ collab.name }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="person" slot="start"></ion-icon>
-      <ion-select label="Acompanhantes" labelPlacement="floating" formControlName="follower_ids" multiple="true" placeholder="Selecione acompanhantes">
-        @for (collab of collaborators; track collab._id) {
-          <ion-select-option [value]="collab._id">{{ collab.name }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-    
-    <div class="ion-padding-start ion-padding-bottom">
-      <p style="font-size: 0.85rem; color: var(--ion-color-medium); margin-top: 5px;">
-        Nota: Se a pessoa não estiver na lista, você precisa cadastrá-la no menu "Colaboradores" primeiro.
-      </p>
-    </div>
-
-    <ion-item lines="none" class="toggle-item">
-      <ion-label>
-        <h3>Unidade Ativa</h3>
-      </ion-label>
-      <ion-toggle slot="end" formControlName="status" value="ACTIVE" [checked]="unitForm.get('status')?.value === 'ACTIVE'" (ionChange)="unitForm.get('status')?.setValue($event.detail.checked ? 'ACTIVE' : 'INACTIVE')"></ion-toggle>
-    </ion-item>
-
-    <div class="ion-padding">
-      <ion-button type="submit" expand="block" [disabled]="!unitForm.valid || isLoading()">
-        @if (isLoading()) {
-          <ion-spinner name="crescent" slot="start"></ion-spinner>
-        }
-        {{ isLoading() ? 'Processando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Unidade') }}
+<form [formGroup]="unitForm" (ngSubmit)="onSubmit()" class="form-container">
+  
+  <!-- 1. DADOS PRINCIPAIS -->
+  <div class="form-card">
+    <div class="form-card__header">
+      <div class="header-left">
+        <ion-icon name="business-outline" color="primary"></ion-icon>
+        <span class="card-title">Dados da Unidade / Filial</span>
+      </div>
+      <ion-button fill="clear" size="small" class="help-btn" (click)="toggleHelpMain()">
+        <ion-icon [name]="showHelpMain() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span>Ajuda</span>
       </ion-button>
     </div>
-  </ion-list>
+
+    @if (showHelpMain()) {
+      <div class="info-banner">
+        <div class="info-banner__header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Identificação da Filial</strong>
+        </div>
+        <ul class="info-banner__list">
+          <li><strong>Nome da Unidade:</strong> Nome oficial ou de identificação (ex: Matriz Centro, Filial João Dias).</li>
+          <li><strong>Identificador / Nome Curto:</strong> Código de referência rápida nos relatórios (ex: LOJA_01, MATRIZ).</li>
+          <li><strong>CNPJ:</strong> Caso a filial possua CNPJ próprio, informe aqui.</li>
+        </ul>
+      </div>
+    }
+
+    <div class="form-grid">
+      <div class="form-grid__col form-grid__col--12">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
+          <ion-input 
+            label="Nome da Unidade *" 
+            labelPlacement="stacked" 
+            formControlName="name" 
+            placeholder="Ex: Filial João Dias">
+          </ion-input>
+        </ion-item>
+        @if (unitForm.get('name')?.invalid && unitForm.get('name')?.touched) {
+          <span class="error-msg">O nome da unidade é obrigatório (mínimo 3 letras).</span>
+        }
+      </div>
+
+      <div class="form-grid__col form-grid__col--6">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="document-text-outline" slot="start" color="primary"></ion-icon>
+          <ion-input 
+            label="Identificador Curto" 
+            labelPlacement="stacked" 
+            formControlName="short_name" 
+            placeholder="Ex: FL_JD">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--6">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="document-text-outline" slot="start" color="primary"></ion-icon>
+          <ion-input 
+            label="CNPJ da Filial" 
+            labelPlacement="stacked" 
+            formControlName="cnpj" 
+            placeholder="00.000.000/0000-00"
+            (ionInput)="onCnpjInput($event)">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--6">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="call-outline" slot="start" color="primary"></ion-icon>
+          <ion-input 
+            label="Telefone de Contato" 
+            labelPlacement="stacked" 
+            formControlName="phone" 
+            placeholder="(11) 99999-9999"
+            (ionInput)="onPhoneInput($event)">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--6">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="mail-outline" slot="start" color="primary"></ion-icon>
+          <ion-input 
+            type="email" 
+            label="E-mail da Filial" 
+            labelPlacement="stacked" 
+            formControlName="email" 
+            placeholder="filial@empresa.com.br">
+          </ion-input>
+        </ion-item>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ENDEREÇO -->
+  <div class="form-card" formGroupName="address">
+    <div class="form-card__header">
+      <div class="header-left">
+        <ion-icon name="location-outline" color="primary"></ion-icon>
+        <span class="card-title">Localização & Endereço</span>
+      </div>
+      <ion-button fill="clear" size="small" class="help-btn" (click)="toggleHelpAddress()">
+        <ion-icon [name]="showHelpAddress() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span>Ajuda</span>
+      </ion-button>
+    </div>
+
+    @if (showHelpAddress()) {
+      <div class="info-banner">
+        <div class="info-banner__header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Endereço Físico</strong>
+        </div>
+        <p class="info-banner__text">
+          O endereço é utilizado pelos técnicos de campo para traçar as rotas de deslocamento no GPS e calcular o raio de atendimento.
+        </p>
+      </div>
+    }
+
+    <div class="form-grid">
+      <div class="form-grid__col form-grid__col--4">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="location-outline" slot="start" color="primary"></ion-icon>
+          <ion-input 
+            label="CEP *" 
+            labelPlacement="stacked" 
+            formControlName="zipcode" 
+            placeholder="00000-000"
+            (ionInput)="onZipcodeInput($event)">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--8">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-input 
+            label="Rua / Logradouro *" 
+            labelPlacement="stacked" 
+            formControlName="street" 
+            placeholder="Ex: Av. Paulista">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--4">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-input 
+            label="Número *" 
+            labelPlacement="stacked" 
+            formControlName="number" 
+            placeholder="1000">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--4">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-input 
+            label="Complemento" 
+            labelPlacement="stacked" 
+            formControlName="complement" 
+            placeholder="Sala 101, Galpão B">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--4">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-input 
+            label="Bairro *" 
+            labelPlacement="stacked" 
+            formControlName="neighborhood" 
+            placeholder="Bela Vista">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--8">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-input 
+            label="Cidade *" 
+            labelPlacement="stacked" 
+            formControlName="city" 
+            placeholder="São Paulo">
+          </ion-input>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--4">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-input 
+            label="Estado (UF) *" 
+            labelPlacement="stacked" 
+            formControlName="state" 
+            placeholder="SP">
+          </ion-input>
+        </ion-item>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. EQUIPE & ACESSOS -->
+  <div class="form-card">
+    <div class="form-card__header">
+      <div class="header-left">
+        <ion-icon name="people-outline" color="primary"></ion-icon>
+        <span class="card-title">Equipe Local & Acompanhantes</span>
+      </div>
+      <ion-button fill="clear" size="small" class="help-btn" (click)="toggleHelpTeam()">
+        <ion-icon [name]="showHelpTeam() ? 'help-circle' : 'help-circle-outline'" color="primary" slot="start"></ion-icon>
+        <span>Ajuda</span>
+      </ion-button>
+    </div>
+
+    @if (showHelpTeam()) {
+      <div class="info-banner">
+        <div class="info-banner__header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <strong>Ajuda: Quem pode acompanhar visitas técnicas?</strong>
+        </div>
+        <ul class="info-banner__list">
+          <li><strong>Gerente da Unidade:</strong> Gestor principal responsável pela filial que responde pelas instalações.</li>
+          <li><strong>Acompanhantes:</strong> Membros da equipe local autorizados a receber o técnico e assinar o check-out da OS no local.</li>
+          <li><strong>Cadastro:</strong> Se o colaborador não aparecer na lista, cadastre-o antes no menu <em>"Colaboradores e Equipe"</em>.</li>
+        </ul>
+      </div>
+    }
+
+    <div class="form-grid">
+      <div class="form-grid__col form-grid__col--12">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+          <ion-select 
+            label="Gerente da Unidade" 
+            labelPlacement="stacked" 
+            formControlName="manager_id" 
+            interface="popover" 
+            placeholder="Selecione o gestor responsável">
+            <ion-select-option value="">Nenhum (A definir)</ion-select-option>
+            @for (collab of collaborators(); track collab._id) {
+              <ion-select-option [value]="collab._id">{{ collab.name }} ({{ collab.role }})</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <div class="form-grid__col form-grid__col--12">
+        <ion-item lines="none" class="custom-input-item">
+          <ion-icon name="people-outline" slot="start" color="primary"></ion-icon>
+          <ion-select 
+            label="Acompanhantes Autorizados" 
+            labelPlacement="stacked" 
+            formControlName="follower_ids" 
+            multiple="true" 
+            interface="popover" 
+            placeholder="Selecione um ou mais acompanhantes">
+            @for (collab of collaborators(); track collab._id) {
+              <ion-select-option [value]="collab._id">{{ collab.name }} ({{ collab.role }})</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <p class="field-hint">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          Pessoas autorizadas a receber técnicos da Bravo e assinar os relatórios nesta filial.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. STATUS DA UNIDADE -->
+  <div class="form-card form-card--compact">
+    <div class="toggle-row">
+      <div class="toggle-row__info">
+        <div class="toggle-row__title">
+          <ion-icon name="shield-checkmark-outline" color="primary"></ion-icon>
+          <strong>Unidade Ativa</strong>
+        </div>
+        <p class="toggle-row__desc">Filiais ativas ficam disponíveis para abertura de chamados técnicos e agendamento na Agenda 365.</p>
+      </div>
+      <ion-toggle 
+        slot="end" 
+        formControlName="status" 
+        value="ACTIVE" 
+        [checked]="unitForm.get('status')?.value === 'ACTIVE'" 
+        (ionChange)="unitForm.get('status')?.setValue($event.detail.checked ? 'ACTIVE' : 'INACTIVE')">
+      </ion-toggle>
+    </div>
+  </div>
+
+  <!-- BOTÃO DE AÇÃO -->
+  <div class="form-actions">
+    <ion-button 
+      type="submit" 
+      expand="block" 
+      color="primary" 
+      class="submit-btn" 
+      [disabled]="!unitForm.valid || isLoading()">
+      @if (isLoading()) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+      } @else {
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+      }
+      {{ isLoading() ? 'Processando...' : (isEditMode() ? 'Salvar Alterações da Filial' : 'Cadastrar Nova Filial') }}
+    </ion-button>
+  </div>
+
 </form>
