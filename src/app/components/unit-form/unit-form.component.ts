@@ -70,17 +70,7 @@ export class UnitFormComponent implements OnInit {
     effect(() => {
       const data = this.unitData();
       if (data) {
-        this.unitForm.patchValue({
-          name: data.name,
-          status: data.status,
-          cnpj: data.cnpj || '',
-          phone: data.phone || '',
-          email: data.email || '',
-          short_name: data.short_name || '',
-          address: data.address,
-          manager_id: data.manager_id?._id || data.manager_id || '',
-          follower_ids: data.follower_ids?.map((f: any) => f._id || f) || []
-        });
+        this.populateForm(data);
       }
     });
 
@@ -105,6 +95,23 @@ export class UnitFormComponent implements OnInit {
     return '';
   }
 
+  private populateForm(data: Unit) {
+    const mgrId = typeof data.manager_id === 'object' && data.manager_id ? (data.manager_id as any)._id : (data.manager_id || '');
+    const fIds = data.follower_ids?.map((f: any) => typeof f === 'object' && f ? f._id : f) || [];
+
+    this.unitForm.patchValue({
+      name: data.name,
+      status: data.status,
+      cnpj: data.cnpj || '',
+      phone: data.phone || '',
+      email: data.email || '',
+      short_name: data.short_name || '',
+      address: data.address,
+      manager_id: mgrId,
+      follower_ids: fIds
+    });
+  }
+
   loadCollaborators(companyId?: string) {
     this.collaboratorService.getCollaborators(companyId).subscribe({
       next: (res) => {
@@ -113,18 +120,46 @@ export class UnitFormComponent implements OnInit {
           const filtered = res.data.filter(c => {
             if (c.type === 'super_staff' || c.type === 'super_admin') return false;
             if (companyId) {
-              const cCompId = typeof c.company_id === 'object' ? c.company_id?._id : c.company_id;
+              const cCompId = typeof c.company_id === 'object' && c.company_id ? c.company_id._id : c.company_id;
               return String(cCompId) === String(companyId);
             }
             return true;
           });
           this.collaborators.set(filtered);
+
+          // Re-sincroniza os valores de gerente e acompanhantes no formulário após os options renderizarem
+          const data = this.unitData();
+          if (data) {
+            const mgrId = typeof data.manager_id === 'object' && data.manager_id ? (data.manager_id as any)._id : (data.manager_id || '');
+            const fIds = data.follower_ids?.map((f: any) => typeof f === 'object' && f ? f._id : f) || [];
+            
+            this.unitForm.patchValue({
+              manager_id: mgrId,
+              follower_ids: fIds
+            });
+          }
         }
       },
       error: (err) => {
         console.error('Error loading collaborators', err);
       }
     });
+  }
+
+  getRoleLabel(collab: Collaborator): string {
+    if (!collab) return '';
+    const role = collab.role;
+    const type = collab.type;
+
+    if (role === 'manager') return 'Gerente Administrativo';
+    if (role === 'backoffice') return 'Atendente / Comercial';
+    if (role === 'supervisor') return 'Supervisor de Equipe';
+    if (role === 'technician' || role === 'técnico') return 'Técnico de Campo';
+    if (role === 'owner' || type === 'company_owner') return 'Dono de Empresa';
+    if (type === 'admin') return 'Gerente / Operador';
+    if (type === 'collaborator') return 'Colaborador';
+    if (role) return role;
+    return 'Membro da Equipe';
   }
 
   // Máscaras de entrada
@@ -188,7 +223,13 @@ export class UnitFormComponent implements OnInit {
 
   onSubmit() {
     if (this.unitForm.valid) {
-      this.save.emit(this.unitForm.getRawValue());
+      const raw = this.unitForm.getRawValue();
+      const payload: Partial<Unit> = {
+        ...raw,
+        manager_id: raw.manager_id && raw.manager_id.trim() !== '' ? raw.manager_id : null,
+        follower_ids: Array.isArray(raw.follower_ids) ? raw.follower_ids.filter((id: any) => id && String(id).trim() !== '') : []
+      };
+      this.save.emit(payload);
     } else {
       this.unitForm.markAllAsTouched();
     }
