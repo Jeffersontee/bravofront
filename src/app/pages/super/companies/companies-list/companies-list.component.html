@@ -157,6 +157,10 @@
                     <ion-icon name="card-outline"></ion-icon>
                     CNPJ: {{ company.cnpj }}
                   </span>
+                  <span class="detail-item owner">
+                    <ion-icon name="person-outline"></ion-icon>
+                    {{ company.owner_name || 'Sem responsável' }}
+                  </span>
                   <span class="detail-item email">
                     <ion-icon name="mail-outline"></ion-icon>
                     {{ company.email || 'Sem e-mail' }}
@@ -188,13 +192,26 @@
 
               <div class="company-card__body">
                 <h3 class="company-card__name">{{ company.name }}</h3>
-                <p class="company-card__cnpj">CNPJ: {{ company.cnpj }}</p>
-                <p class="company-card__email">{{ company.email || 'Sem e-mail cadastrado' }}</p>
+                <p class="company-card__cnpj">
+                  <ion-icon name="card-outline"></ion-icon>
+                  CNPJ: {{ company.cnpj }}
+                </p>
+                <p class="company-card__email">
+                  <ion-icon name="mail-outline"></ion-icon>
+                  {{ company.email || 'Sem e-mail cadastrado' }}
+                </p>
+                @if (company.phone) {
+                  <p class="company-card__phone">
+                    <ion-icon name="call-outline"></ion-icon>
+                    {{ company.phone }}
+                  </p>
+                }
               </div>
 
               <div class="company-card__footer">
                 <span class="company-card__owner">
-                  Responsável: {{ company.owner_name || 'Não informado' }}
+                  <ion-icon name="person-outline"></ion-icon>
+                  {{ company.owner_name || 'Não informado' }}
                 </span>
                 <span class="edit-link">
                   Editar

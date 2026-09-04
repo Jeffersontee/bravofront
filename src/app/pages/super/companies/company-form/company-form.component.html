@@ -170,6 +170,43 @@
           </div>
         </div>
 
+        <!-- CARD: PLANO E CONTRATO -->
+        <div class="form-card">
+          <div class="form-card__header">
+            <ion-icon name="ribbon-outline" class="form-card__icon"></ion-icon>
+            <h2 class="form-card__title">Plano de Contrato & Liberação de Módulos</h2>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-grid__col form-grid__col--full">
+              <ion-item lines="none" class="custom-input-item">
+                <ion-select 
+                  label="Plano de Contrato da Empresa" 
+                  labelPlacement="stacked"
+                  formControlName="plan_id" 
+                  interface="popover"
+                  placeholder="Selecione o plano comercial contratado">
+                  @for (plan of plans(); track plan._id) {
+                    <ion-select-option [value]="plan._id">
+                      {{ plan.name }} - R$ {{ plan.price.toFixed(2) }} (Até {{ plan.max_services }} serviços)
+                    </ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            </div>
+
+            <div class="form-grid__col form-grid__col--full">
+              <div class="toggle-box">
+                <div class="toggle-box__info">
+                  <span class="toggle-box__title">Módulo: Catálogo de Serviços</span>
+                  <span class="toggle-box__desc">Permite à empresa gerenciar seu próprio catálogo de serviços e preços dedicados</span>
+                </div>
+                <ion-toggle formControlName="catalog_module_enabled" color="primary"></ion-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- CARD: SERVIÇOS AUTORIZADOS E STATUS -->
         <div class="form-card">
           <div class="form-card__header">

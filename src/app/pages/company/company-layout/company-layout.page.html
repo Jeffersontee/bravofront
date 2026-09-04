@@ -21,7 +21,7 @@
           @for (item of menuItems; track item.title) {
             @if (!item.children || item.children.length === 0) {
               <ion-menu-toggle auto-hide="false">
-                <ion-item routerDirection="root" [routerLink]="item.url ? [item.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-1">
+                <ion-item routerDirection="root" [routerLink]="item.url ? [item.url] : null" [routerLinkActiveOptions]="{ exact: true }" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-1">
                   <ion-icon slot="start" [name]="item.icon"></ion-icon>
                   @if (!isCollapsed) {
                     <ion-label>{{ item.title }}</ion-label>
@@ -40,7 +40,7 @@
               @if (item.open && !isCollapsed) {
                 @for (child of item.children; track child.title) {
                   <ion-menu-toggle auto-hide="false">
-                    <ion-item routerDirection="root" [routerLink]="child.url ? [child.url] : null" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-2">
+                    <ion-item routerDirection="root" [routerLink]="child.url ? [child.url] : null" [routerLinkActiveOptions]="{ exact: true }" lines="none" detail="false" routerLinkActive="selected" class="menu-item level-2">
                       <ion-icon slot="start" [name]="child.icon"></ion-icon>
                       <ion-label>{{ child.title }}</ion-label>
                     </ion-item>

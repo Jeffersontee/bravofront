@@ -5,7 +5,7 @@ import { CompanyService } from 'src/app/services/company/company.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { ThemeService } from 'src/app/services/theme/theme.service';
-import { RouterModule, RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterModule, RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
@@ -45,7 +45,7 @@ interface MenuItem {
   styleUrls: ['./company-layout.page.scss'],
   standalone: true,
   imports: [
-    IonFooter, CommonModule, FormsModule, RouterLink, RouterOutlet,
+    IonFooter, CommonModule, FormsModule, RouterLink, RouterLinkActive, RouterOutlet,
     IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
     IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
     IonLabel, IonButtons, IonButton, IonRouterOutlet
@@ -75,9 +75,15 @@ export class CompanyLayoutPage implements OnInit {
       children: [
         { title: 'Painel da Empresa', icon: 'speedometer-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/painel` },
         { title: 'Dados da Empresa', icon: 'document-text-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/edit/${companyId}` },
-        { title: 'Unidades / Filiais', icon: 'business-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/units` },
-        { title: 'Catálogo de Serviços', icon: 'layers-outline', permissionKey: 'SUPER_SERVICES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/catalog` }
+        { title: 'Unidades / Filiais', icon: 'business-outline', permissionKey: 'SUPER_COMPANIES_PANEL', url: (companyId: string) => `/company/companies/${companyId}/units` }
       ]
+    },
+    {
+      title: 'Catálogo de Serviços',
+      icon: 'layers-outline',
+      permissionKey: 'SUPER_SERVICES_PANEL',
+      requiresCatalogModule: true,
+      url: (companyId: string) => `/company/companies/${companyId}/catalog`
     },
     {
       title: 'Colaborador',
@@ -104,11 +110,8 @@ export class CompanyLayoutPage implements OnInit {
       icon: 'cash-outline',
       permissionKey: 'COMPANY_FINANCIAL_PANEL',
       children: [
-        { title: 'Minhas Faturas', stringKey: 'ADMIN_INVOICES', icon: 'receipt-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' }, 
-        { title: 'Contas', stringKey: 'ADMIN_FIADOS', icon: 'mail-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' },
-        { title: 'Fiados (Conta Corrente)', stringKey: 'ADMIN_FIADOS', icon: 'folder-open-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' },
-        { title: 'Pagamentos', stringKey: 'ADMIN_PAYMENTS', icon: 'wallet-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL'},
-        { title: 'Assinaturas', stringKey: 'ADMIN_SUBSCRIPTIONS', icon: 'repeat-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL' },
+        { title: 'Minhas Faturas', icon: 'receipt-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL', url: (companyId: string) => `/company/financial/invoices` },
+        { title: 'Assinaturas', icon: 'repeat-outline', permissionKey: 'COMPANY_FINANCIAL_PANEL', url: (companyId: string) => `/company/financial/subscriptions` },
       ]
     },
     { 
@@ -186,8 +189,21 @@ export class CompanyLayoutPage implements OnInit {
         // Carrega as configurações de aparência da empresa específica
         this.themeService.loadAppearance('COMPANY', companyId);
 
+        // Verifica liberação do módulo de catálogo
+        let isCatalogEnabled = true;
+        if (companyId && user.type !== 'super_admin') {
+          try {
+            const compRes = await this.companyService.getCompanyById(companyId).toPromise();
+            if (compRes?.data && compRes.data.catalog_module_enabled === false) {
+              isCatalogEnabled = false;
+            }
+          } catch (e) {
+            console.warn('Não foi possível carregar dados da empresa:', e);
+          }
+        }
+
         // Reconstrói o menu dinâmico com o company_id do lojista
-        this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId, userPermissions);
+        this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId, userPermissions, isCatalogEnabled);
         
         this.router.events.pipe(
           filter(event => event instanceof NavigationEnd)
@@ -247,10 +263,14 @@ export class CompanyLayoutPage implements OnInit {
     return fallbackItem ? fallbackItem.url || null : null;
   }
 
-  private buildMenuWithCompany(configList: any[], companyId: string, userPermissions: string[]): MenuItem[] {
+  private buildMenuWithCompany(configList: any[], companyId: string, userPermissions: string[], isCatalogEnabled: boolean = true): MenuItem[] {
     const items: MenuItem[] = [];
 
     for (const config of configList) {
+      if (config.requiresCatalogModule && !isCatalogEnabled) {
+        continue;
+      }
+
       if (config.permissionKey && !userPermissions.includes(config.permissionKey)) {
         // Exceções de menus essenciais que nunca somem
         if (config.permissionKey !== 'ADMIN_ACCOUNT' && config.permissionKey !== 'ADMIN_HELP') {
@@ -273,7 +293,7 @@ export class CompanyLayoutPage implements OnInit {
       };
 
       if (config.children && config.children.length > 0) {
-        item.children = this.buildMenuWithCompany(config.children, companyId, userPermissions);
+        item.children = this.buildMenuWithCompany(config.children, companyId, userPermissions, isCatalogEnabled);
         // Se o menu pai precisava de filhos e todos foram bloqueados, esconde o pai
         if (item.children.length === 0 && !item.url) {
           continue;

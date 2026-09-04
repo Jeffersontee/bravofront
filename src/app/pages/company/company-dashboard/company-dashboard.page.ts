@@ -21,6 +21,7 @@ import { UnitService, Unit } from 'src/app/services/unit/unit.service';
 import { ServiceOrderService, ServiceOrder } from 'src/app/services/service-order/service-order.service';
 import { DateFilterService } from 'src/app/services/date-filter/date-filter.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
+import { StatusUtil } from 'src/app/utils/status.util';
 import { forkJoin } from 'rxjs';
 import {
   Chart,
@@ -158,6 +159,14 @@ export class CompanyDashboardPage implements OnInit {
         this.loadCompanyData(id);
       }
     }, { allowSignalWrites: true });
+  }
+
+  getStatusLabel(status: string): string {
+    return StatusUtil.getStatusLabel(status);
+  }
+
+  getStatusColor(status: string): string {
+    return StatusUtil.getStatusColor(status);
   }
 
   async ngOnInit() {

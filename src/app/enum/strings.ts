@@ -97,6 +97,13 @@ export enum Strings {
   COLLABORATOR_ORDER_DETAILS = 'collaborator/orders/details',
   CUSTOMER_ORDER_DETAILS = 'customer/orders/details',
 
+  // Financial & Subscriptions
+  SUPER_SUBSCRIPTIONS = '/super-admin/subscriptions',
+  SUPER_PAYMENTS = '/super-admin/payments',
+  SUPER_INVOICES = '/super-admin/invoices',
+  COMPANY_INVOICES = '/company/financial/invoices',
+  COMPANY_SUBSCRIPTIONS = '/company/financial/subscriptions',
+
   // Strings de Conexão Backend APIs
   API_COMPANIES = 'companies',
   API_SERVICES = 'services',
@@ -104,6 +111,9 @@ export enum Strings {
   API_SERVICE_ORDERS = 'service-orders',
   API_HEALTH = 'health',
   API_DASHBOARD = 'dashboard',
+  API_INVOICES = 'invoices',
+  API_SUBSCRIPTIONS = 'subscriptions',
+  API_PLANS = 'plans',
 
   // TOKENS
   TOKEN = 'hub_token',

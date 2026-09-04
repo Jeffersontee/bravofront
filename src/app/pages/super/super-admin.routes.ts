@@ -112,6 +112,20 @@ export const superAdminRoutes: Routes = [
     loadComponent: () => import('./operational/service-order-form-page/service-order-form-page.component').then(m => m.ServiceOrderFormPageComponent)
   },
 
+  // --- Financeiro ---
+  {
+    path: 'subscriptions',
+    loadComponent: () => import('./subscriptions/super-subscriptions.page').then(m => m.SuperSubscriptionsPage)
+  },
+  {
+    path: 'payments',
+    loadComponent: () => import('../payments/payments.page').then(m => m.PaymentsPage)
+  },
+  {
+    path: 'invoices',
+    loadComponent: () => import('../payments/payments.page').then(m => m.PaymentsPage)
+  },
+
   {
     path: 'settings/appearance',
     loadComponent: () => import('../manage-settings/appearance/appearance.page').then(m => m.AppearancePage)

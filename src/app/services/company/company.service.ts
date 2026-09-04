@@ -12,8 +12,14 @@ export interface Company {
   description?: string;
   cnpj: string;
   email?: string;
+  phone?: string;
   active: boolean;
   services?: string[];
+  plan_id?: any;
+  catalog_module_enabled?: boolean;
+  subscription_status?: 'trial' | 'active' | 'inactive' | 'canceled';
+  next_payment_date?: Date | string;
+  subscription_id?: any;
   createdAt?: string;
   updatedAt?: string;
 }

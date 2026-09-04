@@ -5,7 +5,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
   IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
   IonLabel, IonButtons, IonButton, IonRouterOutlet, IonFooter } from '@ionic/angular/standalone';
-import { RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
@@ -16,7 +16,8 @@ import {
   businessOutline, receiptOutline, gridOutline, settingsOutline,
   colorPaletteOutline, calendarOutline,
   calendarNumberOutline, personCircleOutline, helpCircleOutline,
-  serverOutline, keyOutline, cardOutline, swapHorizontalOutline
+  serverOutline, keyOutline, cardOutline, swapHorizontalOutline,
+  documentTextOutline, walletOutline, cashOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ProfileService } from '../../../services/profile/profile.service';
@@ -46,7 +47,7 @@ interface MenuConfig {
   styleUrls: ['./super-layout.page.scss'],
   standalone: true,
   imports: [IonFooter, 
-    CommonModule, FormsModule, RouterLink,
+    CommonModule, FormsModule, RouterLink, RouterLinkActive,
     IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
     IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
     IonLabel, IonButtons, IonButton, IonRouterOutlet
@@ -101,6 +102,15 @@ export class SuperLayoutPage implements OnInit {
         { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-outline', permissionKey: 'SUPER_COLLABORATORS_TEAMS' },
         { title: 'Lista', stringKey: 'SUPER_COLLABORATORS', icon: 'list-outline', permissionKey: 'SUPER_COLLABORATORS' },
         { title: 'Cadastrar Colaborador', stringKey: 'SUPER_COLLABORATORS_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_COLLABORATORS_CREATE' },
+      ]
+    },
+    {
+      title: 'Financeiro',
+      icon: 'cash-outline',
+      children: [
+        { title: 'Gestão de Assinaturas', icon: 'swap-horizontal-outline', url: '/super-admin/subscriptions' },
+        { title: 'Faturas & Cobranças', icon: 'document-text-outline', url: '/super-admin/invoices' },
+        { title: 'Histórico de Pagamentos', icon: 'wallet-outline', url: '/super-admin/payments' },
       ]
     },
     {
@@ -159,7 +169,8 @@ export class SuperLayoutPage implements OnInit {
       peopleOutline, listOutline, personAddOutline, chevronForward, chevronDown, calendarNumberOutline,
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
       businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline, calendarOutline,
-      serverOutline, keyOutline, cardOutline, swapHorizontalOutline
+      serverOutline, keyOutline, cardOutline, swapHorizontalOutline,
+      documentTextOutline, walletOutline, cashOutline
     });
   }
 

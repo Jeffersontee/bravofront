@@ -436,17 +436,25 @@
     margin: 0;
   }
 
-  &__cnpj {
-    font-size: 0.85rem;
+  &__cnpj, &__email, &__phone {
+    font-size: 0.82rem;
     color: var(--ion-color-step-600, #64748b);
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    word-break: break-all;
+
+    ion-icon {
+      font-size: 14px;
+      color: var(--ion-color-step-500, #94a3b8);
+      flex-shrink: 0;
+    }
   }
 
   &__email {
-    font-size: 0.82rem;
-    color: var(--ion-color-step-500, #94a3b8);
-    margin: 0;
-    word-break: break-all;
+    color: var(--ion-color-primary, #1d4ed8);
+    font-weight: 500;
   }
 
   &__footer {
@@ -460,7 +468,16 @@
 
   &__owner {
     font-size: 0.8rem;
-    color: var(--ion-color-step-600, #64748b);
+    color: var(--ion-color-step-700, #475569);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    ion-icon {
+      font-size: 14px;
+      color: var(--ion-color-primary, #1d4ed8);
+    }
   }
 }
 

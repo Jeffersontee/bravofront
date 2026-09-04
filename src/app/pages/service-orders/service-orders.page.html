@@ -1,23 +1,25 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="orders-toolbar">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Minhas Ordens de Serviço</ion-title>
+    <ion-title class="toolbar-title">Minhas Ordens de Serviço</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding bg-light">
-  <app-service-order-list
-    [orders]="orders()"
-    [isLoading]="isLoading()"
-    [role]="isLojista() ? 'company' : 'collaborator'"
-    [showCreateButton]="canCreateOrder()"
-    createButtonText="Solicitar Serviço"
-    pageTitle="Listagem de Ordens"
-    pageSubtitle="Acompanhe suas solicitações e visitas técnicas em tempo real."
-    (onRefresh)="loadOrders($event)"
-    (onCreate)="openCreateVisitModal()"
-    (onDetails)="goToDetails($event)">
-  </app-service-order-list>
+<ion-content class="orders-content">
+  <div class="orders-page-container">
+    <app-service-order-list
+      [orders]="orders()"
+      [isLoading]="isLoading()"
+      [role]="isLojista() ? 'company' : 'collaborator'"
+      [showCreateButton]="canCreateOrder()"
+      createButtonText="Solicitar Serviço"
+      pageTitle="Listagem de Ordens"
+      pageSubtitle="Acompanhe suas solicitações e visitas técnicas em tempo real."
+      (onRefresh)="loadOrders($event)"
+      (onCreate)="openCreateVisitModal()"
+      (onDetails)="goToDetails($event)">
+    </app-service-order-list>
+  </div>
 </ion-content>
