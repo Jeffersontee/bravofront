@@ -87,6 +87,34 @@ export const companyRoutes: Routes = [
     loadComponent: () => import('../account/account.page').then(m => m.AccountPage)
   },
   {
+    path: 'financial/subscriptions',
+    loadComponent: () => import('./subscriptions/subscriptions.page').then(m => m.SubscriptionsPage)
+  },
+  {
+    path: 'financial/invoices',
+    loadComponent: () => import('../payments/payments.page').then(m => m.PaymentsPage)
+  },
+  {
+    path: 'financial/payments',
+    redirectTo: 'financial/invoices',
+    pathMatch: 'full'
+  },
+  {
+    path: 'invoices',
+    redirectTo: 'financial/invoices',
+    pathMatch: 'full'
+  },
+  {
+    path: 'payments',
+    redirectTo: 'financial/invoices',
+    pathMatch: 'full'
+  },
+  {
+    path: 'subscriptions',
+    redirectTo: 'financial/subscriptions',
+    pathMatch: 'full'
+  },
+  {
     path: 'my-profile',
     redirectTo: 'profile',
     pathMatch: 'full'

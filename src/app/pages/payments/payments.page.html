@@ -1,0 +1,83 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="payments-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title class="payments-title">
+      {{ isSuperAdmin() ? 'Faturamento Global' : 'Minhas Faturas' }}
+    </ion-title>
+
+    @if (isSuperAdmin()) {
+      <div class="company-filter-wrapper" slot="end">
+        <span class="filter-label">Empresas:</span>
+        <select [ngModel]="selectedCompanyId()" (ngModelChange)="onCompanyChange($event)" class="company-select">
+          <option value="ALL">Todos as Empresas</option>
+          @for (comp of companies(); track comp._id) {
+            <option [value]="comp._id">{{ comp.name }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    <ion-buttons slot="end">
+      <ion-button (click)="loadAll()" title="Atualizar">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="payments-content">
+  <div class="payments-container">
+    
+    <!-- KPI SUMMARY CARDS (PAGO, PENDENTE, ATRASADO) -->
+    <section class="kpi-summary-grid">
+      <div class="kpi-summary-card kpi-summary-card--paid">
+        <span class="kpi-tag">PAGO</span>
+        <span class="kpi-amount">R$ {{ stats().totalPaid | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="kpi-summary-card kpi-summary-card--pending">
+        <span class="kpi-tag">PENDENTE</span>
+        <span class="kpi-amount">R$ {{ stats().totalPending | number:'1.2-2' }}</span>
+      </div>
+
+      <div class="kpi-summary-card kpi-summary-card--overdue">
+        <span class="kpi-tag">ATRASADO</span>
+        <span class="kpi-amount">R$ {{ stats().totalOverdue | number:'1.2-2' }}</span>
+      </div>
+    </section>
+
+    <!-- SAAS GROWTH CHART (APENAS SUPER ADMIN OU VISÃO GERAL) -->
+    @if (isSuperAdmin()) {
+      <section class="chart-section">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">Crescimento SaaS</h3>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas #growthChart></canvas>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- INVOICE LIST SECTION (HISTÓRICO DE COBRANÇAS) -->
+    <section class="invoices-section">
+      <div class="section-header">
+        <h3 class="section-title">Histórico de Cobranças</h3>
+      </div>
+
+      <app-invoice-list
+        [invoices]="invoices()"
+        [isLoading]="isLoading()"
+        [showCompany]="isSuperAdmin()"
+        [isSuperAdmin]="isSuperAdmin()"
+        (pay)="handleManualPay($event)"
+        (pix)="handlePix($event)">
+      </app-invoice-list>
+    </section>
+
+  </div>
+</ion-content>

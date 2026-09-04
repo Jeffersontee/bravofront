@@ -235,13 +235,13 @@
         <div class="select-wrapper">
           <select [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
             <option value="Todos">Todos</option>
-            <option value="AGENDADO">AGENDADO</option>
-            <option value="PENDENTE">PENDENTE</option>
-            <option value="EM_DESLOCAMENTO">EM DESLOCAMENTO</option>
-            <option value="CHECK_IN">CHECK IN</option>
-            <option value="EM_EXECUCAO">EM EXECUÇÃO</option>
-            <option value="CONCLUIDO">CONCLUÍDO</option>
-            <option value="CANCELADO">CANCELADO</option>
+            <option value="SOLICITADO">Solicitado</option>
+            <option value="AGENDADO">Agendado</option>
+            <option value="EM_DESLOCAMENTO">Técnico a caminho</option>
+            <option value="CHECK_IN">Técnico no local</option>
+            <option value="EM_EXECUCAO">Em Execução</option>
+            <option value="CONCLUIDO">Concluído</option>
+            <option value="CANCELADO">Cancelado</option>
           </select>
         </div>
       </div>
@@ -267,19 +267,19 @@
             <div class="col-date">{{ order.scheduled_date ? (order.scheduled_date | date:'dd/MM') : '--/--' }}</div>
             <div class="col-day">{{ order.scheduled_date ? (order.scheduled_date | date:'EEEE') : 'N/A' }}</div>
             <div class="col-unit">
-              {{ getUnitName(order.unit_id) }} 
+              <span class="unit-name">{{ getUnitName(order.unit_id) }}</span>
               <span [innerHTML]="getServiceBadge(order.service_id)"></span>
             </div>
             <div class="col-status">
-              <span class="badge" [ngClass]="{
-                'badge-pending': order.current_status !== 'CONCLUIDO',
-                'badge-success': order.current_status === 'CONCLUIDO'
-              }">{{ order.current_status }}</span>
+              <span class="badge" [ngClass]="'badge-' + getStatusColor(order.current_status || 'SOLICITADO')">
+                {{ getStatusLabel(order.current_status || 'SOLICITADO') }}
+              </span>
             </div>
           </div>
         } @empty {
           <div class="empty-state">
-            Nenhuma solicitação encontrada com os filtros atuais.
+            <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+            <p>Nenhuma solicitação encontrada com os filtros atuais.</p>
           </div>
         }
       </div>

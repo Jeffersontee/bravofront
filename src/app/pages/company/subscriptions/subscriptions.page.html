@@ -1,0 +1,185 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title class="page-header-title">Minha Assinatura & Contrato</ion-title>
+    <ion-button slot="end" fill="clear" (click)="loadData()" [disabled]="isLoading()">
+      <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding subscriptions-content">
+  <div class="subscriptions-container">
+
+    <!-- CABEÇALHO -->
+    <div class="subscriptions-header">
+      <div class="subscriptions-header__badge">
+        <ion-icon name="ribbon-outline"></ion-icon>
+        <span>Gestão de Contrato SaaS</span>
+      </div>
+      <h1 class="subscriptions-header__title">Plano e Serviços Contratados</h1>
+      <p class="subscriptions-header__subtitle">
+        Acompanhe a vigência do seu contrato, limites de serviços no catálogo e recursos disponíveis.
+      </p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <ion-spinner color="primary"></ion-spinner>
+        <p class="loading-state__text">Carregando informações do plano e contrato...</p>
+      </div>
+    }
+
+    @if (!isLoading()) {
+      <!-- CARD PRINCIPAL: ASSINATURA ATUAL -->
+      <div class="active-subscription-card">
+        <div class="active-subscription-card__top">
+          <div class="active-subscription-card__info">
+            <span class="plan-type-pill">Plano Atual</span>
+            <h2 class="active-subscription-card__name">{{ activePlan()?.name || company()?.plan_name || 'Plano Básico / Trial' }}</h2>
+            <p class="active-subscription-card__desc">
+              {{ activePlan()?.description || 'Contrato de prestação e licenciamento de software Bravo Instalações.' }}
+            </p>
+          </div>
+          <div class="active-subscription-card__status">
+            <span class="status-pill" [ngClass]="getStatusBadgeClass(currentSubscription()?.status || 'active')">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              {{ getStatusLabel(currentSubscription()?.status) }}
+            </span>
+            <div class="price-box">
+              <span class="price-box__currency">R$</span>
+              <span class="price-box__value">{{ (activePlan()?.price || currentSubscription()?.amount || 0).toFixed(2) }}</span>
+              <span class="price-box__period">/ {{ getBillingCycleLabel(activePlan()?.billing_cycle) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIVISOR COM GRADIENTE -->
+        <div class="card-divider"></div>
+
+        <!-- MÉTRICAS DE CONSUMO E LIMITES DO CONTRATO -->
+        <div class="contract-metrics">
+          <div class="metric-item">
+            <div class="metric-item__header">
+              <div class="metric-item__icon-wrap">
+                <ion-icon name="layers-outline"></ion-icon>
+              </div>
+              <div>
+                <span class="metric-item__label">Serviços no Catálogo</span>
+                <span class="metric-item__value">
+                  <strong>{{ catalogServicesCount() }}</strong> / {{ activePlan()?.max_services || 10 }} contratados
+                </span>
+              </div>
+            </div>
+            <div class="metric-item__bar">
+              <ion-progress-bar [value]="getServicesProgress()" color="primary"></ion-progress-bar>
+            </div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-item__header">
+              <div class="metric-item__icon-wrap">
+                <ion-icon name="business-outline"></ion-icon>
+              </div>
+              <div>
+                <span class="metric-item__label">Filiais / Unidades</span>
+                <span class="metric-item__value">Até <strong>{{ activePlan()?.max_units || 1 }}</strong> unidades</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-item__header">
+              <div class="metric-item__icon-wrap">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <div>
+                <span class="metric-item__label">Usuários & Técnicos</span>
+                <span class="metric-item__value">Até <strong>{{ activePlan()?.max_users || 2 }}</strong> contas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        @if (activePlan()?.features && activePlan()!.features!.length > 0) {
+          <div class="plan-features-list">
+            <h4 class="plan-features-list__title">
+              <ion-icon name="sparkles-outline"></ion-icon>
+              Recursos e Módulos Inclusos:
+            </h4>
+            <div class="features-grid">
+              @for (feat of activePlan()!.features; track feat) {
+                <div class="feature-item">
+                  <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  <span>{{ feat }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- SEÇÃO DE PLANOS DISPONÍVEIS PARA UPGRADE -->
+      <div class="plans-section">
+        <div class="plans-section__header">
+          <h3 class="plans-section__title">Planos e Upgrades Disponíveis</h3>
+          <p class="plans-section__subtitle">
+            Evolua o plano da sua empresa para desbloquear maior volume de serviços, usuários e unidades integradas.
+          </p>
+        </div>
+
+        <div class="plans-grid">
+          @for (plan of availablePlans(); track plan._id) {
+            <div class="plan-card" [class.plan-card--active]="activePlan()?._id === plan._id">
+              @if (activePlan()?._id === plan._id) {
+                <div class="current-plan-banner">
+                  <ion-icon name="star-outline"></ion-icon>
+                  Seu Plano Atual
+                </div>
+              }
+              <div class="plan-card__header">
+                <h4 class="plan-card__name">{{ plan.name }}</h4>
+                <p class="plan-card__desc">{{ plan.description || 'Plano completo de serviços' }}</p>
+              </div>
+
+              <div class="plan-card__price">
+                <span class="plan-card__currency">R$</span>
+                <span class="plan-card__amount">{{ plan.price.toFixed(2) }}</span>
+                <span class="plan-card__cycle">/ {{ getBillingCycleLabel(plan.billing_cycle) }}</span>
+              </div>
+
+              <div class="plan-card__specs">
+                <div class="spec-row">
+                  <ion-icon name="layers-outline"></ion-icon>
+                  <span>Até <strong>{{ plan.max_services }}</strong> serviços no catálogo</span>
+                </div>
+                <div class="spec-row">
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Até <strong>{{ plan.max_units }}</strong> filiais / unidades</span>
+                </div>
+                <div class="spec-row">
+                  <ion-icon name="people-outline"></ion-icon>
+                  <span>Até <strong>{{ plan.max_users }}</strong> usuários de acesso</span>
+                </div>
+              </div>
+
+              <div class="plan-card__action">
+                @if (activePlan()?._id === plan._id) {
+                  <ion-button expand="block" fill="outline" color="medium" disabled class="btn-current-plan">
+                    <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                    Plano Vigente
+                  </ion-button>
+                } @else {
+                  <ion-button expand="block" color="primary" class="btn-upgrade" (click)="onSelectPlan(plan)">
+                    Selecionar Plano
+                    <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+                  </ion-button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+</ion-content>

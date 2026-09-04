@@ -1,0 +1,429 @@
+.subscriptions-content {
+  --background: var(--ion-background-color, #f4f6f9);
+}
+
+.subscriptions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 8px 40px;
+}
+
+/* CABEÇALHO */
+.subscriptions-header {
+  margin-bottom: 24px;
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.1);
+    color: var(--ion-color-primary, #3b82f6);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+  }
+
+  &__title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-size: 0.92rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+    line-height: 1.45;
+  }
+}
+
+/* LOADING STATE */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+
+  &__text {
+    font-size: 0.95rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+  }
+}
+
+/* CARD DA ASSINATURA ATIVA */
+.active-subscription-card {
+  background: var(--ion-card-background, #ffffff);
+  border: 1px solid var(--ion-color-step-150, #e2e8f0);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--ion-color-primary, #3b82f6), #10b981);
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  .plan-type-pill {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ion-color-primary, #3b82f6);
+    margin-bottom: 4px;
+  }
+
+  &__name {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 6px;
+  }
+
+  &__desc {
+    font-size: 0.9rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  &__status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+
+    @media (max-width: 600px) {
+      align-items: flex-start;
+      width: 100%;
+    }
+  }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  &.badge--active {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+  }
+  &.badge--trial {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+  }
+  &.badge--warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+  }
+  &.badge--danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+  }
+}
+
+.price-box {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+
+  &__currency {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #1e293b);
+  }
+
+  &__value {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--ion-text-color, #1e293b);
+  }
+
+  &__period {
+    font-size: 0.85rem;
+    color: var(--ion-color-step-600, #64748b);
+  }
+}
+
+.card-divider {
+  height: 1px;
+  background: var(--ion-color-step-150, #e2e8f0);
+  margin: 20px 0;
+}
+
+/* MÉTRICAS DO CONTRATO */
+.contract-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.metric-item {
+  background: var(--ion-color-step-50, #f8fafc);
+  border: 1px solid var(--ion-color-step-150, #e2e8f0);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.1);
+    color: var(--ion-color-primary, #3b82f6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ion-color-step-600, #64748b);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__value {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--ion-text-color, #1e293b);
+    margin-top: 2px;
+  }
+
+  &__bar {
+    width: 100%;
+    ion-progress-bar {
+      border-radius: 4px;
+      height: 6px;
+    }
+  }
+}
+
+/* FEATURES DO PLANO */
+.plan-features-list {
+  background: var(--ion-color-step-50, #f8fafc);
+  border-radius: 12px;
+  padding: 16px;
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    ion-icon {
+      color: var(--ion-color-primary, #3b82f6);
+    }
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--ion-text-color, #334155);
+
+  ion-icon {
+    color: #10b981;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+}
+
+/* SEÇÃO DE PLANOS DISPONÍVEIS */
+.plans-section {
+  &__header {
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 6px;
+  }
+
+  &__subtitle {
+    font-size: 0.88rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+  }
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.plan-card {
+  background: var(--ion-card-background, #ffffff);
+  border: 1px solid var(--ion-color-step-150, #e2e8f0);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  }
+
+  &--active {
+    border: 2px solid var(--ion-color-primary, #3b82f6);
+    box-shadow: 0 8px 24px -4px rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.15);
+  }
+
+  .current-plan-banner {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--ion-color-primary, #3b82f6);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__header {
+    margin-bottom: 14px;
+  }
+
+  &__name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 4px;
+  }
+
+  &__desc {
+    font-size: 0.82rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+    min-height: 34px;
+  }
+
+  &__price {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ion-color-step-150, #e2e8f0);
+  }
+
+  &__currency {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #1e293b);
+  }
+
+  &__amount {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--ion-text-color, #1e293b);
+  }
+
+  &__cycle {
+    font-size: 0.8rem;
+    color: var(--ion-color-step-600, #64748b);
+  }
+
+  &__specs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex: 1;
+
+    .spec-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      color: var(--ion-text-color, #334155);
+
+      ion-icon {
+        color: var(--ion-color-primary, #3b82f6);
+        font-size: 1.05rem;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  &__action {
+    margin-top: auto;
+
+    ion-button {
+      --border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+  }
+}

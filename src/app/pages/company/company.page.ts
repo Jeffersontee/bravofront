@@ -1,7 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonSpinner, IonBackButton, IonMenuButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonSpinner, IonBackButton, IonMenuButton, IonBadge, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { businessOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { CompanyFormComponent } from 'src/app/components/company-form/company-form.component';
@@ -16,7 +18,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonSpinner, 
-    IonBackButton, IonMenuButton, CommonModule, FormsModule, 
+    IonBackButton, IonMenuButton, IonBadge, IonIcon, CommonModule, FormsModule, 
     CompanyFormComponent 
   ]
 })
@@ -32,6 +34,10 @@ export class CompanyPage {
   isEditMode = signal<boolean>(false);
   isDetailsMode = signal<boolean>(false);
   isLoading = signal<boolean>(false);
+
+  constructor() {
+    addIcons({ businessOutline });
+  }
 
   ionViewWillEnter() {
     this.loadInitialData();

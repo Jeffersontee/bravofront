@@ -1,0 +1,176 @@
+.payments-toolbar {
+  --background: var(--ion-background-color, #ffffff);
+  border-bottom: 1px solid var(--ion-color-step-150, rgba(0, 0, 0, 0.08));
+}
+
+.payments-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--ion-text-color, #111);
+}
+
+.company-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ion-card-background, #f4f5f8);
+  border: 1px solid var(--ion-color-step-200, rgba(0, 0, 0, 0.12));
+  border-radius: 8px;
+  padding: 4px 12px;
+  margin-right: 8px;
+
+  .filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-color-medium, #666);
+  }
+
+  .company-select {
+    border: none;
+    background: transparent;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #222);
+    outline: none;
+    cursor: pointer;
+  }
+}
+
+.payments-content {
+  --background: var(--ion-background-color, #f8f9fc);
+}
+
+.payments-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* KPI CARDS (PAGO, PENDENTE, ATRASADO) */
+.kpi-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}
+
+.kpi-summary-card {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 12px;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ion-color-step-150, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  text-align: center;
+
+  .kpi-tag {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+  }
+
+  .kpi-amount {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  &--paid {
+    .kpi-tag {
+      color: var(--ion-color-medium, #666);
+    }
+    .kpi-amount {
+      color: #2dd36f;
+    }
+  }
+
+  &--pending {
+    .kpi-tag {
+      color: var(--ion-color-medium, #666);
+    }
+    .kpi-amount {
+      color: #ffc409;
+    }
+  }
+
+  &--overdue {
+    .kpi-tag {
+      color: var(--ion-color-medium, #666);
+    }
+    .kpi-amount {
+      color: #eb445a;
+    }
+  }
+}
+
+/* CHART SECTION */
+.chart-section {
+  width: 100%;
+}
+
+.chart-card {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 14px;
+  border: 1px solid var(--ion-color-step-150, rgba(0, 0, 0, 0.08));
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  box-sizing: border-box;
+
+  .chart-header {
+    margin-bottom: 16px;
+  }
+
+  .chart-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #222);
+    margin: 0;
+  }
+
+  .chart-canvas-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 280px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+
+    canvas {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+    }
+  }
+}
+
+/* INVOICES SECTION */
+.invoices-section {
+  width: 100%;
+
+  .section-header {
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ion-text-color, #222);
+    margin: 0;
+  }
+}

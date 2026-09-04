@@ -6,10 +6,8 @@ import { addIcons } from 'ionicons';
 import {
   businessOutline, peopleOutline, clipboardOutline,
   checkmarkCircleOutline, timeOutline, closeCircleOutline,
-  menuOutline,
-  helpCircleOutline,
-  personCircleOutline,
-  refreshOutline
+  menuOutline, helpCircleOutline, personCircleOutline,
+  refreshOutline, trendingUpOutline, walletOutline, cardOutline
 } from 'ionicons/icons';
 import { DashboardService, DashboardStats } from 'src/app/services/dashboard/dashboard.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
@@ -57,6 +55,7 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
   stats = signal<DashboardStats | null>(null);
   companies = signal<Company[]>([]);
   selectedCompanyId = signal<string>('ALL');
+  billingCycle = signal<'MENSAL' | 'ANUAL'>('MENSAL');
 
   private ordersChart: Chart | null = null;
   private subscriptionsChart: Chart | null = null;
@@ -66,7 +65,8 @@ export class SuperDashboardPage implements OnInit, AfterViewInit {
     addIcons({
       businessOutline, peopleOutline, clipboardOutline,
       checkmarkCircleOutline, timeOutline, closeCircleOutline,
-      menuOutline, helpCircleOutline, personCircleOutline, refreshOutline
+      menuOutline, helpCircleOutline, personCircleOutline, refreshOutline,
+      trendingUpOutline, walletOutline, cardOutline
     });
   }
 

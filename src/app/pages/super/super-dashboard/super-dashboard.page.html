@@ -35,58 +35,66 @@
     }
 
     @if (!isLoading() && stats()) {
-      <!-- KPI CARDS GRID (2 COLUNAS NO MOBILE, 4 NO DESKTOP) -->
-      <section class="kpi-grid">
-        <div class="kpi-card kpi-card--companies">
-          <div class="kpi-card__header">
-            <div class="kpi-icon kpi-icon--companies">
-              <ion-icon name="business-outline"></ion-icon>
-            </div>
-            <span class="kpi-sub">{{ stats()!.kpis.activeCompanies }} ativas</span>
+      <!-- SAAS TOGGLE (MENSAL / ANUAL) -->
+      <div class="saas-toggle-container">
+        <div class="saas-toggle-group">
+          <button
+            class="saas-toggle-btn"
+            [class.saas-toggle-btn--active]="billingCycle() === 'MENSAL'"
+            (click)="billingCycle.set('MENSAL')">
+            MENSAL
+          </button>
+          <button
+            class="saas-toggle-btn"
+            [class.saas-toggle-btn--active]="billingCycle() === 'ANUAL'"
+            (click)="billingCycle.set('ANUAL')">
+            ANUAL
+          </button>
+        </div>
+      </div>
+
+      <!-- SAAS KPI CARDS (MATCHING PRINT 2) -->
+      <section class="saas-kpi-grid">
+        <!-- MRR -->
+        <div class="saas-kpi-card">
+          <div class="saas-kpi-icon">
+            <ion-icon name="wallet-outline"></ion-icon>
           </div>
-          <div class="kpi-card__body">
-            <span class="kpi-value">{{ stats()!.kpis.totalCompanies }}</span>
-            <span class="kpi-label">Empresas</span>
+          <span class="saas-kpi-label">MRR (Receita Mensal)</span>
+          <span class="saas-kpi-value">R$ 0</span>
+          <span class="saas-kpi-sub">↘ % vs mês ant.</span>
+        </div>
+
+        <!-- TOTAL ESTABELECIMENTOS -->
+        <div class="saas-kpi-card">
+          <div class="saas-kpi-icon">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <span class="saas-kpi-label">Total de Estabelecimentos</span>
+          <span class="saas-kpi-value">{{ stats()!.kpis.totalCompanies }}</span>
+          <span class="saas-kpi-sub">+ + novos este mês</span>
+        </div>
+
+        <!-- CHURN RATE -->
+        <div class="saas-kpi-card">
+          <div class="saas-kpi-icon">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </div>
+          <span class="saas-kpi-label">Churn Rate (Cancelamento)</span>
+          <span class="saas-kpi-value">0.0%</span>
+          <div class="saas-kpi-health-badge">
+            <span class="health-tag">Saúde: Alerta</span>
           </div>
         </div>
 
-        <div class="kpi-card kpi-card--users">
-          <div class="kpi-card__header">
-            <div class="kpi-icon kpi-icon--users">
-              <ion-icon name="people-outline"></ion-icon>
-            </div>
-            <span class="kpi-sub">Cadastrados</span>
+        <!-- LTV -->
+        <div class="saas-kpi-card">
+          <div class="saas-kpi-icon">
+            <ion-icon name="trending-up-outline"></ion-icon>
           </div>
-          <div class="kpi-card__body">
-            <span class="kpi-value">{{ stats()!.kpis.totalUsers }}</span>
-            <span class="kpi-label">Usuários</span>
-          </div>
-        </div>
-
-        <div class="kpi-card kpi-card--orders">
-          <div class="kpi-card__header">
-            <div class="kpi-icon kpi-icon--orders">
-              <ion-icon name="clipboard-outline"></ion-icon>
-            </div>
-            <span class="kpi-sub">{{ stats()!.kpis.pendingOrders }} pendentes</span>
-          </div>
-          <div class="kpi-card__body">
-            <span class="kpi-value">{{ stats()!.kpis.totalOrders }}</span>
-            <span class="kpi-label">Ordens de Serviço</span>
-          </div>
-        </div>
-
-        <div class="kpi-card kpi-card--completed">
-          <div class="kpi-card__header">
-            <div class="kpi-icon kpi-icon--completed">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-            </div>
-            <span class="kpi-sub">{{ stats()!.kpis.canceledOrders }} canceladas</span>
-          </div>
-          <div class="kpi-card__body">
-            <span class="kpi-value">{{ stats()!.kpis.completedOrders }}</span>
-            <span class="kpi-label">Concluídas</span>
-          </div>
+          <span class="saas-kpi-label">LTV (Valor do Ciclo de Vida)</span>
+          <span class="saas-kpi-value">R$ 0</span>
+          <span class="saas-kpi-sub">CAC: R$ 0</span>
         </div>
       </section>
 

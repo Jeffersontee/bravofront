@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
+import { PlanService, Plan } from 'src/app/services/plan/plan.service';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { Strings } from 'src/app/enum/strings';
 import { addIcons } from 'ionicons';
@@ -31,7 +32,9 @@ import {
   eyeOffOutline,
   callOutline,
   closeCircleOutline,
-  informationCircleOutline
+  informationCircleOutline,
+  layersOutline,
+  ribbonOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -51,6 +54,7 @@ export class CompanyFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private companyService = inject(CompanyService);
   private serviceService = inject(ServiceService);
+  private planService = inject(PlanService);
   private global = inject(GlobalService);
   private alertCtrl = inject(AlertController);
   private route = inject(ActivatedRoute);
@@ -65,6 +69,7 @@ export class CompanyFormComponent implements OnInit {
   public companyUsers = signal<any[]>([]);
   public showUserForm = signal(false);
   public globalServices = signal<ServiceItem[]>([]);
+  public plans = signal<Plan[]>([]);
 
   // Toggles de Visibilidade da Senha
   public passwordHidden = signal(true);
@@ -107,7 +112,9 @@ export class CompanyFormComponent implements OnInit {
       password: [''],
       confirmPassword: [''],
       active: [true],
-      services: [[]]
+      services: [[]],
+      plan_id: [''],
+      catalog_module_enabled: [true]
     });
 
     this.userForm = this.fb.group({
@@ -121,6 +128,7 @@ export class CompanyFormComponent implements OnInit {
     });
 
     this.loadGlobalServices();
+    this.loadPlans();
 
     this.companyId = this.route.snapshot.paramMap.get('id');
     if (this.companyId && this.companyId !== 'create') {
@@ -134,6 +142,19 @@ export class CompanyFormComponent implements OnInit {
       this.form.get('password')?.updateValueAndValidity();
       this.form.get('confirmPassword')?.updateValueAndValidity();
     }
+  }
+
+  loadPlans() {
+    this.planService.getPlans().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.plans.set(res.data || []);
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao carregar planos:', err);
+      }
+    });
   }
 
   loadGlobalServices() {
@@ -168,7 +189,9 @@ export class CompanyFormComponent implements OnInit {
             email: companyData.email || '',
             phone: this.applyPhoneMask(companyData.phone || ''),
             active: companyData.active !== undefined ? companyData.active : true,
-            services: serviceIds
+            services: serviceIds,
+            plan_id: companyData.plan_id?._id || companyData.plan_id || '',
+            catalog_module_enabled: companyData.catalog_module_enabled !== undefined ? companyData.catalog_module_enabled : true
           });
         }
         this.isLoading.set(false);
@@ -285,7 +308,9 @@ export class CompanyFormComponent implements OnInit {
       email: (rawData.email || '').trim().toLowerCase(),
       phone: (rawData.phone || '').replace(/\D/g, ''),
       active: rawData.active,
-      services: rawData.services || []
+      services: rawData.services || [],
+      plan_id: rawData.plan_id || null,
+      catalog_module_enabled: rawData.catalog_module_enabled !== false
     };
 
     if (!this.isEditMode() && rawData.password) {

@@ -18,7 +18,9 @@ import {
   checkmarkCircleOutline,
   chevronForwardOutline,
   mailOutline,
-  cardOutline
+  cardOutline,
+  personOutline,
+  callOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -86,7 +88,9 @@ export class CompaniesListComponent implements OnInit {
       checkmarkCircleOutline,
       chevronForwardOutline,
       mailOutline,
-      cardOutline
+      cardOutline,
+      personOutline,
+      callOutline
     });
   }
 

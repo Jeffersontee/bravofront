@@ -2,12 +2,13 @@ import { Component, OnInit, input, output, signal, effect, untracked, inject, co
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
-  IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar, IonTextarea 
+  IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar, IonTextarea, IonBadge 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
   person, mail, call, businessOutline, documentTextOutline, addCircleOutline,
-  lockClosedOutline, eyeOutline, eyeOffOutline 
+  lockClosedOutline, eyeOutline, eyeOffOutline, personOutline, mailOutline, callOutline,
+  saveOutline, cardOutline, checkmarkCircleOutline, alertCircleOutline
 } from 'ionicons/icons';
 import { Company } from 'src/app/services/company/company.service';
 
@@ -19,7 +20,7 @@ import { Company } from 'src/app/services/company/company.service';
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, 
-    IonItemDivider, IonTextarea, IonSpinner, IonProgressBar
+    IonItemDivider, IonTextarea, IonSpinner, IonProgressBar, IonBadge
   ]
 })
 export class CompanyFormComponent implements OnInit {
@@ -49,7 +50,8 @@ export class CompanyFormComponent implements OnInit {
   constructor() {
     addIcons({ 
       person, mail, call, businessOutline, documentTextOutline, addCircleOutline,
-      lockClosedOutline, eyeOutline, eyeOffOutline
+      lockClosedOutline, eyeOutline, eyeOffOutline, personOutline, mailOutline, callOutline,
+      saveOutline, cardOutline, checkmarkCircleOutline, alertCircleOutline
     });
 
     effect(() => {
@@ -137,6 +139,25 @@ export class CompanyFormComponent implements OnInit {
     return formatted;
   }
 
+  onPhoneInput(event: any) {
+    const input = event.target as HTMLInputElement;
+    let val = input.value.replace(/\D/g, '');
+    if (val.length > 11) val = val.slice(0, 11);
+
+    const masked = this.applyPhoneMask(val);
+    this.companyForm.get('phone')?.setValue(masked, { emitEvent: false });
+    input.value = masked;
+  }
+
+  private applyPhoneMask(value: string): string {
+    const digits = value.replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.length <= 2) return `(${digits}`;
+    if (digits.length <= 6) return `(${digits.substring(0, 2)}) ${digits.substring(2)}`;
+    if (digits.length <= 10) return `(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-${digits.substring(6)}`;
+    return `(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7, 11)}`;
+  }
+
   private patchForm(data: Company) {
     if (!this.companyForm) this.initForm();
 
@@ -146,7 +167,7 @@ export class CompanyFormComponent implements OnInit {
       short_name: data.short_name || '',
       cnpj: this.applyCnpjMask(data.cnpj || ''),
       email: data.email || '',
-      phone: (data as any).phone || '',
+      phone: this.applyPhoneMask((data as any).phone || ''),
       description: data.description || '',
       active: data.active !== undefined ? data.active : true
     });
@@ -173,6 +194,7 @@ export class CompanyFormComponent implements OnInit {
       short_name: formValue.short_name,
       cnpj: (formValue.cnpj || '').replace(/\D/g, ''),
       email: formValue.email?.trim().toLowerCase() || '',
+      phone: formValue.phone?.trim() || '',
       description: formValue.description || '',
       active: formValue.active,
       ...(formValue.password ? { password: formValue.password } : {})
