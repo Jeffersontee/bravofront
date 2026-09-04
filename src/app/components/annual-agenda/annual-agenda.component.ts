@@ -33,8 +33,9 @@ import {
 })
 export class AnnualAgendaComponent implements OnInit {
   year = input.required<number>();
-  mode = input<'company' | 'super_admin'>('company');
+  mode = input<'company' | 'super_admin' | 'collaborator'>('company');
   companyId = input<string | null>(null);
+  collaboratorId = input<string | null>(null);
 
   private serviceOrderService = inject(ServiceOrderService);
   private router = inject(Router);
@@ -89,8 +90,9 @@ export class AnnualAgendaComponent implements OnInit {
     effect(() => {
       const selectedYear = this.year();
       const cId = this.companyId();
+      const colId = this.collaboratorId();
       if (selectedYear) {
-        this.loadAgenda(selectedYear, cId);
+        this.loadAgenda(selectedYear, cId, colId);
       }
     }, { allowSignalWrites: true });
   }
@@ -137,7 +139,7 @@ export class AnnualAgendaComponent implements OnInit {
     };
   }
 
-  private async loadAgenda(year: number, companyId: string | null) {
+  private async loadAgenda(year: number, companyId: string | null, collaboratorId: string | null = null) {
     this.isLoading.set(true);
 
     const startDate = `${year}-01-01T00:00:00.000Z`;
@@ -146,6 +148,9 @@ export class AnnualAgendaComponent implements OnInit {
     const filters: any = { start_date: startDate, end_date: endDate };
     if (companyId) {
       filters.company_id = companyId;
+    }
+    if (collaboratorId) {
+      filters.collaborator_id = collaboratorId;
     }
 
     this.serviceOrderService.getServiceOrders(filters).subscribe({
@@ -248,6 +253,8 @@ export class AnnualAgendaComponent implements OnInit {
       let baseUrl = Strings.COMPANY_ORDER_DETAILS;
       if (this.router.url.includes('/customer')) {
         baseUrl = Strings.CUSTOMER_ORDER_DETAILS;
+      } else if (this.router.url.includes('/collaborator')) {
+        baseUrl = Strings.COLLABORATOR_ORDER_DETAILS;
       } else if (this.mode() === 'super_admin') {
         baseUrl = Strings.SUPER_OPERATIONAL_ORDERS_DETAILS;
       }

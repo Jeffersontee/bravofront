@@ -107,11 +107,16 @@ export class ServiceOrdersPage implements OnInit {
             this.companyService.getCompanyById(companyId).subscribe((res: any) => {
               if (res.success && res.data) {
                 this.company.set(res.data);
-                const activeServiceIds = res.data.services || [];
+                const activeServiceIds = (res.data.services || []).map((s: any) => typeof s === 'object' ? String(s._id || s.id) : String(s));
                 
                 this.serviceService.getServices().subscribe((srvRes: any) => {
                   if (srvRes.success) {
-                    this.services.set(srvRes.data.filter((s: any) => activeServiceIds.includes(s._id)));
+                    const allServices = srvRes.data || [];
+                    if (activeServiceIds.length > 0) {
+                      this.services.set(allServices.filter((s: any) => activeServiceIds.includes(String(s._id || s.id))));
+                    } else {
+                      this.services.set(allServices.filter((s: any) => !s.company_id || String(s.company_id) === String(companyId)));
+                    }
                   }
                 });
               }

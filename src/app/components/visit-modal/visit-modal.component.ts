@@ -86,10 +86,7 @@ export class VisitModalComponent implements OnInit {
       // Find the category of the selected service
       const selectedService = this.services.find(s => s._id === serviceId);
       if (selectedService) {
-        this.selectedCategory = selectedService.category || '';
-        if (!this.categories.includes(this.selectedCategory) && this.selectedCategory) {
-          this.categories.push(this.selectedCategory); // Add dynamically if not present
-        }
+        this.selectedCategory = this.normalizeCategory(selectedService.category || '');
       }
 
       // Infer priority based on existing GUT values
@@ -99,6 +96,29 @@ export class VisitModalComponent implements OnInit {
 
       this.selectedPriority = getPriorityFromGUT(g, u, t);
     }
+
+    // Adiciona dinamicamente categorias extras encontradas nos serviços caso não existam no padrão
+    if (this.services && this.services.length > 0) {
+      const existingNorms = new Set(this.categories.map(c => this.normalizeCategory(c)));
+      for (const s of this.services) {
+        if (s.category) {
+          const norm = this.normalizeCategory(s.category);
+          if (!existingNorms.has(norm)) {
+            existingNorms.add(norm);
+            this.categories.push(norm);
+          }
+        }
+      }
+    }
+  }
+
+  normalizeCategory(cat: string): string {
+    if (!cat) return '';
+    const clean = cat.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (clean.includes('ELETRIC')) return 'ELÉTRICA';
+    if (clean.includes('HIDRAUL') || clean.includes('CIVIL')) return 'HIDRÁULICA/CIVIL';
+    if (clean.includes('SERRALH')) return 'SERRALHERIA';
+    return cat.trim().toUpperCase();
   }
 
   setPriority(level: PriorityLevel) {
@@ -125,7 +145,8 @@ export class VisitModalComponent implements OnInit {
 
   get filteredServices() {
     if (!this.selectedCategory) return [];
-    return this.services.filter(s => s.category === this.selectedCategory);
+    const selNorm = this.normalizeCategory(this.selectedCategory);
+    return this.services.filter(s => this.normalizeCategory(s.category || '') === selNorm);
   }
 
   setCategory(cat: string) {

@@ -108,7 +108,7 @@ export class CollaboratorLayoutPage implements OnInit {
     this.themeService.loadAppearance('GLOBAL');
     
     try {
-      const user = await this.profileService.getProfile();
+      const user = await this.profileService.getProfile(true);
       const companyId = user?.company_id || '';
       
       this.menuItems = this.buildMenuWithCompany(this.MENU_DATA, companyId);

@@ -18,8 +18,10 @@
     <!-- CABEÇALHO DA PÁGINA -->
     <div class="panel-header">
       <div class="panel-header__info">
-        <h1 class="panel-header__title">Usuários e Permissões</h1>
-        <p class="panel-header__subtitle">Gerencie todos os perfis administrativos, operadores e acessos do sistema.</p>
+        <h1 class="panel-header__title">{{ isSuperAdmin() ? 'Usuários e Permissões' : 'Colaboradores e Equipe' }}</h1>
+        <p class="panel-header__subtitle">
+          {{ isSuperAdmin() ? 'Gerencie todos os perfis administrativos, operadores e acessos do sistema.' : 'Gerencie os gerentes, atendentes, supervisores e técnicos da sua empresa.' }}
+        </p>
       </div>
       <div class="panel-header__actions">
         <div class="view-toggle-group">
@@ -42,14 +44,14 @@
         </div>
         <ion-button (click)="goToCreate()" color="success" class="btn-create-user">
           <ion-icon name="add-outline" slot="start"></ion-icon>
-          Novo Usuário
+          {{ isSuperAdmin() ? 'Novo Usuário' : 'Novo Colaborador' }}
         </ion-button>
       </div>
     </div>
 
     <!-- BARRA DE BUSCA E FILTRO DE EMPRESA -->
     <div class="filter-card">
-      <div class="filter-card__grid">
+      <div class="filter-card__grid" [class.single-column]="!isSuperAdmin()">
         <div class="filter-card__field">
           <ion-searchbar 
             [value]="searchTerm()" 
@@ -60,25 +62,27 @@
           </ion-searchbar>
         </div>
 
-        <div class="filter-card__field">
-          <ion-item lines="none" class="custom-select-item">
-            <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
-            <ion-select 
-              [value]="selectedCompanyId()" 
-              label="Empresa Parceira" 
-              labelPlacement="floating" 
-              (ionChange)="onCompanyFilterChange($event.detail.value)" 
-              placeholder="Todas as Empresas">
-              <ion-select-option value="">Todas as Empresas</ion-select-option>
-              @for (company of companies(); track company._id) {
-                <ion-select-option [value]="company._id">{{ company.name }}</ion-select-option>
-              }
-            </ion-select>
-          </ion-item>
-        </div>
+        @if (isSuperAdmin()) {
+          <div class="filter-card__field">
+            <ion-item lines="none" class="custom-select-item">
+              <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
+              <ion-select 
+                [value]="selectedCompanyId()" 
+                label="Empresa Parceira" 
+                labelPlacement="floating" 
+                (ionChange)="onCompanyFilterChange($event.detail.value)" 
+                placeholder="Todas as Empresas">
+                <ion-select-option value="">Todas as Empresas</ion-select-option>
+                @for (company of companies(); track company._id) {
+                  <ion-select-option [value]="company._id">{{ company.name }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </div>
+        }
       </div>
 
-      @if (selectedCompanyId() || searchTerm() || selectedRoleFilter() !== 'ALL') {
+      @if ((isSuperAdmin() && selectedCompanyId()) || searchTerm() || selectedRoleFilter() !== 'ALL') {
         <div class="filter-card__footer">
           <span class="filter-card__summary">Filtro ativo: {{ filteredStaffList().length }} usuário(s) encontrado(s)</span>
           <ion-button fill="clear" size="small" color="danger" (click)="clearFilters()" class="btn-clear-filter">
@@ -94,12 +98,14 @@
       <ion-segment-button value="ALL">
         <ion-label>Todos</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="super_admin">
-        <ion-label>Super Admin</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="company_owner">
-        <ion-label>Empresas</ion-label>
-      </ion-segment-button>
+      @if (isSuperAdmin()) {
+        <ion-segment-button value="super_admin">
+          <ion-label>Super Admin</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="company_owner">
+          <ion-label>Empresas</ion-label>
+        </ion-segment-button>
+      }
       <ion-segment-button value="admin">
         <ion-label>Gerentes & Atendentes</ion-label>
       </ion-segment-button>
@@ -109,9 +115,11 @@
       <ion-segment-button value="technicians">
         <ion-label>Técnicos</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="user">
-        <ion-label>Clientes (B2C)</ion-label>
-      </ion-segment-button>
+      @if (isSuperAdmin()) {
+        <ion-segment-button value="user">
+          <ion-label>Clientes (B2C)</ion-label>
+        </ion-segment-button>
+      }
     </ion-segment>
 
     @if (isLoading()) {

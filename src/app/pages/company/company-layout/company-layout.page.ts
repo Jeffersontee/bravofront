@@ -181,7 +181,7 @@ export class CompanyLayoutPage implements OnInit {
 
   async ngOnInit() {
     try {
-      const user = await this.profileService.getProfile();
+      const user = await this.profileService.getProfile(true);
       if (user) {
         const companyId = user.company_id || '';
         const userPermissions = user.permissions || [];

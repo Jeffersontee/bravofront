@@ -13,6 +13,7 @@ import {
   chevronForwardOutline
 } from 'ionicons/icons';
 import { AVAILABLE_PERMISSIONS } from 'src/app/enum/permissions';
+import { ProfileService } from 'src/app/services/profile/profile.service';
 
 @Component({
   selector: 'app-staff-list-page',
@@ -28,6 +29,12 @@ export class StaffListPageComponent implements OnInit {
   private global = inject(GlobalService);
 
   private route = inject(ActivatedRoute);
+  public profileService = inject(ProfileService);
+
+  isSuperAdmin = computed(() => {
+    const p = this.profileService.profile() as any;
+    return p?.type === 'super_admin';
+  });
 
   staffList = signal<StaffUser[]>([]);
   companies = signal<Company[]>([]);
@@ -117,12 +124,16 @@ export class StaffListPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    const queryRole = this.route.snapshot.queryParamMap.get('role');
-    if (queryRole === 'technician') {
-      this.selectedRoleFilter.set('technicians');
-    } else if (queryRole === 'supervisor') {
-      this.selectedRoleFilter.set('supervisors');
-    }
+    this.route.queryParams.subscribe(params => {
+      const queryRole = params['role'];
+      if (queryRole === 'technician') {
+        this.selectedRoleFilter.set('technicians');
+      } else if (queryRole === 'supervisor') {
+        this.selectedRoleFilter.set('supervisors');
+      } else if (!queryRole) {
+        this.selectedRoleFilter.set('ALL');
+      }
+    });
     this.loadStaff();
   }
 
@@ -147,11 +158,15 @@ export class StaffListPageComponent implements OnInit {
   }
 
   goToCreate() {
-    this.router.navigateByUrl('/super-admin/staff/create');
+    const isCompany = this.router.url.includes('/company') || !this.isSuperAdmin();
+    const target = isCompany ? '/company/staff/create' : '/super-admin/staff/create';
+    this.router.navigateByUrl(target);
   }
 
   goToEdit(id: string) {
-    this.router.navigateByUrl(`/super-admin/staff/edit/${id}`);
+    const isCompany = this.router.url.includes('/company') || !this.isSuperAdmin();
+    const target = isCompany ? `/company/staff/edit/${id}` : `/super-admin/staff/edit/${id}`;
+    this.router.navigateByUrl(target);
   }
 
   getPermissionLabels(user: StaffUser): string {
