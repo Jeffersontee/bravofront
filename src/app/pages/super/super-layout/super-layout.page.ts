@@ -17,7 +17,7 @@ import {
   colorPaletteOutline, calendarOutline,
   calendarNumberOutline, personCircleOutline, helpCircleOutline,
   serverOutline, keyOutline, cardOutline, swapHorizontalOutline,
-  documentTextOutline, walletOutline, cashOutline
+  documentTextOutline, walletOutline, cashOutline, peopleCircleOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ProfileService } from '../../../services/profile/profile.service';
@@ -97,13 +97,14 @@ export class SuperLayoutPage implements OnInit {
       ]
     },
     {
-      title: 'Colaboradores / Técnicos',
-      icon: 'briefcase-outline',
+      title: 'Equipe & Usuários',
+      icon: 'people-outline',
       children: [
-        { title: 'Painel', stringKey: 'SUPER_COLLABORATORS_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_COLLABORATORS_PANEL' },
-        { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-outline', permissionKey: 'SUPER_COLLABORATORS_TEAMS' },
+        { title: 'Painel', stringKey: 'SUPER_STAFF_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_STAFF_PANEL' },
+        { title: 'Listar Todos', stringKey: 'SUPER_STAFF', icon: 'list-outline', permissionKey: 'SUPER_STAFF' },
         { title: 'Técnicos de Campo', url: '/super-admin/staff?role=technician', icon: 'construct-outline', permissionKey: 'SUPER_COLLABORATORS' },
-        { title: 'Cadastrar Colaborador', url: '/super-admin/staff/create', icon: 'person-add-outline', permissionKey: 'SUPER_COLLABORATORS_CREATE' },
+        { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-circle-outline', permissionKey: 'SUPER_COLLABORATORS_TEAMS' },
+        { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE' },
       ]
     },
     {
@@ -113,15 +114,6 @@ export class SuperLayoutPage implements OnInit {
         { title: 'Gestão de Assinaturas', icon: 'swap-horizontal-outline', url: '/super-admin/subscriptions' },
         { title: 'Faturas & Cobranças', icon: 'document-text-outline', url: '/super-admin/invoices' },
         { title: 'Histórico de Pagamentos', icon: 'wallet-outline', url: '/super-admin/payments' },
-      ]
-    },
-    {
-      title: 'Usuários Globais',
-      icon: 'people-outline',
-      children: [
-        { title: 'Painel', stringKey: 'SUPER_STAFF_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_STAFF_PANEL' },
-        { title: 'Listar Todos', stringKey: 'SUPER_STAFF', icon: 'list-outline', permissionKey: 'SUPER_STAFF' },
-        { title: 'Cadastrar Usuário', stringKey: 'SUPER_STAFF_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE' },
       ]
     },
     {
@@ -172,7 +164,7 @@ export class SuperLayoutPage implements OnInit {
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
       businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline, calendarOutline,
       serverOutline, keyOutline, cardOutline, swapHorizontalOutline,
-      documentTextOutline, walletOutline, cashOutline
+      documentTextOutline, walletOutline, cashOutline, peopleCircleOutline
     });
   }
 

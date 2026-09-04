@@ -1,56 +1,91 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border">
+  <ion-toolbar class="custom-light-toolbar">
     <ion-buttons slot="start">
       <ion-back-button [defaultHref]="'/company/companies/' + companyId() + '/dashboard'"></ion-back-button>
     </ion-buttons>
-    <ion-title>
-      {{ isLoading() ? 'Carregando...' : (isEditMode() ? 'Editar Unidade' : (isDetailsMode() ? 'Detalhes da Unidade' : (isListMode() ? 'Unidades' : 'Nova Unidade'))) }}
+    <ion-title class="page-header-title">
+      {{ isLoading() ? 'Carregando...' : (isEditMode() ? 'Editar Filial / Unidade' : (isDetailsMode() ? 'Detalhes da Unidade' : (isListMode() ? 'Filiais & Unidades' : 'Nova Filial / Unidade'))) }}
     </ion-title>
     @if (isListMode()) {
       <ion-buttons slot="end">
-        <ion-button (click)="goToCreate()">
-          <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+        <ion-button (click)="goToCreate()" fill="solid" color="primary" class="header-action-btn">
+          <ion-icon slot="start" name="add-circle"></ion-icon>
+          Nova Filial
         </ion-button>
       </ion-buttons>
     }
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding unit-content">
   @if (isLoading()) {
-    <div class="ion-text-center ion-padding">
-      <ion-spinner></ion-spinner>
-      <p>Carregando dados...</p>
+    <div class="ion-text-center ion-padding loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="loading-text">Carregando dados da unidade...</p>
     </div>
   } @else {
     @if (isListMode()) {
-      <ion-list>
-        @for (unit of units(); track unit._id) {
-          <ion-item (click)="goToEdit(unit._id!)" button>
-            <ion-icon name="business" slot="start" color="primary"></ion-icon>
-            <ion-label>
-              <h2>{{ unit.name }}</h2>
-              <p>{{ unit.address.city }} - {{ unit.address.state }}</p>
-            </ion-label>
-            <ion-badge slot="end" [color]="unit.status === 'ACTIVE' ? 'success' : 'medium'">
-              {{ unit.status === 'ACTIVE' ? 'Ativo' : 'Inativo' }}
-            </ion-badge>
-          </ion-item>
-        } @empty {
-          <div class="ion-text-center ion-padding empty-state">
-            <ion-icon name="business-outline" size="large" color="medium"></ion-icon>
-            <p>Nenhuma unidade cadastrada para esta empresa.</p>
-            <ion-button fill="outline" (click)="goToCreate()">Cadastrar Primeira Unidade</ion-button>
+      <div class="units-container">
+        <div class="units-header-card">
+          <div class="units-header-info">
+            <h1 class="units-title">Filiais & Unidades Operacionais</h1>
+            <p class="units-subtitle">Gerencie os endereços físicos, gerentes responsáveis e acompanhantes autorizados de cada filial da sua empresa.</p>
           </div>
-        }
-      </ion-list>
+        </div>
+
+        <ion-list lines="none" class="units-list">
+          @for (unit of units(); track unit._id) {
+            <ion-item (click)="goToEdit(unit._id!)" button class="unit-card-item">
+              <div class="unit-icon-wrapper" slot="start">
+                <ion-icon name="business" color="primary"></ion-icon>
+              </div>
+              <ion-label class="unit-label">
+                <div class="unit-title-row">
+                  <h2 class="unit-name">{{ unit.name }}</h2>
+                  @if (unit.short_name) {
+                    <span class="unit-code-badge">{{ unit.short_name }}</span>
+                  }
+                </div>
+                <p class="unit-address">
+                  <ion-icon name="location-outline"></ion-icon>
+                  {{ unit.address.street }}, {{ unit.address.number }} - {{ unit.address.city }}/{{ unit.address.state }}
+                </p>
+                @if (unit.manager_id) {
+                  <p class="unit-manager">
+                    <ion-icon name="person-outline"></ion-icon>
+                    Gerente: {{ (unit.manager_id && typeof unit.manager_id === 'object') ? (unit.manager_id.name || 'Definido') : 'Definido' }}
+                  </p>
+                }
+              </ion-label>
+              <ion-badge slot="end" [color]="unit.status === 'ACTIVE' ? 'success' : 'medium'" class="unit-status-badge">
+                {{ unit.status === 'ACTIVE' ? 'Ativa' : 'Inativa' }}
+              </ion-badge>
+            </ion-item>
+          } @empty {
+            <div class="empty-state">
+              <div class="empty-icon-circle">
+                <ion-icon name="business-outline" color="primary"></ion-icon>
+              </div>
+              <h3>Nenhuma filial cadastrada</h3>
+              <p>Cadastre as unidades físicas da sua empresa para solicitar visitas técnicas e manutenções.</p>
+              <ion-button fill="solid" color="primary" (click)="goToCreate()">
+                <ion-icon slot="start" name="add-circle"></ion-icon>
+                Cadastrar Primeira Filial
+              </ion-button>
+            </div>
+          }
+        </ion-list>
+      </div>
     } @else {
-      <app-unit-form
-        [unitData]="unitData()"
-        [isLoading]="isLoading()"
-        [isEditMode]="isEditMode()"
-        (save)="onSave($event)">
-      </app-unit-form>
+      <div class="form-wrapper">
+        <app-unit-form
+          [unitData]="unitData()"
+          [companyId]="companyId()"
+          [isLoading]="isLoading()"
+          [isEditMode]="isEditMode()"
+          (save)="onSave($event)">
+        </app-unit-form>
+      </div>
     }
   }
 </ion-content>

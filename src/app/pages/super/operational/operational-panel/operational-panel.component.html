@@ -1,141 +1,319 @@
-<ion-header>
+<ion-header class="ion-no-border operational-header">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Painel Operacional</ion-title>
+    <ion-title class="page-header-title">Painel Operacional</ion-title>
+
+    <!-- FILTRO MULTI-TENANT POR EMPRESA -->
+    <div class="company-select-wrapper" slot="end">
+      <ion-icon name="business-outline" class="select-icon"></ion-icon>
+      <select [ngModel]="selectedCompanyId()" (ngModelChange)="onCompanyChange($event)" class="company-select" aria-label="Filtrar por empresa">
+        <option value="ALL">Todas as Empresas</option>
+        @for (comp of companies(); track comp._id) {
+          <option [value]="comp._id">{{ comp.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- BOTÃO REFRESH -->
+    <ion-buttons slot="end">
+      <ion-button (click)="loadStats()" title="Atualizar Métricas" [disabled]="isLoading()">
+        <ion-icon name="refresh-outline" slot="icon-only" [class.spin-anim]="isLoading()"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="mb-4">
-    <h2 class="page-title">Métricas e Atividades</h2>
-    <p class="page-subtitle">Visão geral das ordens de serviço, agendamentos e execuções.</p>
-  </div>
+<ion-content class="operational-content">
+  <div class="operational-container">
 
-  <!-- KPIs -->
-  <ion-grid class="ion-no-padding mb-4">
-    <ion-row>
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-primary-light text-primary">
-              <ion-icon name="receipt-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Total de OS</span>
-              <h3 class="kpi-value">{{ totalCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
+    <!-- WELCOME / CONTEXT BANNER -->
+    <div class="welcome-banner">
+      <div class="welcome-banner__info">
+        <div class="welcome-banner__tag">
+          <ion-icon name="speedometer-outline"></ion-icon>
+          <span>Cockpit de Atendimento e Campo</span>
+        </div>
+        <h1 class="welcome-banner__title">Gestão Operacional de Serviços</h1>
+        <p class="welcome-banner__desc">
+          Acompanhamento em tempo real de chamados técnicos, deslocamento, check-in e relatórios de check-out.
+        </p>
+      </div>
 
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-tertiary-light text-tertiary">
-              <ion-icon name="calendar-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Agendadas</span>
-              <h3 class="kpi-value">{{ scheduledCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-warning-light text-warning">
-              <ion-icon name="flash-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Em Andamento</span>
-              <h3 class="kpi-value">{{ inProgressCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-
-      <ion-col size="6" size-md="3">
-        <ion-card class="kpi-card">
-          <ion-card-content class="d-flex align-items-center">
-            <div class="kpi-icon-wrapper bg-success-light text-success">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-            </div>
-            <div class="ms-3">
-              <span class="kpi-label">Concluídas</span>
-              <h3 class="kpi-value">{{ completedCount() }}</h3>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <!-- Ações Rápidas -->
-  <div class="mb-4">
-    <h3 class="section-title">Ações Rápidas</h3>
-    <ion-grid class="ion-no-padding">
-      <ion-row>
-        <ion-col size="12" size-md="6">
-          <ion-card class="action-card" (click)="goToList()">
-            <ion-card-content>
-              <div class="d-flex align-items-center">
-                <ion-icon name="list-outline" class="action-icon text-primary"></ion-icon>
-                <div class="ms-3">
-                  <h4 class="action-title">Ver Todas as Ordens</h4>
-                  <p class="action-desc text-muted">Acesse a listagem completa com filtros de status e pesquisa.</p>
-                </div>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-
-        <ion-col size="12" size-md="6">
-          <ion-card class="action-card" (click)="goToCreate()">
-            <ion-card-content>
-              <div class="d-flex align-items-center">
-                <ion-icon name="add-circle-outline" class="action-icon text-success"></ion-icon>
-                <div class="ms-3">
-                  <h4 class="action-title">Cadastrar Nova Ordem</h4>
-                  <p class="action-desc text-muted">Agende uma nova visita técnica ou ordem de serviço.</p>
-                </div>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
-
-  <!-- Últimas Ordens -->
-  @if (recentOrders().length > 0) {
-    <div class="mb-4">
-      <h3 class="section-title">Últimas Ordens</h3>
-      <div class="recent-orders-list">
-        @for (order of recentOrders(); track order._id) {
-          <ion-card class="recent-order-card" (click)="goToDetails(order)" style="cursor: pointer;">
-            <ion-card-content>
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <h4 class="recent-order-service">{{ $any(order.service_id)?.name || 'Serviço' }}</h4>
-                  <p class="recent-order-unit text-muted">{{ $any(order.unit_id)?.name || 'Unidade' }}</p>
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <ion-badge [color]="getStatusColor(order.current_status)" class="status-badge">
-                    {{ getStatusLabel(order.current_status) }}
-                  </ion-badge>
-                  <ion-button fill="clear" size="small" (click)="goToEdit($event, order)" style="margin: 0; --padding-start: 4px; --padding-end: 4px; height: 28px;">
-                    <ion-icon slot="icon-only" name="pencil-outline" color="primary"></ion-icon>
-                  </ion-button>
-                </div>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        }
+      <div class="welcome-banner__actions">
+        <button class="btn-action-primary" (click)="goToCreate()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          <span>Nova Ordem de Serviço</span>
+        </button>
       </div>
     </div>
-  }
+
+    <!-- SKELETON LOADING STATE -->
+    @if (isLoading()) {
+      <div class="operational-kpi-grid">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="kpi-card skeleton-card">
+            <ion-skeleton-text [animated]="true" class="sk-icon"></ion-skeleton-text>
+            <div class="sk-body">
+              <ion-skeleton-text [animated]="true" class="sk-line-sm"></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true" class="sk-line-lg"></ion-skeleton-text>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="skeleton-section">
+        <ion-skeleton-text [animated]="true" class="sk-banner"></ion-skeleton-text>
+      </div>
+    }
+
+    <!-- METRICS CONTENT -->
+    @if (!isLoading()) {
+      <!-- KPI GRID (2 COLUNAS MOBILE / 4 COLUNAS DESKTOP) -->
+      <section class="operational-kpi-grid">
+        <!-- TOTAL DE ORDENS -->
+        <div class="kpi-card kpi-card--primary" (click)="goToList()">
+          <div class="kpi-card__header">
+            <div class="kpi-icon-wrapper">
+              <ion-icon name="receipt-outline"></ion-icon>
+            </div>
+            <span class="kpi-trend">Global</span>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-label">Total de OS</span>
+            <h3 class="kpi-value">{{ totalCount() }}</h3>
+            <span class="kpi-sub">Ordens registradas</span>
+          </div>
+        </div>
+
+        <!-- AGENDADAS / EM ESPERA -->
+        <div class="kpi-card kpi-card--tertiary" (click)="goToList('AGENDADO')">
+          <div class="kpi-card__header">
+            <div class="kpi-icon-wrapper">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <span class="kpi-badge kpi-badge--tertiary">Programadas</span>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-label">Agendadas</span>
+            <h3 class="kpi-value">{{ scheduledCount() }}</h3>
+            <span class="kpi-sub">Aguardando atendimento</span>
+          </div>
+        </div>
+
+        <!-- EM ANDAMENTO / EM CAMPO -->
+        <div class="kpi-card kpi-card--warning" (click)="goToList('EM_EXECUCAO')">
+          <div class="kpi-card__header">
+            <div class="kpi-icon-wrapper">
+              <ion-icon name="flash-outline"></ion-icon>
+            </div>
+            <span class="kpi-badge kpi-badge--warning">Em Campo</span>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-label">Em Execução</span>
+            <h3 class="kpi-value">{{ inProgressCount() }}</h3>
+            <span class="kpi-sub">Deslocamento ou no local</span>
+          </div>
+        </div>
+
+        <!-- CONCLUÍDAS -->
+        <div class="kpi-card kpi-card--success" (click)="goToList('CONCLUIDO')">
+          <div class="kpi-card__header">
+            <div class="kpi-icon-wrapper">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <span class="kpi-badge kpi-badge--success">{{ completionRate() }}% taxa</span>
+          </div>
+          <div class="kpi-card__body">
+            <span class="kpi-label">Concluídas</span>
+            <h3 class="kpi-value">{{ completedCount() }}</h3>
+            <span class="kpi-sub">Finalizadas com sucesso</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROGRESS & EFFICIENCY BAR -->
+      <div class="efficiency-bar-card">
+        <div class="efficiency-bar-header">
+          <div class="efficiency-title-wrap">
+            <ion-icon name="shield-checkmark-outline" class="efficiency-icon"></ion-icon>
+            <span class="efficiency-title">Distribuição Operacional dos Chamados</span>
+          </div>
+          <span class="efficiency-percentage">{{ completionRate() }}% Conclusão Efetiva</span>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-segment progress-segment--completed" [style.width.%]="totalCount() > 0 ? (completedCount() / totalCount()) * 100 : 0" title="Concluídas"></div>
+          <div class="progress-segment progress-segment--progress" [style.width.%]="totalCount() > 0 ? (inProgressCount() / totalCount()) * 100 : 0" title="Em Execução"></div>
+          <div class="progress-segment progress-segment--scheduled" [style.width.%]="totalCount() > 0 ? (scheduledCount() / totalCount()) * 100 : 0" title="Agendadas"></div>
+          <div class="progress-segment progress-segment--cancelled" [style.width.%]="totalCount() > 0 ? (cancelledCount() / totalCount()) * 100 : 0" title="Canceladas"></div>
+        </div>
+
+        <div class="status-legend-wrap">
+          <button class="legend-item" (click)="goToList('CONCLUIDO')">
+            <span class="legend-dot legend-dot--completed"></span>
+            <span class="legend-text">Concluídas ({{ completedCount() }})</span>
+          </button>
+          <button class="legend-item" (click)="goToList('EM_EXECUCAO')">
+            <span class="legend-dot legend-dot--progress"></span>
+            <span class="legend-text">Em Campo ({{ inProgressCount() }})</span>
+          </button>
+          <button class="legend-item" (click)="goToList('AGENDADO')">
+            <span class="legend-dot legend-dot--scheduled"></span>
+            <span class="legend-text">Agendadas ({{ scheduledCount() }})</span>
+          </button>
+          @if (cancelledCount() > 0) {
+            <button class="legend-item" (click)="goToList('CANCELADO')">
+              <span class="legend-dot legend-dot--cancelled"></span>
+              <span class="legend-text">Canceladas ({{ cancelledCount() }})</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- AÇÕES RÁPIDAS (2/4 COLUNAS) -->
+      <section class="section-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-heading">Ações e Atalhos Operacionais</h2>
+            <p class="section-sub">Acesse fluxos rápidos de gestão técnica e operacional.</p>
+          </div>
+        </div>
+
+        <div class="quick-actions-grid">
+          <!-- VER ORDENS -->
+          <div class="action-card" (click)="goToList()">
+            <div class="action-card__icon action-card__icon--primary">
+              <ion-icon name="list-outline"></ion-icon>
+            </div>
+            <div class="action-card__content">
+              <h4 class="action-card__title">Listagem Completa de Ordens</h4>
+              <p class="action-card__desc">Filtros avançados por status, período, unidade e exportação.</p>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="action-card__arrow"></ion-icon>
+          </div>
+
+          <!-- NOVA ORDEM -->
+          <div class="action-card" (click)="goToCreate()">
+            <div class="action-card__icon action-card__icon--success">
+              <ion-icon name="add-circle-outline"></ion-icon>
+            </div>
+            <div class="action-card__content">
+              <h4 class="action-card__title">Abrir Nova Ordem de Serviço</h4>
+              <p class="action-card__desc">Cadastre um chamado técnico, defina escopo e acompanhantes.</p>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="action-card__arrow"></ion-icon>
+          </div>
+
+          <!-- AGENDA 365 -->
+          <div class="action-card" (click)="goToAgenda()">
+            <div class="action-card__icon action-card__icon--tertiary">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <div class="action-card__content">
+              <h4 class="action-card__title">Agenda Anual 365</h4>
+              <p class="action-card__desc">Visão em calendário de manutenções preventivas e corretivas.</p>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="action-card__arrow"></ion-icon>
+          </div>
+
+          <!-- TÉCNICOS & EQUIPE -->
+          <div class="action-card" (click)="goToTechnicians()">
+            <div class="action-card__icon action-card__icon--warning">
+              <ion-icon name="construct-outline"></ion-icon>
+            </div>
+            <div class="action-card__content">
+              <h4 class="action-card__title">Técnicos & Equipe de Campo</h4>
+              <p class="action-card__desc">Gerencie os profissionais técnicos, especialidades e escala.</p>
+            </div>
+            <ion-icon name="chevron-forward-outline" class="action-card__arrow"></ion-icon>
+          </div>
+        </div>
+      </section>
+
+      <!-- ÚLTIMAS ORDENS / LIVE QUEUE -->
+      <section class="section-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-heading">Fila Recente de Atendimentos</h2>
+            <p class="section-sub">Últimas solicitações registradas no sistema.</p>
+          </div>
+          <button class="btn-link" (click)="goToList()">
+            <span>Ver Todas as Ordens</span>
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+        </div>
+
+        @if (recentOrders().length === 0) {
+          <div class="empty-state-card">
+            <div class="empty-icon-wrap">
+              <ion-icon name="receipt-outline"></ion-icon>
+            </div>
+            <h3 class="empty-title">Nenhuma Ordem de Serviço Encontrada</h3>
+            <p class="empty-desc">Não há chamados operacionais registrados para o filtro selecionado.</p>
+            <button class="btn-action-primary" (click)="goToCreate()">
+              <ion-icon name="add-circle-outline"></ion-icon>
+              <span>Criar Primeira Ordem</span>
+            </button>
+          </div>
+        } @else {
+          <div class="recent-orders-grid">
+            @for (order of recentOrders(); track order._id) {
+              <div class="order-queue-card" (click)="goToDetails(order)">
+                <div class="order-queue-card__header">
+                  <div class="order-company-tag">
+                    <ion-icon name="business-outline"></ion-icon>
+                    <span>{{ getCompanyName(order) }}</span>
+                  </div>
+                  <ion-badge [color]="getStatusColor(order.current_status)" class="status-pill">
+                    {{ getStatusLabel(order.current_status) }}
+                  </ion-badge>
+                </div>
+
+                <div class="order-queue-card__body">
+                  <h4 class="order-service-name">{{ getServiceName(order) }}</h4>
+                  
+                  <div class="order-meta-row">
+                    <div class="order-meta-item">
+                      <ion-icon name="location-outline"></ion-icon>
+                      <span>{{ getUnitName(order) }}</span>
+                    </div>
+
+                    @if (order.scheduled_date || order.proposed_date) {
+                      <div class="order-meta-item">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        <span>{{ (order.scheduled_date || order.proposed_date) | date:'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                    }
+                  </div>
+
+                  @if (getTechnicianName(order)) {
+                    <div class="order-tech-tag">
+                      <ion-icon name="person-outline"></ion-icon>
+                      <span>Técnico: <strong>{{ getTechnicianName(order) }}</strong></span>
+                    </div>
+                  }
+                </div>
+
+                <div class="order-queue-card__footer">
+                  <span class="view-details-text">
+                    Ver Detalhes
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                  </span>
+
+                  <div class="order-actions" (click)="$event.stopPropagation()">
+                    <button class="btn-icon-edit" (click)="goToEdit($event, order)" title="Editar Ordem">
+                      <ion-icon name="pencil-outline"></ion-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+
+  </div>
 </ion-content>

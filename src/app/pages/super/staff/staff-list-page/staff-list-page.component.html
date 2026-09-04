@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title class="page-header-title">Usuários Globais</ion-title>
+    <ion-title class="page-header-title">{{ isSuperAdmin() ? 'Equipe & Usuários' : 'Colaboradores e Equipe' }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="loadStaff()" title="Atualizar Lista">
         <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
