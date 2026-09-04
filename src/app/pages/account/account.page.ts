@@ -182,6 +182,21 @@ export class AccountPage implements OnInit {
     this.global.customStatusbar();
   }
 
+  navigateToPayments() {
+    const user = this.profile();
+    if (!user) return;
+
+    const isSuperAdmin = user.type === Strings.SUPER_TYPE;
+    const permissions = user.permissions || [];
+    const hasFinancialPermission = isSuperAdmin || permissions.includes('COMPANY_FINANCIAL_PANEL');
+
+    if (hasFinancialPermission) {
+      this.router.navigate(this.getBaseRoute('payments'));
+    } else {
+      this.global.errorToast('Acesso Restrito: Você precisa de liberação para acessar o módulo Financeiro e Faturas.');
+    }
+  }
+
   getBaseRoute(path: string): string[] {
     const type = this.profile()?.type;
     let base = '/customer'; // Default ou cliente

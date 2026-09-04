@@ -73,24 +73,35 @@
     <ion-item>
       <ion-icon name="person" slot="start" color="primary"></ion-icon>
       <ion-select label="Nível de Acesso *" labelPlacement="stacked" formControlName="type" interface="popover">
-        @for (t of types; track t.value) {
+        @for (t of availableTypes(); track t.value) {
           <ion-select-option [value]="t.value">{{ t.label }}</ion-select-option>
         }
       </ion-select>
     </ion-item>
 
-    @if (staffForm.get('type')?.value === 'collaborator' || staffForm.get('type')?.value === 'admin') {
+    @if (isRoleVisible()) {
       <ion-item>
         <ion-icon name="briefcase-outline" slot="start" color="primary"></ion-icon>
-        <ion-select label="Cargo / Função (Role) *" labelPlacement="stacked" formControlName="role" interface="popover" placeholder="Selecione o cargo">
-          @for (r of roles; track r.value) {
+        <ion-select label="Cargo / Função *" labelPlacement="stacked" formControlName="role" interface="popover">
+          @for (r of availableRoles(); track r.value) {
             <ion-select-option [value]="r.value">{{ r.label }}</ion-select-option>
           }
         </ion-select>
       </ion-item>
     }
 
-    @if (staffForm.get('type')?.value !== 'super_admin') {
+    @if (isTechnician()) {
+      <ion-item>
+        <ion-icon name="construct-outline" slot="start" color="primary"></ion-icon>
+        <ion-select label="Especialidades Técnicas" labelPlacement="stacked" formControlName="specialties" [multiple]="true" interface="popover" placeholder="Selecione as especialidades">
+          @for (s of technicianSpecialties; track s) {
+            <ion-select-option [value]="s">{{ s }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    }
+
+    @if (profileService.profile()?.type === 'super_admin' && staffForm.get('type')?.value !== 'super_admin') {
       <ion-item>
         <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
         <ion-select label="Empresa Associada" labelPlacement="stacked" formControlName="company_id" interface="action-sheet" placeholder="Selecione a empresa">
@@ -102,20 +113,18 @@
       </ion-item>
     }
 
-    @if (profileService.profile()?.type === 'super_admin') {
-      <ion-item-divider style="--background: transparent; margin-top: 15px;">
-        <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">PERMISSÕES DE MENU</ion-label>
-      </ion-item-divider>
+    <ion-item-divider style="--background: transparent; margin-top: 15px;">
+      <ion-label style="font-family: 'Outfit', sans-serif; font-weight: 600; color: var(--ion-color-medium);">PERMISSÕES DE MENU</ion-label>
+    </ion-item-divider>
 
-      <ion-item>
-        <ion-icon name="list-outline" slot="start" color="primary"></ion-icon>
-        <ion-select label="Módulos Liberados" labelPlacement="stacked" formControlName="permissions" [multiple]="true" interface="popover" placeholder="Selecione os acessos">
-          @for (p of availablePermissions; track p.value) {
-            <ion-select-option [value]="p.value">{{ p.label }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
-    }
+    <ion-item>
+      <ion-icon name="list-outline" slot="start" color="primary"></ion-icon>
+      <ion-select label="Módulos Liberados" labelPlacement="stacked" formControlName="permissions" [multiple]="true" interface="popover" placeholder="Selecione os acessos">
+        @for (p of availablePermissions; track p.value) {
+          <ion-select-option [value]="p.value">{{ p.label }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
 
     <ion-item lines="none" style="margin-top: 10px;">
       <ion-label>
@@ -126,7 +135,7 @@
     </ion-item>
 
     <div class="ion-padding-top ion-padding-horizontal">
-      <ion-button type="submit" expand="block" color="primary" [disabled]="!hasChanges() || isLoading()">
+      <ion-button type="submit" expand="block" color="primary" [disabled]="!staffForm.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
         @if (isLoading()) {
           <ion-spinner name="crescent" slot="start"></ion-spinner>
         }

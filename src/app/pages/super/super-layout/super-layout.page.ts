@@ -100,8 +100,8 @@ export class SuperLayoutPage implements OnInit {
       children: [
         { title: 'Painel', stringKey: 'SUPER_COLLABORATORS_PANEL', icon: 'grid-outline', permissionKey: 'SUPER_COLLABORATORS_PANEL' },
         { title: 'Equipes', stringKey: 'SUPER_COLLABORATORS_TEAMS', icon: 'people-outline', permissionKey: 'SUPER_COLLABORATORS_TEAMS' },
-        { title: 'Lista', stringKey: 'SUPER_COLLABORATORS', icon: 'list-outline', permissionKey: 'SUPER_COLLABORATORS' },
-        { title: 'Cadastrar Colaborador', stringKey: 'SUPER_COLLABORATORS_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_COLLABORATORS_CREATE' },
+        { title: 'Técnicos de Campo', url: '/super-admin/staff?role=technician', icon: 'construct-outline', permissionKey: 'SUPER_COLLABORATORS' },
+        { title: 'Cadastrar Colaborador', url: '/super-admin/staff/create', icon: 'person-add-outline', permissionKey: 'SUPER_COLLABORATORS_CREATE' },
       ]
     },
     {
