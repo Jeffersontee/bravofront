@@ -1,0 +1,241 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Planos & Preço</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadPlans()" [disabled]="isLoading()" title="Atualizar">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onCreatePlan()" class="create-top-btn">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        Novo Plano
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="plans-content ion-padding">
+  <div class="plans-container">
+
+    <!-- KPIs Super Admin -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-icon-box--primary">
+          <ion-icon name="pricetags-outline"></ion-icon>
+        </div>
+        <div class="kpi-data">
+          <span class="kpi-label">Total de Planos</span>
+          <h2 class="kpi-value">{{ plans().length }}</h2>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-icon-box--success">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+        <div class="kpi-data">
+          <span class="kpi-label">Planos Ativos</span>
+          <h2 class="kpi-value">{{ activePlansCount() }}</h2>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-icon-box--info">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="kpi-data">
+          <span class="kpi-label">Total Assinantes</span>
+          <h2 class="kpi-value">{{ totalSubscribers() }}</h2>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-icon-box--warning">
+          <ion-icon name="cash-outline"></ion-icon>
+        </div>
+        <div class="kpi-data">
+          <span class="kpi-label">MRR Estimado</span>
+          <h2 class="kpi-value">{{ (totalMRR() || 0) | currency:'BRL':'symbol':'1.2-2' }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Cabeçalho da Lista -->
+    <div class="section-header">
+      <div class="section-header__info">
+        <h2 class="section-title">Catálogo de Planos de Assinatura</h2>
+        <p class="section-subtitle">
+          Configure os limites, preços e recursos que ficam disponíveis para os lojistas contratarem em Minhas Assinaturas.
+        </p>
+      </div>
+      <ion-button color="primary" class="new-plan-btn" (click)="onCreatePlan()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Cadastrar Novo Plano
+      </ion-button>
+    </div>
+
+    <!-- Skeletons durante o carregamento -->
+    @if (isLoading()) {
+      <div class="plans-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="plan-card plan-card--skeleton">
+            <ion-skeleton-text [animated]="true" class="skeleton-badge"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" class="skeleton-title"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" class="skeleton-price"></ion-skeleton-text>
+            <ion-skeleton-text [animated]="true" class="skeleton-desc"></ion-skeleton-text>
+            <div class="skeleton-chips">
+              <ion-skeleton-text [animated]="true" class="skeleton-chip"></ion-skeleton-text>
+              <ion-skeleton-text [animated]="true" class="skeleton-chip"></ion-skeleton-text>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Grid de Planos -->
+      <div class="plans-grid">
+        @for (plan of plans(); track plan._id) {
+          <div class="plan-card" [class.plan-card--inactive]="plan.status === 'inactive'">
+            
+            <!-- Top Header do Card -->
+            <div class="plan-card__header">
+              <div class="plan-badges">
+                <span class="status-badge" [class.status-badge--active]="plan.status === 'active'" [class.status-badge--inactive]="plan.status === 'inactive'">
+                  <ion-icon [name]="plan.status === 'active' ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+                  {{ plan.status === 'active' ? 'Ativo' : 'Inativo' }}
+                </span>
+                <span class="cycle-badge">
+                  <ion-icon name="repeat-outline"></ion-icon>
+                  {{ getBillingCycleLabel(plan.billing_cycle) }}
+                </span>
+              </div>
+
+              <div class="subscribers-count" (click)="onViewSubscribers(plan)" title="Ver assinantes vinculados">
+                <ion-icon name="people-outline"></ion-icon>
+                <span>{{ plan.total_subscribers || 0 }} assinantes</span>
+              </div>
+            </div>
+
+            <!-- Título e Preço -->
+            <div class="plan-card__main">
+              <h3 class="plan-name">{{ plan.name }}</h3>
+              
+              <div class="plan-pricing">
+                @if (plan.price === 0) {
+                  <span class="free-tag">Gratuito / Trial</span>
+                } @else {
+                  <span class="currency-symbol">R$</span>
+                  <span class="price-value">{{ plan.price | number:'1.2-2' }}</span>
+                  <span class="price-period">/ {{ getBillingCycleLabel(plan.billing_cycle).toLowerCase() }}</span>
+                }
+              </div>
+
+              @if (plan.description) {
+                <p class="plan-description">{{ plan.description }}</p>
+              }
+            </div>
+
+            <!-- Limites e Quotas -->
+            <div class="plan-card__limits">
+              <div class="limit-item" title="Limite de Serviços">
+                <ion-icon name="construct-outline"></ion-icon>
+                <span class="limit-label">Serviços:</span>
+                <span class="limit-value">{{ plan.max_services }}</span>
+              </div>
+
+              <div class="limit-item" title="Limite de Filiais / Unidades">
+                <ion-icon name="business-outline"></ion-icon>
+                <span class="limit-label">Filiais:</span>
+                <span class="limit-value">{{ plan.max_units }}</span>
+              </div>
+
+              <div class="limit-item" title="Limite de Usuários">
+                <ion-icon name="people-outline"></ion-icon>
+                <span class="limit-label">Usuários:</span>
+                <span class="limit-value">{{ plan.max_users }}</span>
+              </div>
+
+              <div class="limit-item" title="Catálogo Público">
+                <ion-icon name="layers-outline"></ion-icon>
+                <span class="limit-label">Catálogo:</span>
+                <span class="limit-value" [class.limit-value--enabled]="plan.catalog_module_enabled">
+                  {{ plan.catalog_module_enabled ? 'Habilitado' : 'Desabilitado' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Lista de Recursos (Features) -->
+            @if (plan.features && plan.features.length > 0) {
+              <div class="plan-card__features">
+                <span class="features-title">Recursos Inclusos:</span>
+                <ul class="features-list">
+                  @for (feat of plan.features; track feat) {
+                    <li class="feature-item">
+                      <ion-icon name="checkmark-circle-outline"></ion-icon>
+                      <span>{{ feat }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            <!-- Ações do Card -->
+            <div class="plan-card__actions">
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                color="primary" 
+                class="action-btn" 
+                (click)="onEditPlan(plan)"
+              >
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Editar
+              </ion-button>
+
+              <ion-button 
+                fill="clear" 
+                size="small" 
+                color="medium" 
+                class="action-btn"
+                (click)="onViewSubscribers(plan)"
+              >
+                <ion-icon name="eye-outline" slot="start"></ion-icon>
+                Assinantes
+              </ion-button>
+
+              <ion-button 
+                fill="clear" 
+                size="small" 
+                color="danger" 
+                class="action-btn"
+                (click)="onDeletePlan(plan)"
+              >
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <ion-icon name="pricetags-outline" class="empty-icon"></ion-icon>
+            <h3>Nenhum plano cadastrado</h3>
+            <p>Clique no botão abaixo para criar o primeiro plano SaaS.</p>
+            <ion-button color="primary" (click)="onCreatePlan()">
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Criar Primeiro Plano
+            </ion-button>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+  <!-- Botão Flutuante (FAB) Mobile -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="plans-fab">
+    <ion-fab-button (click)="onCreatePlan()" color="primary" title="Cadastrar Plano">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

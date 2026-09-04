@@ -154,15 +154,31 @@
             <div class="card-header-flex">
               <div class="service-title">
                 <h2 class="title-text">{{ $any(order.service_id)?.name || 'Serviço Operacional' }}</h2>
-                <p class="unit-name">
-                  <ion-icon name="location-outline"></ion-icon>
-                  <span>{{ $any(order.unit_id)?.name || 'Unidade não informada' }}</span>
-                </p>
+                <div class="location-group">
+                  <p class="unit-name">
+                    <ion-icon name="location-outline"></ion-icon>
+                    <span>{{ $any(order.unit_id)?.name || 'Unidade não informada' }}</span>
+                  </p>
+                  @if (order.company_id && role() === 'super') {
+                    <span class="company-badge">
+                      <ion-icon name="business-outline"></ion-icon>
+                      {{ $any(order.company_id)?.name }}
+                    </span>
+                  }
+                </div>
               </div>
               <span class="status-badge" [ngClass]="'status-badge--' + getStatusColor(order.current_status)">
                 {{ getStatusLabel(order.current_status) }}
               </span>
             </div>
+
+            <!-- Destaque do Técnico Atribuído (Apenas quando definido) -->
+            @if (order.collaborator_id) {
+              <div class="order-tech-tag">
+                <ion-icon name="person-outline"></ion-icon>
+                <span>Técnico: <strong>{{ $any(order.collaborator_id)?.name }}</strong></span>
+              </div>
+            }
 
             <div class="card-footer-flex">
               <div class="date-info">
@@ -171,7 +187,7 @@
               </div>
               <div class="card-actions-group">
                 @if (role() === 'super') {
-                  <ion-button fill="clear" size="small" (click)="handleEdit($event, order)" class="edit-action-btn">
+                  <ion-button fill="clear" size="small" (click)="handleEdit($event, order)" class="edit-action-btn" title="Editar OS">
                     <ion-icon slot="icon-only" name="pencil-outline" color="primary"></ion-icon>
                   </ion-button>
                 }

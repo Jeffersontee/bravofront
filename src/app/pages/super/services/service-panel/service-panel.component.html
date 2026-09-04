@@ -162,7 +162,7 @@
                 [class.category-pill-card--active]="selectedCategoryFilter() === cat.name"
                 (click)="setCategoryFilter(cat.name)">
                 <div class="category-pill-top">
-                  <ion-icon name="pricetag-outline" class="category-pill-icon"></ion-icon>
+                  <ion-icon [name]="getCategoryIcon(cat.name)" class="category-pill-icon"></ion-icon>
                   <span class="category-pill-count">{{ cat.count }} {{ cat.count === 1 ? 'serviço' : 'serviços' }}</span>
                 </div>
                 <h4 class="category-pill-name">{{ cat.name }}</h4>

@@ -1,0 +1,117 @@
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.modal-content {
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+.plan-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-section {
+  background: var(--ion-card-background, #ffffff);
+  border-radius: 14px;
+  padding: 16px 20px;
+  border: 1px solid var(--ion-color-step-150, rgba(0, 0, 0, 0.07));
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ion-color-primary, #0054e9);
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ion-color-step-100, rgba(0, 0, 0, 0.05));
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
+.form-item {
+  --background: var(--ion-item-background, transparent);
+  --border-radius: 10px;
+  --highlight-color-focused: var(--ion-color-primary);
+  margin-top: 4px;
+
+  ion-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ion-color-step-600, #555555);
+    margin-bottom: 6px;
+
+    ion-icon {
+      font-size: 0.9rem;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+  }
+
+  ion-input, ion-textarea, ion-select {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+}
+
+.toggle-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--ion-color-step-50, #f9fafb);
+  border-radius: 10px;
+  border: 1px solid var(--ion-color-step-150, rgba(0, 0, 0, 0.06));
+  margin-top: 6px;
+
+  .toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .toggle-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ion-text-color, #1f2937);
+  }
+
+  .toggle-hint {
+    font-size: 0.78rem;
+    color: var(--ion-color-step-500, #6b7280);
+  }
+}
+
+.form-help-text {
+  font-size: 0.78rem;
+  color: var(--ion-color-step-500, #6b7280);
+  margin-top: -6px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.modal-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 0 24px 0;
+
+  ion-button {
+    --border-radius: 10px;
+    font-weight: 600;
+    min-width: 130px;
+  }
+}

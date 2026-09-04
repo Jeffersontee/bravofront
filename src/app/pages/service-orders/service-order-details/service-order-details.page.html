@@ -102,7 +102,7 @@
                 <ion-label position="stacked" style="font-weight: 600; color: #1a1a1a; font-family: 'Outfit', sans-serif; margin-bottom: 8px;">Técnico Responsável</ion-label>
                 <ion-select placeholder="Selecione o Técnico" [value]="selectedCollaboratorId()" (ionChange)="selectedCollaboratorId.set($event.detail.value)" style="width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; font-family: 'Outfit', sans-serif;">
                   @for (col of collaborators(); track col._id) {
-                    <ion-select-option [value]="col._id">{{ col.name }}</ion-select-option>
+                    <ion-select-option [value]="col._id">{{ col.name }} {{ !col.company_id ? '(Global)' : '' }}</ion-select-option>
                   }
                 </ion-select>
               </ion-item>

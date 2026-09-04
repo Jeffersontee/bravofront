@@ -17,7 +17,7 @@ import {
   colorPaletteOutline, calendarOutline,
   calendarNumberOutline, personCircleOutline, helpCircleOutline,
   serverOutline, keyOutline, cardOutline, swapHorizontalOutline,
-  documentTextOutline, walletOutline, cashOutline, peopleCircleOutline
+  documentTextOutline, walletOutline, cashOutline, peopleCircleOutline, pricetagsOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ProfileService } from '../../../services/profile/profile.service';
@@ -111,6 +111,7 @@ export class SuperLayoutPage implements OnInit {
       title: 'Financeiro',
       icon: 'cash-outline',
       children: [
+        { title: 'Planos & Preço', icon: 'pricetags-outline', url: '/super-admin/financial/plans' },
         { title: 'Gestão de Assinaturas', icon: 'swap-horizontal-outline', url: '/super-admin/subscriptions' },
         { title: 'Faturas & Cobranças', icon: 'document-text-outline', url: '/super-admin/invoices' },
         { title: 'Histórico de Pagamentos', icon: 'wallet-outline', url: '/super-admin/payments' },
@@ -164,7 +165,7 @@ export class SuperLayoutPage implements OnInit {
       menuOutline, chevronForwardOutline, constructOutline, briefcaseOutline, addCircleOutline,
       businessOutline, receiptOutline, gridOutline, settingsOutline, colorPaletteOutline, calendarOutline,
       serverOutline, keyOutline, cardOutline, swapHorizontalOutline,
-      documentTextOutline, walletOutline, cashOutline, peopleCircleOutline
+      documentTextOutline, walletOutline, cashOutline, peopleCircleOutline, pricetagsOutline
     });
   }
 
