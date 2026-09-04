@@ -246,7 +246,7 @@
             placeholder="Selecione o gestor responsável">
             <ion-select-option value="">Nenhum (A definir)</ion-select-option>
             @for (collab of collaborators(); track collab._id) {
-              <ion-select-option [value]="collab._id">{{ collab.name }} ({{ collab.role }})</ion-select-option>
+              <ion-select-option [value]="collab._id">{{ collab.name }} ({{ getRoleLabel(collab) }})</ion-select-option>
             }
           </ion-select>
         </ion-item>
@@ -259,11 +259,13 @@
             label="Acompanhantes Autorizados" 
             labelPlacement="stacked" 
             formControlName="follower_ids" 
-            multiple="true" 
-            interface="popover" 
+            [multiple]="true" 
+            interface="alert" 
+            okText="Confirmar"
+            cancelText="Cancelar"
             placeholder="Selecione um ou mais acompanhantes">
             @for (collab of collaborators(); track collab._id) {
-              <ion-select-option [value]="collab._id">{{ collab.name }} ({{ collab.role }})</ion-select-option>
+              <ion-select-option [value]="collab._id">{{ collab.name }} ({{ getRoleLabel(collab) }})</ion-select-option>
             }
           </ion-select>
         </ion-item>
