@@ -65,7 +65,7 @@ ion-accordion-group {
         margin-bottom: 0;
       }
       
-      // Estilos para as tags internas injetadas (strong, em)
+      // Estilos para as tags internas injetadas (strong, em, status-pill)
       ::ng-deep strong {
         color: var(--ion-color-primary);
       }
@@ -73,7 +73,64 @@ ion-accordion-group {
         color: var(--ion-color-medium);
         font-style: italic;
       }
+      ::ng-deep .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        margin: 0 4px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        vertical-align: middle;
+        line-height: 1.2;
+
+        &.status-primary {
+          background: rgba(37, 99, 235, 0.12) !important;
+          color: #1d4ed8 !important;
+          border: 1px solid rgba(37, 99, 235, 0.25) !important;
+        }
+
+        &.status-secondary {
+          background: rgba(14, 165, 233, 0.12) !important;
+          color: #0369a1 !important;
+          border: 1px solid rgba(14, 165, 233, 0.25) !important;
+        }
+
+        &.status-tertiary {
+          background: rgba(147, 51, 234, 0.12) !important;
+          color: #7e22ce !important;
+          border: 1px solid rgba(147, 51, 234, 0.25) !important;
+        }
+
+        &.status-warning {
+          background: rgba(245, 158, 11, 0.15) !important;
+          color: #b45309 !important;
+          border: 1px solid rgba(245, 158, 11, 0.3) !important;
+        }
+
+        &.status-success {
+          background: rgba(16, 185, 129, 0.15) !important;
+          color: #047857 !important;
+          border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        }
+
+        &.status-danger {
+          background: rgba(239, 68, 68, 0.15) !important;
+          color: #b91c1c !important;
+          border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        }
+
+        &.status-medium {
+          background: #f1f5f9 !important;
+          color: #475569 !important;
+          border: 1px solid #cbd5e1 !important;
+        }
+      }
     }
   }
 }
+
 
