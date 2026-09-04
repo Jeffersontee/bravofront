@@ -1,0 +1,188 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-title class="modal-title">
+      {{ planInput ? 'Editar Plano SaaS' : 'Novo Plano SaaS' }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-content ion-padding">
+  <form [formGroup]="planForm" (ngSubmit)="onSubmit()" class="plan-form">
+    <!-- Seção de Identificação -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <ion-icon name="pricetag-outline"></ion-icon>
+        Informações Principais
+      </h3>
+
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="12" size-md="8">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">Nome do Plano *</ion-label>
+              <ion-input 
+                formControlName="name" 
+                placeholder="Ex: Bronze (Básico), Prata, Ouro..."
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12" size-md="4">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">Status</ion-label>
+              <ion-select formControlName="status" interface="popover">
+                <ion-select-option value="active">Ativo</ion-select-option>
+                <ion-select-option value="inactive">Inativo</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">Preço de Assinatura (R$) *</ion-label>
+              <ion-input 
+                type="number" 
+                step="0.01" 
+                min="0"
+                formControlName="price" 
+                placeholder="0.00"
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12" size-md="6">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">Ciclo de Cobrança *</ion-label>
+              <ion-select formControlName="billing_cycle" interface="popover">
+                <ion-select-option value="monthly">Mensal</ion-select-option>
+                <ion-select-option value="quarterly">Trimestral</ion-select-option>
+                <ion-select-option value="semiannual">Semestral</ion-select-option>
+                <ion-select-option value="yearly">Anual</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="12">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">Descrição do Plano</ion-label>
+              <ion-textarea 
+                formControlName="description" 
+                rows="2" 
+                placeholder="Resumo do público-alvo ou diferenciais do plano..."
+              ></ion-textarea>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Seção de Limites Operacionais -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <ion-icon name="layers-outline"></ion-icon>
+        Limites & Capacidade da Empresa
+      </h3>
+
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">
+                <ion-icon name="construct-outline"></ion-icon>
+                Máx. Serviços Catálogo *
+              </ion-label>
+              <ion-input 
+                type="number" 
+                min="1" 
+                formControlName="max_services" 
+                placeholder="10"
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12" size-md="4">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">
+                <ion-icon name="business-outline"></ion-icon>
+                Máx. Filiais / Unidades *
+              </ion-label>
+              <ion-input 
+                type="number" 
+                min="1" 
+                formControlName="max_units" 
+                placeholder="1"
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+
+          <ion-col size="12" size-md="4">
+            <ion-item fill="outline" class="form-item ion-margin-bottom">
+              <ion-label position="stacked">
+                <ion-icon name="people-outline"></ion-icon>
+                Máx. Usuários / Equipe *
+              </ion-label>
+              <ion-input 
+                type="number" 
+                min="1" 
+                formControlName="max_users" 
+                placeholder="1"
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="12">
+            <div class="toggle-card">
+              <div class="toggle-info">
+                <span class="toggle-label">Módulo de Catálogo Público Ativo</span>
+                <span class="toggle-hint">Permite à empresa exibir seu catálogo público de serviços online.</span>
+              </div>
+              <ion-toggle formControlName="catalog_module_enabled" color="primary"></ion-toggle>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+
+    <!-- Seção de Recursos / Benefícios -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <ion-icon name="list-outline"></ion-icon>
+        Benefícios & Recursos (1 por linha)
+      </h3>
+
+      <ion-item fill="outline" class="form-item ion-margin-bottom">
+        <ion-label position="stacked">Lista de Recursos (visíveis na contratação)</ion-label>
+        <ion-textarea 
+          formControlName="featuresText" 
+          rows="4" 
+          placeholder="Até 10 serviços no catálogo&#10;Gestão completa de OS&#10;Relatórios e KPIs&#10;Suporte prioritário"
+        ></ion-textarea>
+      </ion-item>
+      <div class="form-help-text">
+        Digite cada recurso em uma linha separada para exibir com checkmarks no card de contratação.
+      </div>
+    </div>
+
+    <!-- Rodapé de Ações -->
+    <div class="modal-footer-actions">
+      <ion-button type="button" fill="outline" color="medium" (click)="dismiss()">
+        Cancelar
+      </ion-button>
+      <ion-button type="submit" color="primary" [disabled]="planForm.invalid">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+        {{ planInput ? 'Atualizar Plano' : 'Salvar Plano' }}
+      </ion-button>
+    </div>
+  </form>
+</ion-content>

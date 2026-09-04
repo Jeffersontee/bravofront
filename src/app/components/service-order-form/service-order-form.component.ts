@@ -9,6 +9,8 @@ import {
   businessOutline, locationOutline, constructOutline, peopleOutline, 
   calendarOutline, documentTextOutline, saveOutline, closeOutline 
 } from 'ionicons/icons';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { ServiceService } from 'src/app/services/service/service.service';
 import { CollaboratorService } from 'src/app/services/collaborator/collaborator.service';
@@ -51,6 +53,7 @@ export class ServiceOrderFormComponent implements OnInit {
   collaborators = signal<any[]>([]);
 
   selectedPriority: PriorityLevel = '';
+  private currentLoadedCompanyId = '';
 
   hasChanges = computed(() => {
     const changed = this.formChanged();
@@ -89,16 +92,17 @@ export class ServiceOrderFormComponent implements OnInit {
     this.initForm();
     this.loadDropdownData();
 
-    // Sincronização de combos dependentes: quando a empresa mudar, recarrega filiais, colaboradores e serviços daquela empresa
+    // Sincronização de combos dependentes: quando a empresa mudar manualmente pelo usuário
     this.form.get('company_id')?.valueChanges.subscribe((companyId) => {
-      if (companyId) {
-        // Reset dos selects filhos sem disparar eventos circulares infinitos
+      if (companyId && companyId !== this.currentLoadedCompanyId) {
+        // Reset dos selects filhos apenas se a empresa tiver mudado pelo usuário
         this.form.get('unit_id')?.setValue('', { emitEvent: false });
         this.form.get('collaborator_id')?.setValue('', { emitEvent: false });
         this.form.get('service_id')?.setValue('', { emitEvent: false });
 
         this.loadCompanyDependentData(companyId);
-      } else {
+      } else if (!companyId) {
+        this.currentLoadedCompanyId = '';
         this.units.set([]);
         this.collaborators.set([]);
         this.services.set([]);
@@ -141,42 +145,52 @@ export class ServiceOrderFormComponent implements OnInit {
     });
   }
 
-  private loadCompanyDependentData(companyId: string) {
-    // 1. Carregar filiais/unidades
-    this.unitService.getUnits().subscribe({
-      next: (res) => {
-        const allUnits = res.data || [];
+  private loadCompanyDependentData(companyId: string, onComplete?: () => void) {
+    this.currentLoadedCompanyId = companyId;
+    this.isLoadingData.set(true);
+
+    forkJoin({
+      unitsRes: this.unitService.getUnits().pipe(catchError(() => of({ data: [] }))),
+      collabsRes: this.collaboratorService.getCollaborators(companyId).pipe(catchError(() => of({ data: [] }))),
+      compRes: this.companyService.getCompanyById(companyId).pipe(catchError(() => of({ success: false, data: null }))),
+      servicesRes: this.serviceService.getServices().pipe(catchError(() => of({ success: false, data: [] })))
+    }).subscribe({
+      next: ({ unitsRes, collabsRes, compRes, servicesRes }) => {
+        // 1. Unidades
+        const allUnits = unitsRes.data || [];
         this.units.set(allUnits.filter((u: any) => u.company_id === companyId || u.company_id?._id === companyId));
-      }
-    });
 
-    // 2. Carregar colaboradores da empresa
-    this.collaboratorService.getCollaborators(companyId).subscribe({
-      next: (res: any) => {
-        const allCollabs = res.data || [];
+        // 2. Colaboradores da empresa + Técnicos Globais
+        const allCollabs = collabsRes.data || [];
         this.collaborators.set(allCollabs.filter((u: any) => {
-          if (u.type === 'super_staff' || u.type === 'super_admin') return false;
-          return u.company_id === companyId || u.company_id?._id === companyId;
-        }));
-      }
-    });
-
-    // 3. Carregar serviços da empresa baseados no array company.services
-    this.companyService.getCompanyById(companyId).subscribe({
-      next: (companyRes) => {
-        if (companyRes.success && companyRes.data) {
-          const activeServiceIds = companyRes.data.services || [];
+          if (u.type === 'super_admin') return false;
+          if (u.type === 'super_staff' && u.role !== 'technician' && u.role !== 'técnico') return false;
           
-          this.serviceService.getServices().subscribe({
-            next: (servicesRes) => {
-              if (servicesRes.success) {
-                const allServices = servicesRes.data || [];
-                // Filtra mantendo apenas os serviços habilitados para a empresa
-                this.services.set(allServices.filter(s => activeServiceIds.includes(s._id!)));
-              }
-            }
-          });
+          const userCompId = u.company_id?._id || u.company_id;
+          const isFromCompany = String(userCompId) === String(companyId);
+          const isGlobal = !userCompId;
+          
+          return isFromCompany || isGlobal;
+        }));
+
+        // 3. Serviços habilitados para a empresa
+        const activeServiceIds = (compRes?.success && compRes?.data?.services) ? compRes.data.services : [];
+        const allServices = (servicesRes as any)?.data || [];
+        if (activeServiceIds.length > 0) {
+          this.services.set(allServices.filter((s: any) => activeServiceIds.includes(s._id!)));
+        } else {
+          this.services.set(allServices);
         }
+
+        this.isLoadingData.set(false);
+
+        if (onComplete) {
+          onComplete();
+        }
+      },
+      error: () => {
+        this.isLoadingData.set(false);
+        if (onComplete) onComplete();
       }
     });
   }
@@ -185,38 +199,57 @@ export class ServiceOrderFormComponent implements OnInit {
     if (!this.form) this.initForm();
 
     const companyId = order.company_id?._id || order.company_id || '';
-    if (companyId) {
-      this.loadCompanyDependentData(companyId);
-    }
+    const unitId = order.unit_id?._id || order.unit_id || '';
+    const serviceId = order.service_id?._id || order.service_id || '';
+    const collaboratorId = order.collaborator_id?._id || order.collaborator_id || '';
 
     // Formatar data ISO para input datetime-local do HTML
     let dateStr = '';
     if (order.scheduled_date) {
       const d = new Date(order.scheduled_date);
-      // ajuste timezone local
       d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
       dateStr = d.toISOString().substring(0, 16);
     }
 
-    this.form.patchValue({
-      company_id: companyId,
-      unit_id: order.unit_id?._id || order.unit_id || '',
-      service_id: order.service_id?._id || order.service_id || '',
-      collaborator_id: order.collaborator_id?._id || order.collaborator_id || '',
-      scheduled_date: dateStr,
-      observations: order.observations || '',
-      address_override: order.address_override || '',
-      gut_gravity: order.gut_gravity || 1,
-      gut_urgency: order.gut_urgency || 1,
-      gut_trend: order.gut_trend || 1
-    });
+    if (companyId) {
+      this.loadCompanyDependentData(companyId, () => {
+        this.form.patchValue({
+          company_id: companyId,
+          unit_id: unitId,
+          service_id: serviceId,
+          collaborator_id: collaboratorId,
+          scheduled_date: dateStr,
+          observations: order.observations || '',
+          address_override: order.address_override || '',
+          gut_gravity: order.gut_gravity || 1,
+          gut_urgency: order.gut_urgency || 1,
+          gut_trend: order.gut_trend || 1
+        }, { emitEvent: false });
+
+        this.form.markAsPristine();
+        this.form.markAsUntouched();
+        this.formChanged.set(false);
+      });
+    } else {
+      this.form.patchValue({
+        company_id: '',
+        unit_id: unitId,
+        service_id: serviceId,
+        collaborator_id: collaboratorId,
+        scheduled_date: dateStr,
+        observations: order.observations || '',
+        address_override: order.address_override || '',
+        gut_gravity: order.gut_gravity || 1,
+        gut_urgency: order.gut_urgency || 1,
+        gut_trend: order.gut_trend || 1
+      }, { emitEvent: false });
+    }
 
     const g = order.gut_gravity || 1;
     const u = order.gut_urgency || 1;
     const t = order.gut_trend || 1;
 
     this.selectedPriority = getPriorityFromGUT(g, u, t);
-
     this.form.markAsPristine();
     this.form.markAsUntouched();
     this.formChanged.set(false);

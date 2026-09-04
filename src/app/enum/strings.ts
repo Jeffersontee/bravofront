@@ -98,6 +98,7 @@ export enum Strings {
   CUSTOMER_ORDER_DETAILS = 'customer/orders/details',
 
   // Financial & Subscriptions
+  SUPER_PLANS = '/super-admin/financial/plans',
   SUPER_SUBSCRIPTIONS = '/super-admin/subscriptions',
   SUPER_PAYMENTS = '/super-admin/payments',
   SUPER_INVOICES = '/super-admin/invoices',

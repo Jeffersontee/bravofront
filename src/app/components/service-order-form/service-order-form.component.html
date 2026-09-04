@@ -53,7 +53,9 @@
       <ion-select label="Técnico / Responsável" labelPlacement="floating" formControlName="collaborator_id">
         <ion-select-option value="">Não atribuído (Pendente)</ion-select-option>
         @for (collab of collaborators(); track collab._id) {
-          <ion-select-option [value]="collab._id">{{ collab.name }} - {{ collab.role || 'Equipe' }}</ion-select-option>
+          <ion-select-option [value]="collab._id">
+            {{ collab.name }} - {{ collab.role === 'technician' ? 'Técnico de Campo' : (collab.role || 'Equipe') }} {{ !collab.company_id ? '(Global)' : '' }}
+          </ion-select-option>
         }
       </ion-select>
     </ion-item>

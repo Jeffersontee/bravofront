@@ -114,6 +114,15 @@ export const superAdminRoutes: Routes = [
 
   // --- Financeiro ---
   {
+    path: 'financial/plans',
+    loadComponent: () => import('./plans/plans.page').then(m => m.PlansPage)
+  },
+  {
+    path: 'plans',
+    redirectTo: 'financial/plans',
+    pathMatch: 'full'
+  },
+  {
     path: 'subscriptions',
     loadComponent: () => import('./subscriptions/super-subscriptions.page').then(m => m.SuperSubscriptionsPage)
   },

@@ -11,7 +11,8 @@ import {
   buildOutline, locationOutline, timeOutline, alertCircleOutline,
   checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
   receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, 
-  addCircleOutline, refreshOutline, pencilOutline, funnelOutline
+  addCircleOutline, refreshOutline, pencilOutline, funnelOutline,
+  personCircleOutline, personOutline, businessOutline
 } from 'ionicons/icons';
 import { ServiceOrder } from 'src/app/services/service-order/service-order.service';
 import { StatusUtil } from 'src/app/utils/status.util';
@@ -140,7 +141,8 @@ export class ServiceOrderListComponent {
       buildOutline, locationOutline, timeOutline, alertCircleOutline,
       checkmarkCircleOutline, documentTextOutline, carOutline, mapOutline,
       receiptOutline, calendarOutline, flashOutline, chevronForwardOutline, 
-      addCircleOutline, refreshOutline, pencilOutline, funnelOutline
+      addCircleOutline, refreshOutline, pencilOutline, funnelOutline,
+      personCircleOutline, personOutline, businessOutline
     });
   }
 

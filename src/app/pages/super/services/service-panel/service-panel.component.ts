@@ -175,6 +175,17 @@ export class ServicePanelComponent implements OnInit {
     }
   }
 
+  getCategoryIcon(categoryName?: string): string {
+    const cat = (categoryName || '').toLowerCase();
+    if (cat.includes('elétr') || cat.includes('ilumin')) return 'flash-outline';
+    if (cat.includes('hidr') || cat.includes('água') || cat.includes('encan')) return 'water-outline';
+    if (cat.includes('serralh') || cat.includes('port') || cat.includes('fechad') || cat.includes('civil')) return 'construct-outline';
+    if (cat.includes('clima') || cat.includes('ar') || cat.includes('refrig')) return 'snow-outline';
+    if (cat.includes('cftv') || cat.includes('segur') || cat.includes('alarm') || cat.includes('câmer')) return 'videocam-outline';
+    if (cat.includes('red') || cat.includes('tecno') || cat.includes('ti') || cat.includes('inform')) return 'hardware-chip-outline';
+    return 'pricetag-outline';
+  }
+
   goToPlans() {
     this.router.navigateByUrl('/super-admin/financial/plans');
   }
