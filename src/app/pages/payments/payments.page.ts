@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController, ModalController } from '@ionic/angular';
@@ -52,6 +53,7 @@ export class PaymentsPage implements OnInit, AfterViewInit {
   private profileService = inject(ProfileService);
   private global = inject(GlobalService);
   private alertCtrl = inject(AlertController);
+  private router = inject(Router);
 
   public isSuperAdmin = signal(false);
   public isLoading = signal(true);
@@ -78,7 +80,9 @@ export class PaymentsPage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    await this.checkUserRole();
+    const hasAccess = await this.checkUserRole();
+    if (!hasAccess) return;
+
     if (this.isSuperAdmin()) {
       this.loadCompanies();
     }
@@ -89,12 +93,24 @@ export class PaymentsPage implements OnInit, AfterViewInit {
     // Gráfico inicializado após carregar dados
   }
 
-  async checkUserRole() {
+  async checkUserRole(): Promise<boolean> {
     try {
       const user = await this.profileService.getProfile();
-      this.isSuperAdmin.set(user?.type === 'super_admin');
+      const isSuper = user?.type === 'super_admin';
+      this.isSuperAdmin.set(isSuper);
+
+      if (!isSuper) {
+        const permissions = user?.permissions || [];
+        if (!permissions.includes('COMPANY_FINANCIAL_PANEL')) {
+          this.global.errorToast('Acesso Restrito: Você precisa de liberação para acessar o módulo Financeiro e Faturas.');
+          this.router.navigate(['/company/profile'], { replaceUrl: true });
+          return false;
+        }
+      }
+      return true;
     } catch (e) {
       console.error('Erro ao obter perfil:', e);
+      return false;
     }
   }
 

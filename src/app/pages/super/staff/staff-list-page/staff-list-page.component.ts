@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { StaffService, StaffUser } from 'src/app/services/staff/staff.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
 import { GlobalService } from 'src/app/services/global/global.service';
@@ -26,6 +26,8 @@ export class StaffListPageComponent implements OnInit {
   private companyService = inject(CompanyService);
   private router = inject(Router);
   private global = inject(GlobalService);
+
+  private route = inject(ActivatedRoute);
 
   staffList = signal<StaffUser[]>([]);
   companies = signal<Company[]>([]);
@@ -65,21 +67,22 @@ export class StaffListPageComponent implements OnInit {
       // Role filter por aba
       if (roleFilter !== 'ALL') {
         if (roleFilter === 'super_admin') {
-          if (u.type !== 'super_admin' && u.type !== 'super_staff') return false;
+          if (u.type !== 'super_admin' && u.type !== 'super_staff' && u.role !== 'root') return false;
         } else if (roleFilter === 'company_owner') {
-          if (u.type !== 'company_owner') return false;
+          if (u.type !== 'company_owner' && u.role !== 'owner') return false;
         } else if (roleFilter === 'admin') {
-          // Aba OPERADORES: quem é admin ou tem role operator
-          const isOperator = u.type === 'admin' || u.role === 'operator';
-          if (!isOperator) return false;
-        } else if (roleFilter === 'collaborator') {
-          // Aba TÉCNICOS: técnicos de campo e supervisores, excluindo operadores
-          const isTechnicianOrSupervisor = (u.type === 'collaborator' || u.role === 'technician' || u.role === 'supervisor') && u.role !== 'operator';
-          if (!isTechnicianOrSupervisor) return false;
+          // Aba GERENTES & ATENDENTES
+          const isManagerOrBackoffice = u.type === 'admin' || u.role === 'manager' || u.role === 'backoffice';
+          if (!isManagerOrBackoffice) return false;
+        } else if (roleFilter === 'supervisors') {
+          if (u.role !== 'supervisor') return false;
+        } else if (roleFilter === 'technicians') {
+          const isTech = u.role === 'technician' || (u.type === 'collaborator' && u.role !== 'supervisor');
+          if (!isTech) return false;
         } else if (roleFilter === 'user') {
-          if (u.type !== 'user') return false;
+          if (u.type !== 'user' && u.role !== 'customer') return false;
         } else {
-          if (u.type !== roleFilter) return false;
+          if (u.type !== roleFilter && u.role !== roleFilter) return false;
         }
       }
 
@@ -114,6 +117,12 @@ export class StaffListPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    const queryRole = this.route.snapshot.queryParamMap.get('role');
+    if (queryRole === 'technician') {
+      this.selectedRoleFilter.set('technicians');
+    } else if (queryRole === 'supervisor') {
+      this.selectedRoleFilter.set('supervisors');
+    }
     this.loadStaff();
   }
 
@@ -131,7 +140,7 @@ export class StaffListPageComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.global.errorToast('Erro ao carregar usuários globais');
+        this.global.errorToast('Erro ao carregar lista de usuários');
         this.isLoading.set(false);
       }
     });
@@ -149,7 +158,7 @@ export class StaffListPageComponent implements OnInit {
     if (!user.permissions || user.permissions.length === 0) {
       if (user.type === 'super_admin') return 'Acesso Total (Super Admin)';
       if (user.type === 'company_owner') return 'Acesso Total (Dono)';
-      return 'Nenhuma permissão';
+      return 'Nenhuma permissão personalizada';
     }
 
     const labels = user.permissions.map(perm => {
@@ -162,12 +171,15 @@ export class StaffListPageComponent implements OnInit {
 
   getTypeLabel(user: StaffUser | string): string {
     if (typeof user === 'object' && user) {
-      if (user.role === 'operator' || user.type === 'admin') return 'Operador';
-      if (user.role === 'supervisor') return 'Supervisor';
-      if (user.role === 'technician' || (user.type === 'collaborator' && user.role !== 'operator')) return 'Técnico de Campo';
-      if (user.type === 'company_owner') return 'Dono de Empresa';
-      if (user.type === 'super_admin') return 'Super Admin';
-      if (user.type === 'user') return 'Cliente';
+      if (user.role === 'root' || user.type === 'super_admin') return 'Super Administrador';
+      if (user.role === 'owner' || user.type === 'company_owner') return 'Dono de Empresa';
+      if (user.role === 'manager') return 'Gerente Administrativo';
+      if (user.role === 'backoffice') return 'Atendente / Comercial';
+      if (user.role === 'supervisor') return 'Supervisor de Equipe';
+      if (user.role === 'technician') return 'Técnico de Campo';
+      if (user.type === 'admin') return 'Gerente / Operador';
+      if (user.type === 'collaborator') return 'Colaborador de Campo';
+      if (user.type === 'user' || user.role === 'customer') return 'Cliente Final';
       if (user.role && user.role.trim() !== '') return user.role;
       return this.getTypeLabelStr(user.type);
     }
@@ -176,37 +188,39 @@ export class StaffListPageComponent implements OnInit {
 
   private getTypeLabelStr(type: string): string {
     switch (type) {
-      case 'super_admin': return 'Super Admin';
+      case 'super_admin': return 'Super Administrador';
       case 'company_owner': return 'Dono de Empresa';
-      case 'collaborator': return 'Técnico de Campo';
+      case 'collaborator': return 'Colaborador';
       case 'super_staff': return 'Operador HQ';
-      case 'admin': return 'Operador';
-      case 'user': return 'Cliente';
+      case 'admin': return 'Gerente / Operador';
+      case 'user': return 'Cliente Final';
       default: return type || 'Usuário';
     }
   }
 
   getTypeBadgeColor(userOrType: StaffUser | string): string {
-    const type = typeof userOrType === 'object' ? userOrType.type : userOrType;
     const role = typeof userOrType === 'object' ? userOrType.role : undefined;
+    const type = typeof userOrType === 'object' ? userOrType.type : userOrType;
 
-    if (role === 'operator' || type === 'admin') return 'secondary';
+    if (role === 'root' || type === 'super_admin') return 'danger';
+    if (role === 'owner' || type === 'company_owner') return 'success';
+    if (role === 'manager') return 'tertiary';
+    if (role === 'backoffice' || type === 'admin') return 'secondary';
     if (role === 'supervisor') return 'warning';
     if (role === 'technician' || type === 'collaborator') return 'primary';
-    if (type === 'company_owner') return 'success';
-    if (type === 'super_admin') return 'tertiary';
     return 'medium';
   }
 
   getUserIcon(userOrType: StaffUser | string): string {
-    const type = typeof userOrType === 'object' ? userOrType.type : userOrType;
     const role = typeof userOrType === 'object' ? userOrType.role : undefined;
+    const type = typeof userOrType === 'object' ? userOrType.type : userOrType;
 
-    if (role === 'operator' || type === 'admin') return 'headset-outline';
+    if (role === 'root' || type === 'super_admin') return 'key-outline';
+    if (role === 'owner' || type === 'company_owner') return 'business-outline';
+    if (role === 'manager') return 'shield-checkmark-outline';
+    if (role === 'backoffice' || type === 'admin') return 'headset-outline';
     if (role === 'supervisor') return 'ribbon-outline';
     if (role === 'technician' || type === 'collaborator') return 'construct-outline';
-    if (type === 'company_owner') return 'business-outline';
-    if (type === 'super_admin') return 'key-outline';
     return 'person-outline';
   }
 }

@@ -90,8 +90,8 @@ export class CompanyLayoutPage implements OnInit {
       icon: 'person-outline',
       permissionKey: 'SUPER_COLLABORATORS_PANEL',
       children: [
-        { title: 'Usuários', stringKey: 'ADMIN_STAFF', icon: 'people-outline', permissionKey: 'SUPER_STAFF' },
-        { title: 'Cadastro de Colaborador', stringKey: 'ADMIN_STAFF_CREATE', icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE'},
+        { title: 'Usuários / Equipe', url: (companyId: string) => `/company/staff`, icon: 'people-outline', permissionKey: 'SUPER_STAFF' },
+        { title: 'Cadastro de Colaborador', url: (companyId: string) => `/company/staff/create`, icon: 'person-add-outline', permissionKey: 'SUPER_STAFF_CREATE'},
       ]
     },
     {
@@ -272,10 +272,7 @@ export class CompanyLayoutPage implements OnInit {
       }
 
       if (config.permissionKey && !userPermissions.includes(config.permissionKey)) {
-        // Exceções de menus essenciais que nunca somem
-        if (config.permissionKey !== 'ADMIN_ACCOUNT' && config.permissionKey !== 'ADMIN_HELP') {
-          continue;
-        }
+        continue;
       }
 
       let resolvedUrl: string | null = null;

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -38,6 +39,7 @@ export class SubscriptionsPage implements OnInit {
   private companyService = inject(CompanyService);
   private global = inject(GlobalService);
   private alertCtrl = inject(AlertController);
+  private router = inject(Router);
 
   public isLoading = signal(true);
   public currentSubscription = signal<any | null>(null);
@@ -63,6 +65,16 @@ export class SubscriptionsPage implements OnInit {
     this.isLoading.set(true);
     try {
       const user = await this.profileService.getProfile();
+      const isSuper = user?.type === 'super_admin';
+      if (!isSuper) {
+        const permissions = user?.permissions || [];
+        if (!permissions.includes('COMPANY_FINANCIAL_PANEL')) {
+          this.global.errorToast('Acesso Restrito: Você precisa de liberação para acessar o módulo Financeiro.');
+          this.router.navigate(['/company/profile'], { replaceUrl: true });
+          this.isLoading.set(false);
+          return;
+        }
+      }
       if (user && user.company_id) {
         const compRes = await this.companyService.getCompanyById(user.company_id).toPromise();
         if (compRes?.data) {

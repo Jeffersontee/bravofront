@@ -6,10 +6,10 @@ import {
   IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline, briefcaseOutline } from 'ionicons/icons';
+import { person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline, briefcaseOutline, constructOutline } from 'ionicons/icons';
 import { StaffUser } from 'src/app/services/staff/staff.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
-import { AVAILABLE_PERMISSIONS } from 'src/app/enum/permissions';
+import { AVAILABLE_PERMISSIONS, DEFAULT_ROLE_PERMISSIONS, TECHNICIAN_SPECIALTIES } from 'src/app/enum/permissions';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 
 @Component({
@@ -52,7 +52,10 @@ export class StaffFormComponent implements OnInit {
   formChanged = signal<boolean>(false);
   companies = signal<Company[]>([]);
 
-  types = [
+  selectedType = signal<string>('admin');
+  selectedRole = signal<string>('');
+
+  allTypes = [
     { value: 'super_admin', label: 'Super Administrador' },
     { value: 'company_owner', label: 'Dono de Empresa' },
     { value: 'admin', label: 'Gerente / Operador' },
@@ -60,23 +63,61 @@ export class StaffFormComponent implements OnInit {
     { value: 'user', label: 'Cliente Final (Consumidor)' }
   ];
 
-  roles = [
-    { value: 'technician', label: 'Técnico de Campo' },
-    { value: 'operator', label: 'Operador / Recepção' },
-    { value: 'supervisor', label: 'Supervisor / Líder' }
+  companyOwnerTypes = [
+    { value: 'admin', label: 'Gerente / Operador' },
+    { value: 'collaborator', label: 'Colaborador / Campo' }
   ];
 
+  availableTypes = computed(() => {
+    const caller = this.profileService.profile();
+    if (caller?.type === 'super_admin') {
+      return this.allTypes;
+    }
+    return this.companyOwnerTypes;
+  });
+
+  availableRoles = computed(() => {
+    const type = this.selectedType();
+    if (type === 'admin') {
+      return [
+        { value: 'manager', label: 'Gerente Administrativo' },
+        { value: 'backoffice', label: 'Atendente / Comercial' }
+      ];
+    }
+    if (type === 'collaborator') {
+      return [
+        { value: 'supervisor', label: 'Supervisor de Equipe' },
+        { value: 'technician', label: 'Técnico de Campo' }
+      ];
+    }
+    if (type === 'super_admin') {
+      return [{ value: 'root', label: 'Super Administrador' }];
+    }
+    if (type === 'company_owner') {
+      return [{ value: 'owner', label: 'Dono de Empresa' }];
+    }
+    return [{ value: 'customer', label: 'Cliente Final' }];
+  });
+
+  isRoleVisible = computed(() => {
+    const type = this.selectedType();
+    return type === 'admin' || type === 'collaborator';
+  });
+
+  isTechnician = computed(() => {
+    const role = this.selectedRole();
+    return role === 'technician' || role === 'técnico';
+  });
+
   availablePermissions = AVAILABLE_PERMISSIONS;
+  technicianSpecialties = TECHNICIAN_SPECIALTIES;
 
   hasChanges = computed(() => {
-    const changed = this.formChanged();
-    if (!this.formReady() || !this.staffForm) return false;
-    if (!this.isEditMode()) return this.staffForm.valid;
-    return changed || this.staffForm.dirty;
+    return this.formChanged();
   });
 
   constructor() {
-    addIcons({ person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline, briefcaseOutline });
+    addIcons({ person, mail, call, key, businessOutline, listOutline, helpCircle, helpCircleOutline, informationCircleOutline, briefcaseOutline, constructOutline });
 
     effect(() => {
       if (!this.formReady() || !this.staffForm) return;
@@ -122,28 +163,56 @@ export class StaffFormComponent implements OnInit {
           this.formChanged.set(true);
         }
       });
+
+      this.staffForm.get('type')?.valueChanges.subscribe((newType) => {
+        this.selectedType.set(newType || 'admin');
+        const roles = this.availableRoles();
+        if (roles.length > 0) {
+          const defaultRole = roles[0].value;
+          this.staffForm.get('role')?.setValue(defaultRole);
+        }
+      });
+
+      this.staffForm.get('role')?.valueChanges.subscribe((newRole) => {
+        this.selectedRole.set(newRole || '');
+        // Auto-preenche permissões sugeridas ao trocar cargo (se não estiver em edição de dados legados)
+        if (newRole && DEFAULT_ROLE_PERMISSIONS[newRole]) {
+          const currentPermissions = this.staffForm.get('permissions')?.value || [];
+          if (currentPermissions.length === 0 || !this.isEditMode()) {
+            this.staffForm.get('permissions')?.setValue(DEFAULT_ROLE_PERMISSIONS[newRole]);
+          }
+        }
+      });
     }
   }
 
   private initForm() {
+    const caller = this.profileService.profile();
+    const defaultType = 'admin';
+    const defaultRole = 'manager';
+
     this.staffForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       password: ['', this.isEditMode() ? [] : [Validators.required, Validators.minLength(6)]],
-      type: ['admin', Validators.required],
-      role: [''],
-      company_id: [''],
-      permissions: [[]],
+      type: [defaultType, Validators.required],
+      role: [defaultRole],
+      specialties: [[]],
+      company_id: [caller?.type !== 'super_admin' ? caller?.company_id || '' : ''],
+      permissions: [DEFAULT_ROLE_PERMISSIONS['manager'] || []],
       active: [true]
     });
+
+    this.selectedType.set(defaultType);
+    this.selectedRole.set(defaultRole);
     this.formReady.set(true);
   }
 
   loadCompanies() {
     this.companyService.getCompanies().subscribe({
       next: (res: any) => {
-        this.companies.set(res.data);
+        this.companies.set(res.data || []);
       }
     });
   }
@@ -170,14 +239,22 @@ export class StaffFormComponent implements OnInit {
   private patchForm(data: StaffUser) {
     if (!this.staffForm) this.initForm();
 
+    const normalizedType = data.type || 'admin';
+    const normalizedRole = data.role || (normalizedType === 'collaborator' ? 'technician' : normalizedType === 'admin' ? 'manager' : normalizedType === 'super_admin' ? 'root' : normalizedType === 'company_owner' ? 'owner' : 'customer');
+    const specs = (data as any).technician_profile?.specialties || [];
+
+    this.selectedType.set(normalizedType);
+    this.selectedRole.set(normalizedRole);
+
     this.staffForm.patchValue({
       name: data.name || '',
       email: data.email || '',
       phone: this.applyPhoneMask(data.phone || ''),
-      type: data.type || 'admin',
-      role: data.role || (data.type === 'collaborator' ? 'technician' : ''),
+      type: normalizedType,
+      role: normalizedRole,
+      specialties: specs,
       company_id: data.company_id?._id || data.company_id || '',
-      permissions: data.permissions || [],
+      permissions: data.permissions && data.permissions.length > 0 ? data.permissions : (DEFAULT_ROLE_PERMISSIONS[normalizedRole] || []),
       active: data.status === 'active'
     });
     
@@ -201,6 +278,13 @@ export class StaffFormComponent implements OnInit {
       permissions: formValue.permissions || [],
       status: formValue.active ? 'active' : 'inactive'
     };
+
+    if (formValue.role === 'technician' || formValue.role === 'técnico') {
+      payload.technician_profile = {
+        specialties: formValue.specialties || [],
+        is_available_now: true
+      };
+    }
 
     if (!this.isEditMode() || formValue.password) {
       payload.password = formValue.password;

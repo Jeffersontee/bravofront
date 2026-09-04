@@ -115,6 +115,33 @@ export const companyRoutes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'staff',
+    loadComponent: () => import('../super/staff/staff-list-page/staff-list-page.component').then(m => m.StaffListPageComponent)
+  },
+  {
+    path: 'staff/create',
+    loadComponent: () => import('../super/staff/staff-form-page/staff-form-page.component').then(m => m.StaffFormPageComponent)
+  },
+  {
+    path: 'staff/edit/:id',
+    loadComponent: () => import('../super/staff/staff-form-page/staff-form-page.component').then(m => m.StaffFormPageComponent)
+  },
+  {
+    path: 'collaborators',
+    redirectTo: 'staff',
+    pathMatch: 'full'
+  },
+  {
+    path: 'collaborators/create',
+    redirectTo: 'staff/create',
+    pathMatch: 'full'
+  },
+  {
+    path: 'collaborators/edit/:id',
+    redirectTo: 'staff/edit/:id',
+    pathMatch: 'full'
+  },
+  {
     path: 'my-profile',
     redirectTo: 'profile',
     pathMatch: 'full'
