@@ -98,6 +98,14 @@ export class StaffFormComponent implements OnInit {
         { value: 'technician', label: 'Técnico de Campo' }
       ];
     }
+    if (type === 'user') {
+      return [
+        { value: 'customer', label: 'Cliente Final / Consumidor' },
+        { value: 'resident', label: 'Morador / Residente' },
+        { value: 'property_manager', label: 'Síndico / Gestor Predial' },
+        { value: 'corporate_client', label: 'Cliente Corporativo' }
+      ];
+    }
     if (type === 'super_admin') {
       return [{ value: 'root', label: 'Super Administrador' }];
     }
@@ -109,7 +117,7 @@ export class StaffFormComponent implements OnInit {
 
   isRoleVisible = computed(() => {
     const type = this.selectedType();
-    return type === 'admin' || type === 'collaborator' || type === 'super_staff';
+    return type === 'admin' || type === 'collaborator' || type === 'super_staff' || type === 'user';
   });
 
   isTechnician = computed(() => {
