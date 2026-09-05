@@ -190,7 +190,7 @@ export class CompanyFormComponent implements OnInit {
             phone: this.applyPhoneMask(companyData.phone || ''),
             active: companyData.active !== undefined ? companyData.active : true,
             services: serviceIds,
-            plan_id: companyData.plan_id?._id || companyData.plan_id || '',
+            plan_id: companyData.subscription_id?.plan_id?._id || companyData.subscription_id?.plan_id || companyData.plan_id?._id || companyData.plan_id || '',
             catalog_module_enabled: companyData.catalog_module_enabled !== undefined ? companyData.catalog_module_enabled : true
           });
         }
