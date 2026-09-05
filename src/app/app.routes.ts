@@ -42,7 +42,7 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
-        loadComponent: () => import('./pages/account/account.page').then(m => m.AccountPage)
+        loadComponent: () => import('./pages/customer/profile/profile.page').then(m => m.ProfilePage)
       },
       {
         path: 'my-profile',

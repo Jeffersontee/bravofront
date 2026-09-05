@@ -60,9 +60,6 @@ export class AddressModalComponent implements OnInit {
 
   async ngOnInit() {
     await this.addressService.loadUserAddresses();
-    if (this.addressService.addresses().length === 0) {
-      this.viewMode.set('FORM');
-    }
   }
 
   public dismiss(address?: Address) {
@@ -99,7 +96,7 @@ export class AddressModalComponent implements OnInit {
   }
 
   /**
-   * Captura localização atual via GPS
+   * Captura localização atual via GPS e define imediatamente
    */
   public async useCurrentGpsLocation() {
     this.isDetectingGps.set(true);
@@ -111,18 +108,25 @@ export class AddressModalComponent implements OnInit {
       this.addressLat.set(lat);
       this.addressLng.set(lng);
 
-      // Preenche dados padrão baseados nas coordenadas
-      this.addressTitle.set('Localização Atual (GPS)');
-      this.addressStreet.set('Coordenadas GPS Detectadas');
-      this.addressNeighborhood.set('Região Atual');
-      this.addressCity.set('São Paulo');
-      this.addressState.set('SP');
+      const gpsAddressPayload: Partial<Address> = {
+        title: 'Localização Atual (GPS)',
+        address: `Localização GPS (${lat.toFixed(5)}, ${lng.toFixed(5)})`,
+        street: 'Localização Atual via GPS',
+        city: 'São Paulo',
+        state: 'SP',
+        lat,
+        lng,
+        is_default: this.addressService.addresses().length === 0
+      };
 
-      this.viewMode.set('FORM');
-      this.showToast('Localização GPS capturada com sucesso!', 'success');
+      // Salva no banco e define como ativo
+      const created = await this.addressService.createAddress(gpsAddressPayload);
+      this.showToast('Localização GPS definida com sucesso!', 'success');
+      this.dismiss(created || undefined);
     } catch (e: any) {
-      console.error(e);
+      console.error('Erro GPS:', e);
       this.showToast('Não foi possível obter a localização GPS. Por favor, insira o CEP ou endereço manualmente.', 'warning');
+      this.viewMode.set('FORM');
     } finally {
       this.isDetectingGps.set(false);
     }
