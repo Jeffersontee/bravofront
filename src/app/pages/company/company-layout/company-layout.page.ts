@@ -5,7 +5,7 @@ import { CompanyService } from 'src/app/services/company/company.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ProfileService } from 'src/app/services/profile/profile.service';
 import { ThemeService } from 'src/app/services/theme/theme.service';
-import { RouterModule, RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterModule, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
@@ -45,7 +45,7 @@ interface MenuItem {
   styleUrls: ['./company-layout.page.scss'],
   standalone: true,
   imports: [
-    IonFooter, CommonModule, FormsModule, RouterLink, RouterLinkActive, RouterOutlet,
+    IonFooter, CommonModule, FormsModule, RouterLink, RouterLinkActive,
     IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
     IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
     IonLabel, IonButtons, IonButton, IonRouterOutlet

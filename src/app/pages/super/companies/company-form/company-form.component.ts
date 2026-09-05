@@ -2,9 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
   IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
-  IonList, IonItem, IonInput, IonLabel, IonToggle, IonButton, 
-  IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption,
-  IonIcon, IonBadge, AlertController
+  IonItem, IonInput, IonToggle, IonButton, 
+  IonSpinner, IonSelect, IonSelectOption,
+  IonIcon, AlertController
 } from '@ionic/angular/standalone';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -45,9 +45,9 @@ import {
   imports: [
     CommonModule, ReactiveFormsModule,
     IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, 
-    IonList, IonItem, IonInput, IonLabel, IonToggle, IonButton, 
-    IonSpinner, IonCard, IonCardContent, IonSelect, IonSelectOption,
-    IonIcon, IonBadge
+    IonItem, IonInput, IonToggle, IonButton, 
+    IonSpinner, IonSelect, IonSelectOption,
+    IonIcon
   ]
 })
 export class CompanyFormComponent implements OnInit {

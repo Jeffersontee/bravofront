@@ -22,7 +22,7 @@ export interface CoverageResult {
 })
 export class AddressService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.serverUrl}/api/${Strings.API_ADDRESSES}`;
+  private apiUrl = `${environment.serverUrl}${Strings.API_ADDRESSES}`;
 
   // Signals reativos para gerenciamento de estado
   private _addresses = signal<Address[]>([]);

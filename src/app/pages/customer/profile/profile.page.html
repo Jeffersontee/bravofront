@@ -1,60 +1,99 @@
-<ion-content [fullscreen]="true" class="ion-padding-bottom bg-profile">
-  
-  <div class="profile-header">
-    <div class="profile-avatar-row">
-      <div class="profile-avatar">
-        {{ customerName() ? customerName()[0].toUpperCase() : 'C' }}
-      </div>
-      <div class="profile-title-group">
-        <h2 class="profile-name">{{ customerName() }}</h2>
-        <span class="profile-tag">Cliente Bravo</span>
-      </div>
-    </div>
-  </div>
+<ion-header class="ion-no-border">
+  <ion-toolbar class="profile-toolbar">
+    <ion-title class="profile-page-title">Minha Conta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="confirmLogout()" title="Sair da Conta">
+        <ion-icon name="power-outline" color="danger" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
-  <div class="profile-content-body">
+<ion-content class="bg-light-profile">
+
+  <!-- PULL TO REFRESH -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Puxe para atualizar"
+      refreshingSpinner="crescent"
+      refreshingText="Atualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="profile-wrapper">
     
-    <!-- Informações Pessoais -->
-    <div class="section-title-wrapper">
-      <h3 class="section-heading">Minhas Informações</h3>
+    <!-- CARD PRINCIPAL DE IDENTIDADE (Similar ao print) -->
+    <div class="bravo-card main-identity-card">
+      <div class="identity-top-row">
+        
+        <div class="avatar-col">
+          <ion-avatar class="user-avatar-wrap">
+            @if (customerProfile()?.photo) {
+              <img [src]="customerProfile()?.photo" alt="Foto de perfil" />
+            } @else {
+              <div class="avatar-placeholder">
+                {{ customerName() ? customerName()[0].toUpperCase() : 'C' }}
+              </div>
+            }
+          </ion-avatar>
+        </div>
+
+        <div class="info-col">
+          <div class="name-edit-row">
+            <h1 class="user-display-name">{{ customerName() }}</h1>
+            <ion-button fill="clear" size="small" (click)="editProfile()" class="btn-edit-link">
+              EDITAR
+            </ion-button>
+          </div>
+          
+          <div class="contact-details">
+            <p class="contact-line">
+              <ion-icon name="mail-outline" class="contact-icon"></ion-icon>
+              <span>{{ customerEmail() || 'E-mail não informado' }}</span>
+            </p>
+            <p class="contact-line">
+              <ion-icon name="call-outline" class="contact-icon"></ion-icon>
+              <span>{{ customerPhone() }}</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LINHA DE AÇÕES RÁPIDAS (3 Colunas) -->
+      <div class="quick-actions-row">
+        <div class="quick-action-item" (click)="navigateToOrders()">
+          <div class="action-icon-wrap">
+            <ion-icon name="receipt-outline" class="action-icon"></ion-icon>
+          </div>
+          <span class="action-label">Minhas Ordens</span>
+        </div>
+
+        <div class="quick-action-item" (click)="openAddAddressModal()">
+          <div class="action-icon-wrap">
+            <ion-icon name="home-outline" class="action-icon"></ion-icon>
+          </div>
+          <span class="action-label">Endereços</span>
+        </div>
+
+        <div class="quick-action-item">
+          <div class="action-icon-wrap">
+            <ion-icon 
+              [name]="isEmailVerified() ? 'checkmark-circle-outline' : 'alert-circle-outline'"
+              [class.icon-success]="isEmailVerified()"
+              [class.icon-warning]="!isEmailVerified()"
+              class="action-icon"></ion-icon>
+          </div>
+          <span class="action-label">{{ isEmailVerified() ? 'Verificado' : 'Pendente' }}</span>
+        </div>
+      </div>
     </div>
 
-    <div class="bravo-card profile-card">
-      <div class="info-row">
-        <div class="info-icon">
-          <ion-icon name="person-outline"></ion-icon>
-        </div>
-        <div class="info-text">
-          <span class="info-label">Nome Completo</span>
-          <span class="info-val">{{ customerName() }}</span>
-        </div>
-      </div>
-
-      <div class="info-row">
-        <div class="info-icon">
-          <ion-icon name="mail-outline"></ion-icon>
-        </div>
-        <div class="info-text">
-          <span class="info-label">E-mail</span>
-          <span class="info-val">{{ customerEmail() || 'Não cadastrado' }}</span>
-        </div>
-      </div>
-
-      <div class="info-row no-border">
-        <div class="info-icon">
-          <ion-icon name="phone-portrait-outline"></ion-icon>
-        </div>
-        <div class="info-text">
-          <span class="info-label">Telefone Celular</span>
-          <span class="info-val">{{ customerPhone() }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Seção de Endereços Salvos -->
-    <div class="section-title-wrapper mt-4">
-      <h3 class="section-heading">Meus Endereços</h3>
-      <button class="btn-add-address-header" (click)="openAddAddressModal()">
+    <!-- SEÇÃO MEUS ENDEREÇOS -->
+    <div class="section-heading-row">
+      <h3 class="section-title">Meus Endereços</h3>
+      <button class="btn-add-address-pill" (click)="openAddAddressModal()">
         <ion-icon name="add-circle-outline"></ion-icon>
         <span>Novo Endereço</span>
       </button>
@@ -62,39 +101,40 @@
 
     <div class="bravo-card addresses-card">
       @if (addressService.addresses().length === 0) {
-        <div class="empty-profile-address">
-          <ion-icon name="location-outline"></ion-icon>
-          <p>Nenhum endereço cadastrado ainda.</p>
-          <button class="btn-primary-small" (click)="openAddAddressModal()">
+        <div class="empty-address-state">
+          <ion-icon name="location-outline" class="empty-icon"></ion-icon>
+          <h4>Nenhum endereço cadastrado</h4>
+          <p>Cadastre seus endereços para agilizar as solicitações de serviço.</p>
+          <button class="btn-primary-action" (click)="openAddAddressModal()">
             Cadastrar Endereço
           </button>
         </div>
       } @else {
-        <div class="profile-addresses-list">
+        <div class="addresses-list">
           @for (addr of addressService.addresses(); track addr._id) {
-            <div class="profile-address-item">
-              <div class="addr-icon-type">
+            <div class="address-row-item">
+              <div class="addr-type-box">
                 <ion-icon [name]="addr.title.toLowerCase().includes('trab') ? 'business-outline' : 'home-outline'"></ion-icon>
               </div>
 
-              <div class="addr-info-main">
-                <div class="addr-heading-row">
+              <div class="addr-info-box">
+                <div class="addr-title-line">
                   <strong class="addr-name">{{ addr.title }}</strong>
                   @if (addr.is_default) {
                     <span class="badge-principal">Principal</span>
                   }
                 </div>
-                <p class="addr-text">{{ addr.address || addr.street }}</p>
+                <p class="addr-desc">{{ addr.address || addr.street }}</p>
                 @if (addr.landmark) {
-                  <span class="addr-ref">Ref: {{ addr.landmark }}</span>
+                  <span class="addr-landmark">Ref: {{ addr.landmark }}</span>
                 }
               </div>
 
-              <div class="addr-actions">
+              <div class="addr-actions-box">
                 @if (!addr.is_default) {
                   <button 
-                    class="btn-icon-action" 
-                    title="Tornar endereço principal"
+                    class="btn-star-idle" 
+                    title="Definir como principal"
                     (click)="setAsDefault(addr, $event)">
                     <ion-icon name="star-outline"></ion-icon>
                   </button>
@@ -105,7 +145,7 @@
                 }
 
                 <button 
-                  class="btn-icon-action btn-danger" 
+                  class="btn-delete" 
                   title="Excluir endereço"
                   (click)="confirmDeleteAddress(addr, $event)">
                   <ion-icon name="trash-outline"></ion-icon>
@@ -117,15 +157,13 @@
       }
     </div>
 
-    <!-- Sair da Conta -->
-    <div class="bravo-card mt-4 p-0">
-      <div (click)="logout()" class="logout-row">
-        <div class="logout-left">
-          <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
-          <span class="logout-text">Sair da Conta</span>
-        </div>
-        <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+    <!-- LOGOUT BUTTON ROW -->
+    <div class="bravo-card logout-card" (click)="confirmLogout()">
+      <div class="logout-left">
+        <ion-icon name="log-out-outline" class="logout-icon"></ion-icon>
+        <span class="logout-label">Sair da Conta</span>
       </div>
+      <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
     </div>
 
   </div>

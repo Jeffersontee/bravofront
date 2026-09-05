@@ -2,7 +2,7 @@ import { Component, OnInit, input, output, signal, effect, untracked, inject, co
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { 
-  IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonItemDivider, IonProgressBar, IonTextarea, IonBadge 
+  IonItem, IonInput, IonToggle, IonButton, IonIcon, IonSpinner, IonProgressBar, IonTextarea 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -19,8 +19,8 @@ import { Company } from 'src/app/services/company/company.service';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
-    IonList, IonItem, IonLabel, IonInput, IonToggle, IonButton, IonIcon, 
-    IonItemDivider, IonTextarea, IonSpinner, IonProgressBar, IonBadge
+    IonItem, IonInput, IonToggle, IonButton, IonIcon, 
+    IonTextarea, IonSpinner, IonProgressBar
   ]
 })
 export class CompanyFormComponent implements OnInit {

@@ -132,7 +132,7 @@
           <ion-grid class="services-grid">
             <ion-row>
               @for (i of [1, 2, 3, 4]; track i) {
-                <ion-col size="12" size-sm="6">
+                <ion-col size="6" size-md="4" size-lg="3">
                   <div class="service-showcase-card skeleton-card">
                     <ion-skeleton-text [animated]="true" class="sk-icon-box"></ion-skeleton-text>
                     <ion-skeleton-text [animated]="true" class="sk-title"></ion-skeleton-text>
@@ -158,7 +158,7 @@
             <ion-grid class="services-grid">
               <ion-row>
                 @for (service of filteredServices(); track service.id) {
-                  <ion-col size="12" size-sm="6">
+                  <ion-col size="6" size-md="4" size-lg="3">
                     <div class="bravo-card service-card-showcase" (click)="selectService(service)">
                       <div class="service-card-top">
                         <div [style.background-color]="service.bgColor" [style.color]="service.iconColor" class="service-icon-wrapper">

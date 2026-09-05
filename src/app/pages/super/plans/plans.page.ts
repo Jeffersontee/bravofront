@@ -1,12 +1,10 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton, IonButton,
-  IonIcon, IonContent, IonSpinner, IonGrid, IonRow, IonCol, IonCard,
-  IonCardHeader, IonCardTitle, IonCardSubtitle, IonBadge, IonCardContent,
-  IonLabel, IonList, IonItem, IonFab, IonFabButton, IonText, IonSkeletonText,
-  IonChip, AlertController, ModalController
+  IonIcon, IonContent, IonFab, IonFabButton, IonSkeletonText,
+  AlertController, ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -27,6 +25,7 @@ import { PlansFormComponent } from 'src/app/components/plans-form/plans-form.com
   imports: [
     CommonModule,
     CurrencyPipe,
+    DecimalPipe,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -35,24 +34,9 @@ import { PlansFormComponent } from 'src/app/components/plans-form/plans-form.com
     IonButton,
     IonIcon,
     IonContent,
-    IonSpinner,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonBadge,
-    IonCardContent,
-    IonLabel,
-    IonList,
-    IonItem,
     IonFab,
     IonFabButton,
-    IonText,
-    IonSkeletonText,
-    IonChip
+    IonSkeletonText
   ]
 })
 export class PlansPage implements OnInit {

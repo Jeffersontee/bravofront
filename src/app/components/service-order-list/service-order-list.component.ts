@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
-  IonIcon, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton,
+  IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton,
   IonSearchbar, IonSelect, IonSelectOption
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -24,7 +24,7 @@ import { StatusUtil } from 'src/app/utils/status.util';
   standalone: true,
   imports: [
     CommonModule, FormsModule, RouterModule,
-    IonIcon, IonGrid, IonRow, IonCol, IonCard, IonCardContent, IonBadge, IonList, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, IonSearchbar,
+    IonIcon, IonSkeletonText, IonRefresher, IonRefresherContent, IonButton, IonSearchbar,
     IonSelect, IonSelectOption
   ]
 })

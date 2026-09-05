@@ -1,10 +1,10 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { 
   IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton, 
-  IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, 
+  IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, 
   IonCardContent, IonLabel, IonIcon, IonList, IonItem, IonBadge, IonButton
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -22,9 +22,9 @@ import { ProfileService } from 'src/app/services/profile/profile.service';
   styleUrls: ['./collaborator-dashboard.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
+    CommonModule, FormsModule,
     IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonMenuButton, 
-    IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, 
+    IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, 
     IonCardContent, IonLabel, IonIcon, IonList, IonItem, IonBadge, IonButton
   ]
 })
