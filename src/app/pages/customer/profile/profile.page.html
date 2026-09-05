@@ -27,16 +27,36 @@
     <div class="bravo-card main-identity-card">
       <div class="identity-top-row">
         
-        <div class="avatar-col">
-          <ion-avatar class="user-avatar-wrap">
-            @if (customerProfile()?.photo) {
-              <img [src]="customerProfile()?.photo" alt="Foto de perfil" />
-            } @else {
-              <div class="avatar-placeholder">
-                {{ customerName() ? customerName()[0].toUpperCase() : 'C' }}
-              </div>
-            }
-          </ion-avatar>
+        <div class="avatar-col" (click)="editPicture()" title="Alterar foto de perfil">
+          <div class="avatar-interactive-wrapper">
+            <ion-avatar class="user-avatar-wrap">
+              @if (customerProfile()?.photo) {
+                <img [src]="customerProfile()?.photo" alt="Foto de perfil" />
+              } @else {
+                <div class="avatar-placeholder">
+                  {{ customerName() ? customerName()[0].toUpperCase() : 'C' }}
+                </div>
+              }
+              @if (isPhotoUploading()) {
+                <div class="avatar-uploading-overlay">
+                  <ion-spinner name="crescent" color="light"></ion-spinner>
+                </div>
+              }
+            </ion-avatar>
+
+            <div class="avatar-edit-badge" title="Alterar foto">
+              <ion-icon name="camera-outline"></ion-icon>
+            </div>
+          </div>
+
+          @if (global.checkPlatformForWeb()) {
+            <input 
+              type="file" 
+              accept="image/jpeg,image/png,image/webp,image/jpg" 
+              #filePicker 
+              (change)="onFileChosen($event)" 
+              style="display: none;">
+          }
         </div>
 
         <div class="info-col">

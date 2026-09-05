@@ -214,3 +214,30 @@ ion-input, ion-textarea, ion-select {
 }
 
 .custom-visit-modal { --width: 500px; --height: 600px; --border-radius: 4px; }
+
+/* ============================================================================
+   GLOBAL MOBILE SAFE AREA & INSET UTILITIES
+   ============================================================================ */
+:root {
+  /* Top: Compensação para Status Bar (Relógio, Bateria, Notch, Wi-Fi) */
+  --bravo-safe-top: calc(env(safe-area-inset-top, 24px) + 16px);
+  --bravo-safe-top-hero: calc(env(safe-area-inset-top, 24px) + 20px);
+
+  /* Bottom: Compensação para Gestos, Safe Area e Tab Bar Inferior */
+  --bravo-safe-bottom: calc(env(safe-area-inset-bottom, 16px) + 24px);
+  --bravo-safe-bottom-tabs: calc(env(safe-area-inset-bottom, 16px) + 90px);
+}
+
+.safe-area-top {
+  padding-top: var(--bravo-safe-top) !important;
+}
+
+.safe-hero-header {
+  padding-top: var(--bravo-safe-top-hero) !important;
+  padding-left: max(env(safe-area-inset-left, 0px), 20px) !important;
+  padding-right: max(env(safe-area-inset-right, 0px), 20px) !important;
+}
+
+.safe-tabs-content {
+  padding-bottom: var(--bravo-safe-bottom-tabs) !important;
+}
