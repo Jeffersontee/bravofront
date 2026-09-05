@@ -10,7 +10,7 @@ import { AccountFormComponent } from '../../../components/account-form/account-f
 import { Address } from '../../../models/address.model';
 import { 
   IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, 
-  IonIcon, IonAvatar, IonRefresher, IonRefresherContent, ModalController, ToastController, AlertController 
+  IonIcon, IonAvatar, IonSpinner, IonRefresher, IonRefresherContent, ModalController, ToastController, AlertController 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -18,7 +18,7 @@ import {
   powerOutline, logOutOutline, chevronForwardOutline, walletOutline, 
   addCircleOutline, homeOutline, businessOutline, pinOutline, 
   trashOutline, starOutline, star, checkmarkCircleOutline,
-  receiptOutline, alertCircleOutline, chevronDownCircleOutline
+  receiptOutline, alertCircleOutline, chevronDownCircleOutline, cameraOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -28,7 +28,7 @@ import {
   standalone: true,
   imports: [
     CommonModule, IonContent, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
-    IonIcon, IonAvatar, IonRefresher, IonRefresherContent
+    IonIcon, IonAvatar, IonSpinner, IonRefresher, IonRefresherContent
   ]
 })
 export class ProfilePage implements OnInit {
@@ -50,6 +50,7 @@ export class ProfilePage implements OnInit {
   public isEmailVerified = computed(() => Boolean(this.customerProfile()?.email_verified));
 
   public isActionLoading = signal<boolean>(false);
+  public isPhotoUploading = signal<boolean>(false);
 
   constructor() {
     addIcons({ 
@@ -57,7 +58,7 @@ export class ProfilePage implements OnInit {
       powerOutline, logOutOutline, chevronForwardOutline, walletOutline, 
       addCircleOutline, homeOutline, businessOutline, pinOutline, 
       trashOutline, starOutline, star, checkmarkCircleOutline,
-      receiptOutline, alertCircleOutline, chevronDownCircleOutline
+      receiptOutline, alertCircleOutline, chevronDownCircleOutline, cameraOutline
     });
   }
 
@@ -93,6 +94,52 @@ export class ProfilePage implements OnInit {
       }
       await this.profileService.getProfile(true);
       this.showToast('Perfil atualizado com sucesso!', 'success');
+    }
+  }
+
+  public async editPicture() {
+    try {
+      if (this.global.checkPlatformForWeb()) {
+        this.filePickerRef.nativeElement.click();
+      } else {
+        const imageData = await this.global.takePicture();
+        if (imageData && imageData.base64String) {
+          const blob = this.global.getBlob(imageData.base64String);
+          const imageFile = new File([blob], 'profile.png', { type: 'image/png' });
+          await this.uploadProfilePic(imageFile);
+        }
+      }
+    } catch (e) {
+      console.log('Erro ao selecionar foto:', e);
+    }
+  }
+
+  public async onFileChosen(event: any) {
+    try {
+      const imageFile = this.global.chooseImageFile(event);
+      if (imageFile) {
+        await this.uploadProfilePic(imageFile);
+      }
+    } catch (e) {
+      console.log('Erro ao processar arquivo selecionado:', e);
+    }
+  }
+
+  public async uploadProfilePic(imageFile: any) {
+    this.isPhotoUploading.set(true);
+    try {
+      await this.global.showLoader('Atualizando foto...');
+      const postData = new FormData();
+      postData.append('profileImages', imageFile, imageFile.name || 'profile.jpg');
+      await this.profileService.updateProfilePic(postData);
+      await this.profileService.getProfile(true);
+      this.showToast('Foto de perfil atualizada com sucesso!', 'success');
+    } catch (e) {
+      console.log('Erro ao enviar foto:', e);
+      this.showToast('Erro ao atualizar foto de perfil.', 'danger');
+    } finally {
+      this.global.hideLoader();
+      this.isPhotoUploading.set(false);
     }
   }
 
