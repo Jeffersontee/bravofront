@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { IonContent, IonButtons, IonBackButton, IonLabel, IonIcon, IonText, IonButton, IonSpinner, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
+import { IonContent, IonButtons, IonBackButton, IonLabel, IonIcon, IonText, IonSpinner, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from 'src/app/services/auth/auth.service';
@@ -18,7 +18,7 @@ import { personOutline, eyeOutline, mailOutline, callOutline, eyeOffOutline, loc
   imports: [
     CommonModule, FormsModule, RouterLink,
     IonContent, IonButtons, IonBackButton, 
-    IonIcon, IonText, IonButton, IonSpinner, 
+    IonIcon, IonText, IonSpinner, 
     IonSegment, IonSegmentButton, IonLabel
   ]
 })

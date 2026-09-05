@@ -5,7 +5,7 @@ import {
   IonHeader, IonToolbar, IonTitle, IonButtons, IonButton,
   IonContent, IonItem, IonLabel, IonInput, IonSelect,
   IonSelectOption, IonTextarea, IonToggle, IonIcon,
-  IonGrid, IonRow, IonCol, IonSpinner, ModalController
+  IonGrid, IonRow, IonCol, ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -39,8 +39,7 @@ import { Plan } from 'src/app/services/plan/plan.service';
     IonIcon,
     IonGrid,
     IonRow,
-    IonCol,
-    IonSpinner
+    IonCol
   ]
 })
 export class PlansFormComponent implements OnInit {

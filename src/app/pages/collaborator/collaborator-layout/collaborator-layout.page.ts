@@ -6,7 +6,7 @@ import {
   IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
   IonLabel, IonButtons, IonButton, IonRouterOutlet, IonFooter 
 } from '@ionic/angular/standalone';
-import { RouterLink, RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import {
@@ -45,7 +45,7 @@ interface MenuItem {
   styleUrls: ['./collaborator-layout.page.scss'],
   standalone: true,
   imports: [
-    IonFooter, CommonModule, FormsModule, RouterLink, RouterOutlet,
+    IonFooter, CommonModule, FormsModule, RouterLink,
     IonContent, IonHeader, IonTitle, IonToolbar, IonItem,
     IonIcon, IonList, IonApp, IonSplitPane, IonMenu, IonMenuToggle,
     IonLabel, IonButtons, IonButton, IonRouterOutlet

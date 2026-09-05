@@ -3,10 +3,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
-  IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, 
-  IonCardTitle, IonCardSubtitle, IonCardContent, IonBadge, IonButton, 
-  IonIcon, IonSpinner, IonGrid, IonRow, IonCol, IonItem, IonLabel,
-  IonList, IonNote, IonProgressBar, AlertController
+  IonHeader, IonToolbar, IonTitle, IonContent, IonButton, 
+  IonIcon, IonSpinner, IonProgressBar, AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -27,10 +25,8 @@ import { GlobalService } from 'src/app/services/global/global.service';
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, 
-    IonCardTitle, IonCardSubtitle, IonCardContent, IonBadge, IonButton, 
-    IonIcon, IonSpinner, IonGrid, IonRow, IonCol, IonItem, IonLabel,
-    IonList, IonNote, IonProgressBar
+    IonHeader, IonToolbar, IonTitle, IonContent, IonButton, 
+    IonIcon, IonSpinner, IonProgressBar
   ]
 })
 export class SubscriptionsPage implements OnInit {

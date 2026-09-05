@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
-  IonContent, IonTitle, IonButton, 
+  IonContent, IonButton, 
   IonIcon, IonGrid, IonRow, IonCol, ToastController, ModalController, IonSpinner, IonSkeletonText
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -44,7 +44,7 @@ export type PriorityLevel = 'URGENTE' | 'ALTA' | 'MEDIA' | 'BAIXA';
   styleUrls: ['./home.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonTitle, IonButton, IonIcon, 
+    CommonModule, FormsModule, IonContent, IonButton, IonIcon, 
     IonGrid, IonRow, IonCol, IonSpinner, IonSkeletonText
   ]
 })

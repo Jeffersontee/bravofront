@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, 
-  IonButton, IonButtons, IonMenuButton, IonBadge, IonSkeletonText
+  IonButton, IonButtons, IonMenuButton, IonSkeletonText
 } from '@ionic/angular/standalone';
 import { ServiceService, ServiceItem } from 'src/app/services/service/service.service';
 import { CompanyService, Company } from 'src/app/services/company/company.service';
@@ -31,7 +31,7 @@ export interface CategoryStat {
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, 
-    IonButton, IonButtons, IonMenuButton, IonBadge, IonSkeletonText
+    IonButton, IonButtons, IonMenuButton, IonSkeletonText
   ]
 })
 export class ServicePanelComponent implements OnInit {
