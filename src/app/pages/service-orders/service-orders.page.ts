@@ -39,6 +39,7 @@ export class ServiceOrdersPage implements OnInit {
   searchQuery = signal<string>('');
   
   isLojista = signal<boolean>(false);
+  isNormalUser = signal<boolean>(false);
   canCreateOrder = signal<boolean>(false);
   company = signal<any>(null);
   units = signal<any[]>([]);
@@ -84,11 +85,13 @@ export class ServiceOrdersPage implements OnInit {
         const isOperatorOrSupervisor = (userData.type === 'collaborator' || userData.type === 'admin') && (userData.role === 'operator' || userData.role === 'supervisor');
         const hasCreatePermission = userData.permissions?.includes('SUPER_OPERATIONAL_ORDERS_CREATE') || userData.permissions?.includes('SUPER_OPERATIONAL_CREATE');
 
+        const isUser = userData.type === Strings.USER_TYPE || userData.type === 'user';
         const canCreate = isOwner || isSuper || isOperatorOrSupervisor || hasCreatePermission;
         this.canCreateOrder.set(canCreate);
         this.isLojista.set(isOwner);
+        this.isNormalUser.set(isUser);
 
-        if (userData.type === Strings.USER_TYPE || userData.type === 'user') {
+        if (isUser) {
           filters.user_id = userData._id;
         } else if (isOwner) {
           filters.company_id = userData.company_id;

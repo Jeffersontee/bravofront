@@ -30,21 +30,44 @@
         <p class="service-desc">{{ $any(os.service_id)?.description }}</p>
         
         <div class="info-grid">
-          <div class="info-item">
-            <ion-icon name="business-outline"></ion-icon>
-            <div>
-              <small>Empresa</small>
-              <span>{{ $any(os.company_id)?.name || 'Não informada' }}</span>
+          <!-- Se for solicitação de Customer ou no painel de cliente, exibe Informação do Cliente / Solicitante -->
+          @if (isNormalUser() || os.user_id || !os.company_id) {
+            <div class="info-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <div>
+                <small>Cliente / Solicitante</small>
+                <span>{{ $any(os.user_id)?.name || customerName() || 'Cliente' }}</span>
+                @if ($any(os.user_id)?.email || $any(os.user_id)?.phone) {
+                  <span class="sub-text">
+                    {{ $any(os.user_id)?.email }} {{ $any(os.user_id)?.phone ? '• ' + $any(os.user_id)?.phone : '' }}
+                  </span>
+                }
+              </div>
             </div>
-          </div>
+          } @else {
+            <div class="info-item">
+              <ion-icon name="business-outline"></ion-icon>
+              <div>
+                <small>Empresa</small>
+                <span>{{ $any(os.company_id)?.name || 'Não informada' }}</span>
+              </div>
+            </div>
+          }
+
           <div class="info-item">
             <ion-icon name="location-outline"></ion-icon>
             <div>
               <small>Localização</small>
-              <span>{{ $any(os.unit_id)?.name || 'Unidade Base' }}</span>
-              <span class="sub-text">
-                {{ $any(os.unit_id)?.address?.street }}, {{ $any(os.unit_id)?.address?.number }} - {{ $any(os.unit_id)?.address?.city }}/{{ $any(os.unit_id)?.address?.state }}
-              </span>
+              <span>{{ os.address_override || $any(os.address_id)?.address || $any(os.address_id)?.title || $any(os.unit_id)?.name || 'Endereço de Atendimento' }}</span>
+              @if ($any(os.address_id)?.reference || ($any(os.unit_id)?.address && !os.address_override && !$any(os.address_id)?.address)) {
+                <span class="sub-text">
+                  @if ($any(os.address_id)?.reference) {
+                    Ref: {{ $any(os.address_id)?.reference }}
+                  } @else if ($any(os.unit_id)?.address) {
+                    {{ $any(os.unit_id)?.address?.street }}, {{ $any(os.unit_id)?.address?.number }} - {{ $any(os.unit_id)?.address?.city }}/{{ $any(os.unit_id)?.address?.state }}
+                  }
+                </span>
+              }
             </div>
           </div>
           <div class="info-item">

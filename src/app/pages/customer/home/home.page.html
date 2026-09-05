@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="ion-padding-bottom bg-neutral">
+<ion-content [fullscreen]="true" class="bg-neutral">
   
   <!-- Modo de visualização normal: Grade de Serviços e Busca -->
   @if (!selectedService()) {
@@ -34,47 +34,104 @@
     <!-- Wrapper Flutuante dos Conteúdos -->
     <div class="main-content-wrapper">
 
-      <!-- Seção 'Em andamento' -->
+      <!-- Widget 'Em andamento' Interativo com Live Pulse e Hover Card Preview -->
       @if (activeOrders().length > 0) {
-        <div class="section-container">
-          <div class="section-header-row">
-            <h3 class="section-title">Em andamento</h3>
-            <button class="section-badge-link" (click)="navigateToOrders()">
-              <span>{{ activeOrders().length }} {{ activeOrders().length === 1 ? 'solicitação' : 'solicitações' }}</span>
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </button>
-          </div>
-          
-          <div class="active-orders-list">
-            @for (order of activeOrders(); track order.id) {
-              <div (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
-                <div class="order-info-container">
-                  <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" class="order-icon-wrapper">
-                    <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
-                  </div>
-                  <div class="order-main-details">
-                    <h4 class="order-title">{{ order.category }}</h4>
-                    <div class="order-status-row">
-                      <span class="status-tag-active" [class.status-tag-deslocamento]="order.rawStatus === 'EM_DESLOCAMENTO'">
-                        {{ order.status }}
-                      </span>
-                      <span class="order-est-price">
-                        R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span class="est-label"> est.</span>
-                      </span>
+        <div class="active-orders-section">
+          <div 
+            class="active-orders-widget"
+            (mouseenter)="isHoveringOrders.set(true)"
+            (mouseleave)="isHoveringOrders.set(false)"
+            (click)="navigateToOrders()"
+            tabindex="0"
+            role="button"
+            aria-label="Ver solicitações em andamento"
+          >
+            <!-- Lado Esquerdo: Live Beacon / Radar + Título -->
+            <div class="widget-left">
+              <div class="live-beacon-wrap">
+                <span class="live-beacon-ring"></span>
+                <span class="live-beacon-dot"></span>
+              </div>
+              <div class="widget-text-group">
+                <div class="widget-title-row">
+                  <h3 class="widget-title">Em andamento</h3>
+                  <span class="live-text-tag">Ao vivo</span>
+                </div>
+                <span class="widget-sub">Acompanhe suas solicitações operacionais</span>
+              </div>
+            </div>
+
+            <!-- Lado Direito: Badge Pulsante com Contador e Ação -->
+            <div class="widget-right">
+              <div class="pulse-counter-badge">
+                <span class="pulse-counter-glow"></span>
+                <ion-icon name="document-text-outline" class="badge-doc-icon"></ion-icon>
+                <span class="count-value">{{ activeOrders().length }}</span>
+                <span class="count-text">{{ activeOrders().length === 1 ? 'solicitação' : 'solicitações' }}</span>
+                <ion-icon name="chevron-forward-outline" class="badge-chevron"></ion-icon>
+              </div>
+            </div>
+
+            <!-- Hover Preview Popover Dropdown Flutuante (Desktop e Interativo) -->
+            <div 
+              class="orders-hover-popover" 
+              [class.is-visible]="isHoveringOrders()" 
+              (click)="$event.stopPropagation()"
+            >
+              <div class="popover-header">
+                <div class="popover-title-row">
+                  <span class="popover-live-dot"></span>
+                  <span class="popover-heading">Ordens em Andamento ({{ activeOrders().length }})</span>
+                </div>
+                <button class="popover-all-link" (click)="navigateToOrders(); $event.stopPropagation()">
+                  <span>Ver todas</span>
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </button>
+              </div>
+
+              <div class="popover-list">
+                @for (order of activeOrders().slice(0, 4); track order.id) {
+                  <div class="popover-item" (click)="navigateToOrderDetails(order.id); $event.stopPropagation()">
+                    <div 
+                      class="popover-item-icon" 
+                      [style.background-color]="getCategoryBgColor(order.category)" 
+                      [style.color]="getCategoryIconColor(order.category)"
+                    >
+                      <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
                     </div>
 
-                    <!-- Banner de Rastreio em Deslocamento com ETA -->
-                    @if (order.rawStatus === 'EM_DESLOCAMENTO' && order.estimatedDistanceKm) {
-                      <div class="displacement-eta-pill">
-                        <ion-icon name="navigate-outline"></ion-icon>
-                        <span>A {{ order.estimatedDistanceKm | number:'1.1-1' }} km • Chegada estimada em ~{{ order.estimatedDurationMin || 15 }} min</span>
+                    <div class="popover-item-content">
+                      <div class="popover-item-top">
+                        <span class="popover-item-name">{{ order.category }}</span>
+                        <span class="popover-status-chip" [class.chip-deslocamento]="order.rawStatus === 'EM_DESLOCAMENTO'">
+                          {{ order.status }}
+                        </span>
                       </div>
-                    }
+                      <div class="popover-item-bottom">
+                        <span class="popover-item-price">
+                          R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span class="price-est-sub"> est.</span>
+                        </span>
+                        @if (order.rawStatus === 'EM_DESLOCAMENTO' && order.estimatedDistanceKm) {
+                          <span class="popover-displacement-hint">
+                            <ion-icon name="navigate-outline"></ion-icon>
+                            ~{{ order.estimatedDurationMin || 15 }} min
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <ion-icon name="chevron-forward-outline" class="popover-item-arrow"></ion-icon>
                   </div>
-                </div>
-                <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
+                }
               </div>
-            }
+
+              @if (activeOrders().length > 4) {
+                <div class="popover-footer" (click)="navigateToOrders(); $event.stopPropagation()">
+                  <span>+ {{ activeOrders().length - 4 }} outra(s) solicitação(ões) em andamento</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </div>
+              }
+            </div>
           </div>
         </div>
       }
@@ -84,20 +141,40 @@
         
         <!-- BARRA DE BUSCA + CHIPS DE CATEGORIAS -->
         <div class="controls-card">
-          <!-- BUSCA -->
-          <div class="custom-searchbox">
-            <ion-icon name="search-outline" class="search-icon"></ion-icon>
-            <input 
-              type="text" 
-              [value]="searchTerm()" 
-              (input)="onSearchInput($event)" 
-              placeholder="Buscar por serviço ou especialidade..."
-              class="search-input" />
-            @if (searchTerm()) {
-              <button class="btn-clear-search" (click)="searchTerm.set('')">
-                <ion-icon name="close-circle-outline"></ion-icon>
+          <!-- TOP ROW: BUSCA + TOGGLE (LIST / CARD) -->
+          <div class="controls-top-row">
+            <div class="custom-searchbox">
+              <ion-icon name="search-outline" class="search-icon"></ion-icon>
+              <input 
+                type="text" 
+                [value]="searchTerm()" 
+                (input)="onSearchInput($event)" 
+                placeholder="Buscar por serviço ou especialidade..."
+                class="search-input" />
+              @if (searchTerm()) {
+                <button class="btn-clear-search" (click)="searchTerm.set('')">
+                  <ion-icon name="close-circle-outline"></ion-icon>
+                </button>
+              }
+            </div>
+
+            <!-- TOGGLE VIEW MODE (LIST / CARD) -->
+            <div class="view-toggle-group">
+              <button 
+                class="view-toggle-btn" 
+                [class.view-toggle-btn--active]="viewMode() === 'list'"
+                (click)="viewMode.set('list')"
+                title="Visualização em Lista">
+                <ion-icon name="list-outline"></ion-icon>
               </button>
-            }
+              <button 
+                class="view-toggle-btn" 
+                [class.view-toggle-btn--active]="viewMode() === 'grid'"
+                (click)="viewMode.set('grid')"
+                title="Visualização em Cards">
+                <ion-icon name="grid-outline"></ion-icon>
+              </button>
+            </div>
           </div>
 
           <!-- CATEGORY CHIPS SCROLLER -->
@@ -129,23 +206,37 @@
 
         <!-- SKELETON LOADING -->
         @if (isLoadingServices()) {
-          <ion-grid class="services-grid">
-            <ion-row>
+          @if (viewMode() === 'grid') {
+            <ion-grid class="services-grid">
+              <ion-row>
+                @for (i of [1, 2, 3, 4]; track i) {
+                  <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                    <div class="service-showcase-card skeleton-card">
+                      <ion-skeleton-text [animated]="true" class="sk-icon-box"></ion-skeleton-text>
+                      <ion-skeleton-text [animated]="true" class="sk-title"></ion-skeleton-text>
+                      <ion-skeleton-text [animated]="true" class="sk-desc"></ion-skeleton-text>
+                      <ion-skeleton-text [animated]="true" class="sk-price"></ion-skeleton-text>
+                    </div>
+                  </ion-col>
+                }
+              </ion-row>
+            </ion-grid>
+          } @else {
+            <div class="services-list-container">
               @for (i of [1, 2, 3, 4]; track i) {
-                <ion-col size="6" size-md="4" size-lg="3">
-                  <div class="service-showcase-card skeleton-card">
-                    <ion-skeleton-text [animated]="true" class="sk-icon-box"></ion-skeleton-text>
-                    <ion-skeleton-text [animated]="true" class="sk-title"></ion-skeleton-text>
-                    <ion-skeleton-text [animated]="true" class="sk-desc"></ion-skeleton-text>
-                    <ion-skeleton-text [animated]="true" class="sk-price"></ion-skeleton-text>
+                <div class="service-list-row skeleton-card">
+                  <ion-skeleton-text [animated]="true" class="sk-icon-box-sm"></ion-skeleton-text>
+                  <div class="sk-list-content">
+                    <ion-skeleton-text [animated]="true" class="sk-title-sm"></ion-skeleton-text>
+                    <ion-skeleton-text [animated]="true" class="sk-desc-sm"></ion-skeleton-text>
                   </div>
-                </ion-col>
+                </div>
               }
-            </ion-row>
-          </ion-grid>
+            </div>
+          }
         }
 
-        <!-- GRADE DE SERVIÇOS -->
+        <!-- GRADE OU LISTA DE SERVIÇOS -->
         @if (!isLoadingServices()) {
           @if (filteredServices().length === 0) {
             <div class="empty-state-card">
@@ -155,32 +246,64 @@
               <button class="btn-clear-filters" (click)="clearFilters()">Limpar Busca</button>
             </div>
           } @else {
-            <ion-grid class="services-grid">
-              <ion-row>
-                @for (service of filteredServices(); track service.id) {
-                  <ion-col size="6" size-md="4" size-lg="3">
-                    <div class="bravo-card service-card-showcase" (click)="selectService(service)">
-                      <div class="service-card-top">
-                        <div [style.background-color]="service.bgColor" [style.color]="service.iconColor" class="service-icon-wrapper">
-                          <ion-icon [name]="service.iconName"></ion-icon>
+            <!-- MODO CARD (GRID) -->
+            @if (viewMode() === 'grid') {
+              <ion-grid class="services-grid">
+                <ion-row>
+                  @for (service of filteredServices(); track service.id) {
+                    <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                      <div class="bravo-card service-card-showcase" (click)="selectService(service)">
+                        <div class="service-card-top">
+                          <div [style.background-color]="service.bgColor" [style.color]="service.iconColor" class="service-icon-wrapper">
+                            <ion-icon [name]="service.iconName"></ion-icon>
+                          </div>
+                          <span class="service-category-badge">{{ service.category }}</span>
                         </div>
-                        <span class="service-category-badge">{{ service.category }}</span>
-                      </div>
-                      
-                      <div class="service-card-body">
-                        <h4 class="service-card-title">{{ service.name }}</h4>
-                        <p class="service-card-desc">{{ service.description }}</p>
-                      </div>
+                        
+                        <div class="service-card-body">
+                          <h4 class="service-card-title">{{ service.name }}</h4>
+                          <p class="service-card-desc">{{ service.description }}</p>
+                        </div>
 
-                      <div class="service-card-footer">
-                        <span class="service-price-tag">{{ service.priceText }}</span>
-                        <ion-icon name="chevron-forward-outline" class="service-card-chevron"></ion-icon>
+                        <div class="service-card-footer">
+                          <span class="service-price-tag">{{ service.priceText }}</span>
+                          <ion-icon name="chevron-forward-outline" class="service-card-chevron"></ion-icon>
+                        </div>
+                      </div>
+                    </ion-col>
+                  }
+                </ion-row>
+              </ion-grid>
+            }
+
+            <!-- MODO LISTA (COMPACTO) -->
+            @if (viewMode() === 'list') {
+              <div class="services-list-container">
+                @for (service of filteredServices(); track service.id) {
+                  <div class="bravo-card service-list-row" (click)="selectService(service)">
+                    <div [style.background-color]="service.bgColor" [style.color]="service.iconColor" class="service-list-icon-wrapper">
+                      <ion-icon [name]="service.iconName"></ion-icon>
+                    </div>
+
+                    <div class="service-list-main-info">
+                      <div class="service-list-top-line">
+                        <h4 class="service-list-name">{{ service.name }}</h4>
+                        <span class="service-list-category-pill">{{ service.category }}</span>
+                      </div>
+                      <p class="service-list-desc-text">{{ service.description }}</p>
+                      <div class="service-list-bottom-line">
+                        <span class="service-list-price">{{ service.priceText }}</span>
                       </div>
                     </div>
-                  </ion-col>
+
+                    <div class="service-list-action-link">
+                      <span>Solicitar</span>
+                      <ion-icon name="chevron-forward-outline"></ion-icon>
+                    </div>
+                  </div>
                 }
-              </ion-row>
-            </ion-grid>
+              </div>
+            }
           }
         }
 

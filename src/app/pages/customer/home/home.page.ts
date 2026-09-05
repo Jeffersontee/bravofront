@@ -12,7 +12,8 @@ import {
   wifiOutline, shieldCheckmarkOutline, locationOutline, chevronBackOutline, 
   construct, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline,
   searchOutline, closeCircleOutline, calendarOutline, timeOutline, alertCircleOutline,
-  navigateOutline, mapOutline
+  navigateOutline, mapOutline, gridOutline, listOutline, pulseOutline, arrowForwardOutline,
+  sparklesOutline
 } from 'ionicons/icons';
 import { registerServiceIcons, SERVICE_AVAILABLE_ICONS } from 'src/app/utils/service-icons';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -62,6 +63,10 @@ export class HomePage implements OnInit {
   public isSubmitting = signal<boolean>(false);
   public categoriesSignal = signal<ServiceCategory[]>([]);
   public customerOrders = signal<any[]>([]);
+  public isHoveringOrders = signal<boolean>(false);
+
+  // View Mode: 'grid' (cards) ou 'list' (lista compacta)
+  public viewMode = signal<'grid' | 'list'>('grid');
 
   // Search & Category Filters (idêntico ao catálogo do Super Admin)
   public searchTerm = signal<string>('');
@@ -121,7 +126,8 @@ export class HomePage implements OnInit {
       wifiOutline, shieldCheckmarkOutline, locationOutline, chevronBackOutline, 
       construct, documentTextOutline, checkmarkCircleOutline, searchOutline,
       closeCircleOutline, calendarOutline, timeOutline, alertCircleOutline,
-      navigateOutline, mapOutline
+      navigateOutline, mapOutline, gridOutline, listOutline, pulseOutline,
+      arrowForwardOutline, sparklesOutline
     });
   }
 

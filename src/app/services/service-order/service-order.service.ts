@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Strings } from 'src/app/enum/strings';
 import { Unit } from '../unit/unit.service';
 import { ServiceItem } from '../service/service.service';
+import { Address } from 'src/app/models/address.model';
 
 export interface TimelineEvent {
   status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'RELATORIO_CHECKOUT' | 'AVALIACAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
@@ -15,12 +16,15 @@ export interface TimelineEvent {
 
 export interface ServiceOrder {
   _id?: string;
-  company_id: string | any;
-  unit_id: string | Unit;
+  company_id?: string | any;
+  unit_id?: string | Unit;
+  address_id?: string | Address | any;
   service_id: string | ServiceItem;
   collaborator_id?: string | any;
+  user_id?: string | any;
   scheduled_date?: string | Date;
   proposed_date?: string | Date;
+  schedule_pending_client_approval?: boolean;
   current_status: 'SOLICITADO' | 'DATA_SUGERIDA' | 'PROPOSTO' | 'APROVADO' | 'AGENDADO' | 'EM_DESLOCAMENTO' | 'CHECK_IN' | 'EM_EXECUCAO' | 'RELATORIO_CHECKOUT' | 'AVALIACAO' | 'CONCLUIDO' | 'CANCELADO' | 'RECUSADO';
   timeline?: TimelineEvent[];
   checkin_location?: { lat: number; lng: number };
@@ -79,6 +83,17 @@ export class ServiceOrderService {
   private http = inject(HttpClient);
   private url = `${environment.serverUrl}${Strings.API_SERVICE_ORDERS}`;
 
+  public activeOrdersCount = signal<number>(0);
+
+  public updateActiveCountFromOrders(orders: ServiceOrder[]) {
+    if (!orders || !Array.isArray(orders)) {
+      this.activeOrdersCount.set(0);
+      return;
+    }
+    const count = orders.filter(o => o.current_status !== 'CONCLUIDO' && o.current_status !== 'CANCELADO' && o.current_status !== 'RECUSADO').length;
+    this.activeOrdersCount.set(count);
+  }
+
   getServiceOrders(filters?: { company_id?: string; collaborator_id?: string; user_id?: string; start_date?: string; end_date?: string }): Observable<{ success: boolean; data: ServiceOrder[] }> {
     let query = '';
     if (filters) {
@@ -90,7 +105,13 @@ export class ServiceOrderService {
       if (filters.end_date) params.append('end_date', filters.end_date);
       query = `?${params.toString()}`;
     }
-    return this.http.get<{ success: boolean; data: ServiceOrder[] }>(`${this.url}${query}`);
+    return this.http.get<{ success: boolean; data: ServiceOrder[] }>(`${this.url}${query}`).pipe(
+      tap((res) => {
+        if (res?.success && res?.data) {
+          this.updateActiveCountFromOrders(res.data);
+        }
+      })
+    );
   }
 
   getServiceOrderById(id: string): Observable<{ success: boolean; data: ServiceOrder }> {
