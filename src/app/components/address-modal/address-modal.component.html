@@ -1,0 +1,246 @@
+<ion-header class="ion-no-border modal-header">
+  <ion-toolbar>
+    <ion-title class="modal-title">
+      {{ viewMode() === 'LIST' ? 'Selecionar Endereço de Atendimento' : 'Cadastrar Novo Endereço' }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" class="btn-close">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-content">
+  <div class="modal-container">
+
+    <!-- VIEW MODE: LISTA DE ENDEREÇOS -->
+    @if (viewMode() === 'LIST') {
+      <!-- BOTÃO LOCALIZAÇÃO ATUAL VIA GPS -->
+      <button class="btn-gps-detect" (click)="useCurrentGpsLocation()" [disabled]="isDetectingGps()">
+        <div class="gps-icon-wrap">
+          @if (isDetectingGps()) {
+            <ion-spinner name="crescent" color="primary"></ion-spinner>
+          } @else {
+            <ion-icon name="navigate-outline"></ion-icon>
+          }
+        </div>
+        <div class="gps-text-wrap">
+          <strong>Localização atual</strong>
+          <span>Usando GPS do dispositivo</span>
+        </div>
+      </button>
+
+      <!-- DIVISOR -->
+      <div class="section-title-row">
+        <span class="section-label">Endereços Salvos</span>
+        <button class="btn-add-text" (click)="openNewAddressForm()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          <span>Novo Endereço</span>
+        </button>
+      </div>
+
+      <!-- LISTA DE ENDEREÇOS SALVOS -->
+      @if (addressService.addresses().length === 0) {
+        <div class="empty-addresses-box">
+          <ion-icon name="location-outline"></ion-icon>
+          <p>Você ainda não possui endereços cadastrados.</p>
+          <button class="btn-action-primary" (click)="openNewAddressForm()">
+            Cadastrar Endereço
+          </button>
+        </div>
+      } @else {
+        <div class="addresses-list">
+          @for (addr of addressService.addresses(); track addr._id) {
+            <div 
+              class="address-card-item" 
+              [class.address-card-item--active]="addressService.activeAddress()?._id === addr._id"
+              (click)="selectAddress(addr)">
+              <div class="address-icon-type">
+                <ion-icon [name]="addr.title.toLowerCase().includes('trab') ? 'business-outline' : 'home-outline'"></ion-icon>
+              </div>
+              <div class="address-details">
+                <div class="address-title-row">
+                  <strong class="addr-title">{{ addr.title }}</strong>
+                  @if (addr.is_default) {
+                    <span class="badge-default">Principal</span>
+                  }
+                </div>
+                <p class="addr-street">{{ addr.address || addr.street }}</p>
+                @if (addr.landmark) {
+                  <span class="addr-ref">Ref: {{ addr.landmark }}</span>
+                }
+              </div>
+              <div class="address-select-check">
+                @if (addressService.activeAddress()?._id === addr._id) {
+                  <ion-icon name="checkmark-circle" class="icon-check-active"></ion-icon>
+                } @else {
+                  <ion-icon name="checkmark-circle-outline" class="icon-check-idle"></ion-icon>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- VIEW MODE: FORMULÁRIO DE CADASTRO -->
+    @if (viewMode() === 'FORM') {
+      @if (addressService.addresses().length > 0) {
+        <button class="btn-back-link" (click)="backToList()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          <span>Voltar para meus endereços</span>
+        </button>
+      }
+
+      <div class="form-container">
+        <!-- BUSCA AUTOMÁTICA DE CEP -->
+        <div class="form-group-cep">
+          <label class="input-label">CEP *</label>
+          <div class="cep-input-wrapper">
+            <input 
+              type="text" 
+              [value]="addressCep()" 
+              (input)="onCepInput($event)"
+              placeholder="00000-000" 
+              maxlength="9"
+              class="custom-input cep-input" />
+            @if (isSearchingCep()) {
+              <ion-spinner name="dots" class="cep-spinner"></ion-spinner>
+            }
+          </div>
+          <span class="input-hint">Digite o CEP para preencher o endereço automaticamente via ViaCEP.</span>
+        </div>
+
+        <!-- RUA / LOGRADOURO -->
+        <div class="form-group">
+          <label class="input-label">Rua / Logradouro *</label>
+          <input 
+            type="text" 
+            [value]="addressStreet()" 
+            (input)="addressStreet.set($any($event.target).value)"
+            placeholder="Ex: Rua das Palmeiras" 
+            class="custom-input" />
+        </div>
+
+        <!-- NÚMERO E COMPLEMENTO -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="input-label">Número *</label>
+            <input 
+              type="text" 
+              [value]="addressNumber()" 
+              (input)="addressNumber.set($any($event.target).value)"
+              placeholder="Ex: 120" 
+              class="custom-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="input-label">Complemento</label>
+            <input 
+              type="text" 
+              [value]="addressComplement()" 
+              (input)="addressComplement.set($any($event.target).value)"
+              placeholder="Apto 42, Bloco B" 
+              class="custom-input" />
+          </div>
+        </div>
+
+        <!-- BAIRRO, CIDADE E UF -->
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="input-label">Bairro *</label>
+            <input 
+              type="text" 
+              [value]="addressNeighborhood()" 
+              (input)="addressNeighborhood.set($any($event.target).value)"
+              placeholder="Bairro" 
+              class="custom-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="input-label">Cidade *</label>
+            <input 
+              type="text" 
+              [value]="addressCity()" 
+              (input)="addressCity.set($any($event.target).value)"
+              placeholder="Cidade" 
+              class="custom-input" />
+          </div>
+
+          <div class="form-group uf-group">
+            <label class="input-label">UF *</label>
+            <input 
+              type="text" 
+              [value]="addressState()" 
+              (input)="addressState.set($any($event.target).value)"
+              placeholder="SP" 
+              maxlength="2"
+              class="custom-input uppercase" />
+          </div>
+        </div>
+
+        <!-- IDENTIFICAÇÃO (TÍTULO DO LOCAL) -->
+        <div class="form-group">
+          <label class="input-label">Identificação do Local</label>
+          <div class="chips-title-options">
+            <button 
+              type="button" 
+              class="chip-title-btn" 
+              [class.chip-title-btn--active]="addressTitle() === 'Casa'"
+              (click)="addressTitle.set('Casa')">
+              <ion-icon name="home-outline"></ion-icon>
+              <span>Casa</span>
+            </button>
+            <button 
+              type="button" 
+              class="chip-title-btn" 
+              [class.chip-title-btn--active]="addressTitle() === 'Trabalho'"
+              (click)="addressTitle.set('Trabalho')">
+              <ion-icon name="business-outline"></ion-icon>
+              <span>Trabalho</span>
+            </button>
+            <button 
+              type="button" 
+              class="chip-title-btn" 
+              [class.chip-title-btn--active]="addressTitle() === 'Apartamento'"
+              (click)="addressTitle.set('Apartamento')">
+              <ion-icon name="pin-outline"></ion-icon>
+              <span>Apartamento</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PONTO DE REFERÊNCIA -->
+        <div class="form-group">
+          <label class="input-label">Ponto de Referência</label>
+          <input 
+            type="text" 
+            [value]="addressLandmark()" 
+            (input)="addressLandmark.set($any($event.target).value)"
+            placeholder="Ex: Próximo à padaria central" 
+            class="custom-input" />
+        </div>
+
+        <!-- BOTÃO SALVAR ENDEREÇO -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn-save-address" 
+            (click)="saveAddress()" 
+            [disabled]="isSaving() || !addressStreet() || !addressCity()">
+            @if (isSaving()) {
+              <ion-spinner name="crescent"></ion-spinner>
+              <span>Salvando...</span>
+            } @else {
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Salvar Endereço</span>
+            }
+          </button>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</ion-content>
