@@ -61,20 +61,22 @@
     </ion-select>
   </div>
 
-  <div class="filter-item">
-    <ion-select
-      label="Filtrar por Unidade"
-      labelPlacement="stacked"
-      [value]="selectedUnitFilter()"
-      (ionChange)="selectedUnitFilter.set($event.detail.value)"
-      class="custom-select-filter"
-      interface="popover">
-      <ion-select-option value="">Todas as Unidades</ion-select-option>
-      @for (u of availableUnits(); track u.id) {
-        <ion-select-option [value]="u.id">{{ u.name }}</ion-select-option>
-      }
-    </ion-select>
-  </div>
+  @if (role() !== 'client' && availableUnits().length > 0) {
+    <div class="filter-item">
+      <ion-select
+        label="Filtrar por Unidade"
+        labelPlacement="stacked"
+        [value]="selectedUnitFilter()"
+        (ionChange)="selectedUnitFilter.set($event.detail.value)"
+        class="custom-select-filter"
+        interface="popover">
+        <ion-select-option value="">Todas as Unidades</ion-select-option>
+        @for (u of availableUnits(); track u.id) {
+          <ion-select-option [value]="u.id">{{ u.name }}</ion-select-option>
+        }
+      </ion-select>
+    </div>
+  }
 </div>
 
 <!-- Painel Informativo / Cards de Resumo no topo -->
@@ -157,12 +159,17 @@
                 <div class="location-group">
                   <p class="unit-name">
                     <ion-icon name="location-outline"></ion-icon>
-                    <span>{{ $any(order.unit_id)?.name || 'Unidade não informada' }}</span>
+                    <span>{{ order.address_override || $any(order.address_id)?.address || $any(order.address_id)?.title || $any(order.unit_id)?.name || 'Endereço não informado' }}</span>
                   </p>
                   @if (order.company_id && role() === 'super') {
                     <span class="company-badge">
                       <ion-icon name="business-outline"></ion-icon>
                       {{ $any(order.company_id)?.name }}
+                    </span>
+                  } @else if (order.user_id && role() === 'super') {
+                    <span class="company-badge">
+                      <ion-icon name="person-outline"></ion-icon>
+                      {{ $any(order.user_id)?.name }}
                     </span>
                   }
                 </div>

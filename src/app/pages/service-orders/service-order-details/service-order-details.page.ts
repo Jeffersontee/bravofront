@@ -89,10 +89,11 @@ export class ServiceOrderDetailsPage implements OnInit {
 
   // Exposing roles for logic in HTML
   userType = computed(() => (this.profileService.profile() as any)?.type);
-  isCollaborator = computed(() => this.userType() === Strings.COLLABORATOR_TYPE);
-  isCompanyOwner = computed(() => this.userType() === Strings.COMPANY_OWNER_TYPE);
-  isSuperAdmin = computed(() => this.userType() === Strings.SUPER_TYPE);
-  isNormalUser = computed(() => this.userType() === 'user');
+  isCollaborator = computed(() => this.userType() === Strings.COLLABORATOR_TYPE || this.userType() === 'collaborator');
+  isCompanyOwner = computed(() => this.userType() === Strings.COMPANY_OWNER_TYPE || this.userType() === 'company_owner');
+  isSuperAdmin = computed(() => this.userType() === Strings.SUPER_TYPE || this.userType() === 'super_admin');
+  isNormalUser = computed(() => this.userType() === Strings.USER_TYPE || this.userType() === 'user');
+  customerName = computed(() => this.profileService.profile()?.name || 'Cliente');
 
   // Status computation for actions
   canStartDisplacement = computed(() => {

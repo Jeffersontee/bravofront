@@ -12,10 +12,10 @@
     <app-service-order-list
       [orders]="orders()"
       [isLoading]="isLoading()"
-      [role]="isLojista() ? 'company' : 'collaborator'"
+      [role]="isLojista() ? 'company' : (isNormalUser() ? 'client' : 'collaborator')"
       [showCreateButton]="canCreateOrder()"
       createButtonText="Solicitar Serviço"
-      pageTitle="Listagem de Ordens"
+      pageTitle="Minhas Ordens de Serviço"
       pageSubtitle="Acompanhe suas solicitações e visitas técnicas em tempo real."
       (onRefresh)="loadOrders($event)"
       (onCreate)="openCreateVisitModal()"
