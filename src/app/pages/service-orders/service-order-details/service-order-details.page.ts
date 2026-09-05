@@ -172,9 +172,10 @@ export class ServiceOrderDetailsPage implements OnInit {
             this.startCountdown(os.checkout_time);
           }
 
-          // Carrega colaboradores se for Super Admin
-          if (this.isSuperAdmin()) {
-            this.collaboratorService.getCollaborators().subscribe({
+          // Carrega técnicos disponíveis se for Super Admin ou Dono de Empresa
+          if (this.isSuperAdmin() || this.isCompanyOwner()) {
+            const companyId = typeof os.company_id === 'object' ? (os.company_id as any)?._id : os.company_id;
+            this.collaboratorService.getCollaborators(companyId || undefined).subscribe({
               next: (colRes) => {
                 if (colRes.success) {
                   this.collaborators.set(colRes.data || []);

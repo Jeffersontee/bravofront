@@ -57,6 +57,15 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
   ],
   customer: [
     'ADMIN_ACCOUNT', 'ADMIN_HELP'
+  ],
+  resident: [
+    'ADMIN_ACCOUNT', 'ADMIN_HELP'
+  ],
+  property_manager: [
+    'ADMIN_ACCOUNT', 'ADMIN_HELP'
+  ],
+  corporate_client: [
+    'ADMIN_ACCOUNT', 'ADMIN_HELP'
   ]
 };
 
