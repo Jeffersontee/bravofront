@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border modal-header">
   <ion-toolbar>
     <ion-title class="modal-title">
-      {{ viewMode() === 'LIST' ? 'Selecionar Endereço de Atendimento' : 'Cadastrar Novo Endereço' }}
+      {{ viewMode() === 'LIST' ? 'Endereço de Atendimento' : 'Cadastrar Novo Endereço' }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()" class="btn-close">
@@ -14,9 +14,10 @@
 <ion-content class="modal-content">
   <div class="modal-container">
 
-    <!-- VIEW MODE: LISTA DE ENDEREÇOS -->
+    <!-- VIEW MODE: LISTA E SELEÇÃO DE ENDEREÇOS -->
     @if (viewMode() === 'LIST') {
-      <!-- BOTÃO LOCALIZAÇÃO ATUAL VIA GPS -->
+      
+      <!-- BOTÃO 1: LOCALIZAÇÃO ATUAL VIA GPS -->
       <button class="btn-gps-detect" (click)="useCurrentGpsLocation()" [disabled]="isDetectingGps()">
         <div class="gps-icon-wrap">
           @if (isDetectingGps()) {
@@ -27,73 +28,86 @@
         </div>
         <div class="gps-text-wrap">
           <strong>Localização atual</strong>
-          <span>Usando GPS do dispositivo</span>
+          <span>Usando GPS</span>
         </div>
       </button>
 
-      <!-- DIVISOR -->
+      <!-- SEÇÃO SELECIONE O ENDEREÇO -->
       <div class="section-title-row">
-        <span class="section-label">Endereços Salvos</span>
-        <button class="btn-add-text" (click)="openNewAddressForm()">
-          <ion-icon name="add-circle-outline"></ion-icon>
-          <span>Novo Endereço</span>
-        </button>
+        <span class="section-label">Selecione o Endereço de Atendimento</span>
+        @if (addressService.addresses().length > 0) {
+          <button class="btn-add-text" (click)="openNewAddressForm()">
+            <ion-icon name="add-circle-outline"></ion-icon>
+            <span>Novo</span>
+          </button>
+        }
       </div>
 
-      <!-- LISTA DE ENDEREÇOS SALVOS -->
-      @if (addressService.addresses().length === 0) {
-        <div class="empty-addresses-box">
-          <ion-icon name="location-outline"></ion-icon>
-          <p>Você ainda não possui endereços cadastrados.</p>
-          <button class="btn-action-primary" (click)="openNewAddressForm()">
-            Cadastrar Endereço
-          </button>
+      <!-- BOTÃO 2: INSERIR O LOCAL MANUALMENTE -->
+      <button class="btn-manual-input" (click)="openNewAddressForm()">
+        <div class="manual-icon-wrap">
+          <ion-icon name="search-outline"></ion-icon>
         </div>
-      } @else {
-        <div class="addresses-list">
-          @for (addr of addressService.addresses(); track addr._id) {
-            <div 
-              class="address-card-item" 
-              [class.address-card-item--active]="addressService.activeAddress()?._id === addr._id"
-              (click)="selectAddress(addr)">
-              <div class="address-icon-type">
-                <ion-icon [name]="addr.title.toLowerCase().includes('trab') ? 'business-outline' : 'home-outline'"></ion-icon>
-              </div>
-              <div class="address-details">
-                <div class="address-title-row">
-                  <strong class="addr-title">{{ addr.title }}</strong>
-                  @if (addr.is_default) {
-                    <span class="badge-default">Principal</span>
+        <div class="manual-text-wrap">
+          <strong>Insira o Local Manualmente</strong>
+          <span>Busca por CEP com preenchimento automático</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
+      </button>
+
+      <!-- LISTA DE ENDEREÇOS SALVOS DO CLIENTE -->
+      @if (addressService.addresses().length > 0) {
+        <div class="saved-addresses-block">
+          <span class="sub-label">Endereços Cadastrados</span>
+          <div class="addresses-list">
+            @for (addr of addressService.addresses(); track addr._id) {
+              <div 
+                class="address-card-item" 
+                [class.address-card-item--active]="addressService.activeAddress()?._id === addr._id"
+                (click)="selectAddress(addr)">
+                <div class="address-icon-type">
+                  <ion-icon [name]="addr.title.toLowerCase().includes('trab') ? 'business-outline' : 'home-outline'"></ion-icon>
+                </div>
+                <div class="address-details">
+                  <div class="address-title-row">
+                    <strong class="addr-title">{{ addr.title }}</strong>
+                    @if (addr.is_default) {
+                      <span class="badge-default">Principal</span>
+                    }
+                  </div>
+                  <p class="addr-street">{{ addr.address || addr.street }}</p>
+                  @if (addr.landmark) {
+                    <span class="addr-ref">Ref: {{ addr.landmark }}</span>
                   }
                 </div>
-                <p class="addr-street">{{ addr.address || addr.street }}</p>
-                @if (addr.landmark) {
-                  <span class="addr-ref">Ref: {{ addr.landmark }}</span>
-                }
+                <div class="address-select-check">
+                  @if (addressService.activeAddress()?._id === addr._id) {
+                    <ion-icon name="checkmark-circle" class="icon-check-active"></ion-icon>
+                  } @else {
+                    <ion-icon name="checkmark-circle-outline" class="icon-check-idle"></ion-icon>
+                  }
+                </div>
               </div>
-              <div class="address-select-check">
-                @if (addressService.activeAddress()?._id === addr._id) {
-                  <ion-icon name="checkmark-circle" class="icon-check-active"></ion-icon>
-                } @else {
-                  <ion-icon name="checkmark-circle-outline" class="icon-check-idle"></ion-icon>
-                }
-              </div>
-            </div>
-          }
+            }
+          </div>
         </div>
       }
     }
 
     <!-- VIEW MODE: FORMULÁRIO DE CADASTRO -->
     @if (viewMode() === 'FORM') {
-      @if (addressService.addresses().length > 0) {
-        <button class="btn-back-link" (click)="backToList()">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-          <span>Voltar para meus endereços</span>
-        </button>
-      }
+      <button class="btn-back-link" (click)="backToList()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span>Voltar para seleção</span>
+      </button>
 
       <div class="form-container">
+        <!-- BOTÃO GPS DENTRO DO FORM -->
+        <button type="button" class="btn-gps-inline" (click)="useCurrentGpsLocation()" [disabled]="isDetectingGps()">
+          <ion-icon name="navigate-outline"></ion-icon>
+          <span>{{ isDetectingGps() ? 'Obtendo GPS...' : 'Preencher com GPS Atual' }}</span>
+        </button>
+
         <!-- BUSCA AUTOMÁTICA DE CEP -->
         <div class="form-group-cep">
           <label class="input-label">CEP *</label>
