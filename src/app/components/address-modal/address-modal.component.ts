@@ -210,7 +210,8 @@ export class AddressModalComponent implements OnInit {
     } catch (e: any) {
       this.isSaving.set(false);
       console.error('Erro ao salvar endereço:', e);
-      this.showToast('Erro ao salvar endereço. Tente novamente.', 'danger');
+      const msg = e?.error?.message || 'Erro ao salvar endereço. Tente novamente.';
+      this.showToast(msg, 'danger');
     }
   }
 
