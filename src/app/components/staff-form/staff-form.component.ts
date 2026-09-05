@@ -57,6 +57,7 @@ export class StaffFormComponent implements OnInit {
 
   allTypes = [
     { value: 'super_admin', label: 'Super Administrador' },
+    { value: 'super_staff', label: 'Operador / Staff HQ' },
     { value: 'company_owner', label: 'Dono de Empresa' },
     { value: 'admin', label: 'Gerente / Operador' },
     { value: 'collaborator', label: 'Colaborador / Campo' },
@@ -78,6 +79,13 @@ export class StaffFormComponent implements OnInit {
 
   availableRoles = computed(() => {
     const type = this.selectedType();
+    if (type === 'super_staff') {
+      return [
+        { value: 'supervisor', label: 'Supervisor Geral HQ' },
+        { value: 'backoffice', label: 'Operador / Backoffice HQ' },
+        { value: 'technician', label: 'Técnico Geral HQ' }
+      ];
+    }
     if (type === 'admin') {
       return [
         { value: 'manager', label: 'Gerente Administrativo' },
@@ -101,7 +109,7 @@ export class StaffFormComponent implements OnInit {
 
   isRoleVisible = computed(() => {
     const type = this.selectedType();
-    return type === 'admin' || type === 'collaborator';
+    return type === 'admin' || type === 'collaborator' || type === 'super_staff';
   });
 
   isTechnician = computed(() => {
@@ -240,7 +248,7 @@ export class StaffFormComponent implements OnInit {
     if (!this.staffForm) this.initForm();
 
     const normalizedType = data.type || 'admin';
-    const normalizedRole = data.role || (normalizedType === 'collaborator' ? 'technician' : normalizedType === 'admin' ? 'manager' : normalizedType === 'super_admin' ? 'root' : normalizedType === 'company_owner' ? 'owner' : 'customer');
+    const normalizedRole = data.role || (normalizedType === 'super_staff' ? 'supervisor' : normalizedType === 'collaborator' ? 'technician' : normalizedType === 'admin' ? 'manager' : normalizedType === 'super_admin' ? 'root' : normalizedType === 'company_owner' ? 'owner' : 'customer');
     const specs = (data as any).technician_profile?.specialties || [];
 
     this.selectedType.set(normalizedType);
