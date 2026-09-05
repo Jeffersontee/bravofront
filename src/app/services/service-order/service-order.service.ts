@@ -38,6 +38,8 @@ export interface ServiceOrder {
   fuel_cost?: string;
   zone?: string;
   address_override?: string;
+  estimated_distance_km?: number;
+  estimated_duration_min?: number;
   observations?: string;
 
   // Novos campos comerciais e de acompanhante

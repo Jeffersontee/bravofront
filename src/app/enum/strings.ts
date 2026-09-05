@@ -115,6 +115,7 @@ export enum Strings {
   API_INVOICES = 'invoices',
   API_SUBSCRIPTIONS = 'subscriptions',
   API_PLANS = 'plans',
+  API_ADDRESSES = 'addresses',
 
   // TOKENS
   TOKEN = 'hub_token',

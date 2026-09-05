@@ -1,9 +1,9 @@
 <ion-content [fullscreen]="true" class="ion-padding-bottom bg-neutral">
   
-  <!-- Modo de visualização normal: Grade de Serviços -->
-  <div *ngIf="!selectedCategory(); else requestFormTemplate">
+  <!-- Modo de visualização normal: Grade de Serviços e Busca -->
+  @if (!selectedService()) {
     
-    <!-- Hero Header Dinâmico com Fundo e Logo da Tela de Login -->
+    <!-- Hero Header Dinâmico -->
     <div 
       class="hero-header" 
       [style.background-image]="themeService.currentAppearance()?.background_url ? 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(' + themeService.currentAppearance()?.background_url + ')' : 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(/assets/icon/fundo.jpg)'"
@@ -18,10 +18,16 @@
         </div>
       </div>
       
-      <!-- Caixa de Endereço em Glassmorphism -->
-      <div class="address-bar">
-        <ion-icon name="location-outline" class="address-icon"></ion-icon>
-        <span class="address-text">{{ customerAddress() }}</span>
+      <!-- Caixa de Endereço em Glassmorphism Clicável -->
+      <div class="address-bar" (click)="openAddressModal()" role="button" tabindex="0">
+        <div class="address-left">
+          <ion-icon name="location-outline" class="address-icon"></ion-icon>
+          <div class="address-text-group">
+            <span class="address-label">Local de Atendimento</span>
+            <span class="address-text">{{ currentAddressDisplay() }}</span>
+          </div>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="address-chevron"></ion-icon>
       </div>
     </div>
 
@@ -29,65 +35,162 @@
     <div class="main-content-wrapper">
 
       <!-- Seção 'Em andamento' -->
-      <div *ngIf="activeOrders().length > 0; else noActiveOrders" class="section-container">
-        <div class="section-header-row">
-          <h3 class="section-title">Em andamento</h3>
-          <span class="section-badge-count">{{ activeOrders().length }} {{ activeOrders().length === 1 ? 'solicitação' : 'solicitações' }}</span>
-        </div>
-        
-        <div *ngFor="let order of activeOrders()" (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
-          <div class="order-info-container">
-            <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" class="order-icon-wrapper">
-              <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
-            </div>
-            <div class="order-main-details">
-              <h4 class="order-title">{{ order.category }}</h4>
-              <div class="order-status-row">
-                <span class="status-tag-active">
-                  {{ order.status }}
-                </span>
-                <span class="order-est-price">
-                  R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span class="est-label"> est.</span>
-                </span>
-              </div>
-            </div>
-          </div>
-          <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
-        </div>
-      </div>
-
-      <ng-template #noActiveOrders>
+      @if (activeOrders().length > 0) {
         <div class="section-container">
-          <h3 class="section-title">Em andamento</h3>
-          <div class="bravo-card empty-state-card">
-            <div class="empty-icon-wrapper">
-              <ion-icon name="document-text-outline"></ion-icon>
-            </div>
-            <h4>Nenhum serviço em andamento</h4>
-            <p>Quando você solicitar um serviço, o acompanhamento aparecerá aqui.</p>
+          <div class="section-header-row">
+            <h3 class="section-title">Em andamento</h3>
+            <button class="section-badge-link" (click)="navigateToOrders()">
+              <span>{{ activeOrders().length }} {{ activeOrders().length === 1 ? 'solicitação' : 'solicitações' }}</span>
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+          </div>
+          
+          <div class="active-orders-list">
+            @for (order of activeOrders(); track order.id) {
+              <div (click)="navigateToOrderDetails(order.id)" class="bravo-card active-order-item">
+                <div class="order-info-container">
+                  <div [style.background-color]="getCategoryBgColor(order.category)" [style.color]="getCategoryIconColor(order.category)" class="order-icon-wrapper">
+                    <ion-icon [name]="getCategoryIcon(order.category)"></ion-icon>
+                  </div>
+                  <div class="order-main-details">
+                    <h4 class="order-title">{{ order.category }}</h4>
+                    <div class="order-status-row">
+                      <span class="status-tag-active" [class.status-tag-deslocamento]="order.rawStatus === 'EM_DESLOCAMENTO'">
+                        {{ order.status }}
+                      </span>
+                      <span class="order-est-price">
+                        R$ {{ (order.finalValue || order.initialEstimate) | number:'1.2-2' }}<span class="est-label"> est.</span>
+                      </span>
+                    </div>
+
+                    <!-- Banner de Rastreio em Deslocamento com ETA -->
+                    @if (order.rawStatus === 'EM_DESLOCAMENTO' && order.estimatedDistanceKm) {
+                      <div class="displacement-eta-pill">
+                        <ion-icon name="navigate-outline"></ion-icon>
+                        <span>A {{ order.estimatedDistanceKm | number:'1.1-1' }} km • Chegada estimada em ~{{ order.estimatedDurationMin || 15 }} min</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="chevron-arrow"></ion-icon>
+              </div>
+            }
           </div>
         </div>
-      </ng-template>
+      }
 
-      <!-- Seção de Seleção de Serviços -->
-      <div class="section-container with-bottom">
-        <h3 class="section-title">Selecione o serviço desejado</h3>
-      </div>
+      <!-- SEÇÃO CATÁLOGO DE SERVIÇOS COM BUSCA (Idêntica ao Super Admin) -->
+      <div class="catalog-section">
+        
+        <!-- BARRA DE BUSCA + CHIPS DE CATEGORIAS -->
+        <div class="controls-card">
+          <!-- BUSCA -->
+          <div class="custom-searchbox">
+            <ion-icon name="search-outline" class="search-icon"></ion-icon>
+            <input 
+              type="text" 
+              [value]="searchTerm()" 
+              (input)="onSearchInput($event)" 
+              placeholder="Buscar por serviço ou especialidade..."
+              class="search-input" />
+            @if (searchTerm()) {
+              <button class="btn-clear-search" (click)="searchTerm.set('')">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </button>
+            }
+          </div>
 
-    <!-- Grade de Serviços (Semelhante ao print do Claude) -->
-    <ion-grid class="services-grid">
-      <ion-row>
-        <ion-col size="12" size-sm="6" *ngFor="let cat of categories">
-          <app-card-services [category]="cat" (select)="selectCategory(cat)"></app-card-services>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+          <!-- CATEGORY CHIPS SCROLLER -->
+          <div class="category-chips-scroller">
+            <button 
+              class="category-chip" 
+              [class.category-chip--active]="selectedCategoryFilter() === 'ALL'"
+              (click)="onCategorySelect('ALL')">
+              <span>Todos</span>
+              <span class="chip-count">{{ categoriesSignal().length }}</span>
+            </button>
+
+            @for (cat of availableCategories(); track cat) {
+              <button 
+                class="category-chip" 
+                [class.category-chip--active]="selectedCategoryFilter() === cat"
+                (click)="onCategorySelect(cat)">
+                <span>{{ cat }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- TÍTULO DA SEÇÃO -->
+        <div class="section-title-row-clean">
+          <h3 class="section-title">Serviços Disponíveis</h3>
+          <span class="services-count-hint">{{ filteredServices().length }} opções</span>
+        </div>
+
+        <!-- SKELETON LOADING -->
+        @if (isLoadingServices()) {
+          <ion-grid class="services-grid">
+            <ion-row>
+              @for (i of [1, 2, 3, 4]; track i) {
+                <ion-col size="12" size-sm="6">
+                  <div class="service-showcase-card skeleton-card">
+                    <ion-skeleton-text [animated]="true" class="sk-icon-box"></ion-skeleton-text>
+                    <ion-skeleton-text [animated]="true" class="sk-title"></ion-skeleton-text>
+                    <ion-skeleton-text [animated]="true" class="sk-desc"></ion-skeleton-text>
+                    <ion-skeleton-text [animated]="true" class="sk-price"></ion-skeleton-text>
+                  </div>
+                </ion-col>
+              }
+            </ion-row>
+          </ion-grid>
+        }
+
+        <!-- GRADE DE SERVIÇOS -->
+        @if (!isLoadingServices()) {
+          @if (filteredServices().length === 0) {
+            <div class="empty-state-card">
+              <ion-icon name="search-outline" class="empty-search-icon"></ion-icon>
+              <h4>Nenhum serviço encontrado</h4>
+              <p>Tente buscar por outro termo ou limpe os filtros.</p>
+              <button class="btn-clear-filters" (click)="clearFilters()">Limpar Busca</button>
+            </div>
+          } @else {
+            <ion-grid class="services-grid">
+              <ion-row>
+                @for (service of filteredServices(); track service.id) {
+                  <ion-col size="12" size-sm="6">
+                    <div class="bravo-card service-card-showcase" (click)="selectService(service)">
+                      <div class="service-card-top">
+                        <div [style.background-color]="service.bgColor" [style.color]="service.iconColor" class="service-icon-wrapper">
+                          <ion-icon [name]="service.iconName"></ion-icon>
+                        </div>
+                        <span class="service-category-badge">{{ service.category }}</span>
+                      </div>
+                      
+                      <div class="service-card-body">
+                        <h4 class="service-card-title">{{ service.name }}</h4>
+                        <p class="service-card-desc">{{ service.description }}</p>
+                      </div>
+
+                      <div class="service-card-footer">
+                        <span class="service-price-tag">{{ service.priceText }}</span>
+                        <ion-icon name="chevron-forward-outline" class="service-card-chevron"></ion-icon>
+                      </div>
+                    </div>
+                  </ion-col>
+                }
+              </ion-row>
+            </ion-grid>
+          }
+        }
+
+      </div> <!-- /catalog-section -->
+
     </div> <!-- /main-content-wrapper -->
 
-  </div>
+  } @else {
 
-  <!-- Template do formulário de solicitação -->
-  <ng-template #requestFormTemplate>
+    <!-- TEMPLATE DO FORMULÁRIO DE SOLICITAÇÃO RICO -->
     <div 
       class="hero-header form-hero-header"
       [style.background-image]="themeService.currentAppearance()?.background_url ? 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(' + themeService.currentAppearance()?.background_url + ')' : 'linear-gradient(rgba(26, 26, 26, 0.78), rgba(26, 26, 26, 0.88)), url(/assets/icon/fundo.jpg)'"
@@ -96,36 +199,133 @@
         <button (click)="cancelSelection()" class="back-btn">
           <ion-icon name="chevron-back-outline"></ion-icon>
         </button>
-        <h2 class="form-header-title">Solicitar {{ selectedCategory()?.name }}</h2>
+        <h2 class="form-header-title">Solicitar Atendimento</h2>
       </div>
     </div>
 
     <div class="form-body-wrapper">
       <div class="bravo-card form-card">
+        
+        <!-- CARTÃO DO SERVIÇO SELECIONADO -->
         <div class="form-service-badge">
-          <div [style.background-color]="selectedCategory()?.bgColor" [style.color]="selectedCategory()?.iconColor" class="form-service-icon">
-            <ion-icon [name]="selectedCategory()?.iconName || 'flash-outline'"></ion-icon>
+          <div [style.background-color]="selectedService()?.bgColor" [style.color]="selectedService()?.iconColor" class="form-service-icon">
+            <ion-icon [name]="selectedService()?.iconName || 'construct-outline'"></ion-icon>
           </div>
           <div class="form-service-info">
-            <h4>{{ selectedCategory()?.name }}</h4>
-            <span>{{ selectedCategory()?.priceText }}</span>
+            <h4>{{ selectedService()?.name }}</h4>
+            <span class="form-service-price">{{ selectedService()?.priceText }}</span>
           </div>
         </div>
 
-        <label class="form-label">Descrição do Problema / Serviço</label>
-        <textarea 
-          placeholder="Descreva detalhadamente o que você precisa (ex: Troca de disjuntor geral que está desarmando)..." 
-          [ngModel]="serviceDescription()" 
-          (ngModelChange)="serviceDescription.set($event)"
-          rows="5"
-          class="form-textarea"
-        ></textarea>
+        <!-- ENDEREÇO DE ATENDIMENTO DO CLIENTE -->
+        <div class="form-address-block">
+          <div class="block-header">
+            <label class="form-label mb-0">Endereço de Atendimento *</label>
+            <button type="button" class="btn-change-address" (click)="openAddressModal()">
+              <ion-icon name="location-outline"></ion-icon>
+              <span>{{ addressService.activeAddress() ? 'Alterar' : 'Cadastrar' }}</span>
+            </button>
+          </div>
+          <div class="address-preview-box" (click)="openAddressModal()">
+            <ion-icon name="pin-outline" class="pin-icon"></ion-icon>
+            <div class="address-preview-details">
+              @if (addressService.activeAddress()) {
+                <strong>{{ addressService.activeAddress()?.title }}</strong>
+                <span>{{ addressService.activeAddress()?.address }}</span>
+              } @else {
+                <span class="text-warning">Nenhum endereço selecionado. Clique aqui para definir.</span>
+              }
+            </div>
+            <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+          </div>
+        </div>
 
-        <ion-button expand="block" (click)="submitRequest()" [disabled]="!serviceDescription().trim() || isSubmitting()" class="form-submit-btn">
-          {{ isSubmitting() ? 'Solicitando...' : 'Solicitar Serviço' }}
+        <!-- DATA E HORÁRIO SUGERIDOS -->
+        <div class="form-group-field">
+          <label class="form-label">Data e Horário Sugeridos *</label>
+          <div class="input-icon-wrapper">
+            <ion-icon name="calendar-outline" class="field-icon"></ion-icon>
+            <input 
+              type="datetime-local" 
+              [ngModel]="suggestedDate()" 
+              (ngModelChange)="suggestedDate.set($event)"
+              class="form-datetime-input" />
+          </div>
+          <span class="field-hint">A data e horário sugeridos serão analisados pela nossa central de agendamento.</span>
+        </div>
+
+        <!-- ESCOLHA A PRIORIDADE -->
+        <div class="form-priority-block">
+          <label class="form-label">Escolha a Prioridade</label>
+          <p class="priority-desc">Classifique a solicitação para que a Central possa planejar o atendimento.</p>
+
+          <div class="priority-grid">
+            <button 
+              type="button" 
+              class="priority-btn priority-urgente"
+              [class.priority-btn--selected]="selectedPriority() === 'URGENTE'"
+              (click)="setPriority('URGENTE')">
+              <span class="dot-urgente"></span>
+              <strong>URGENTE</strong>
+            </button>
+
+            <button 
+              type="button" 
+              class="priority-btn priority-alta"
+              [class.priority-btn--selected]="selectedPriority() === 'ALTA'"
+              (click)="setPriority('ALTA')">
+              <span class="dot-alta"></span>
+              <strong>ALTA</strong>
+            </button>
+
+            <button 
+              type="button" 
+              class="priority-btn priority-media"
+              [class.priority-btn--selected]="selectedPriority() === 'MEDIA'"
+              (click)="setPriority('MEDIA')">
+              <span class="dot-media"></span>
+              <strong>MÉDIA</strong>
+            </button>
+
+            <button 
+              type="button" 
+              class="priority-btn priority-baixa"
+              [class.priority-btn--selected]="selectedPriority() === 'BAIXA'"
+              (click)="setPriority('BAIXA')">
+              <span class="dot-baixa"></span>
+              <strong>BAIXA</strong>
+            </button>
+          </div>
+        </div>
+
+        <!-- DESCRIÇÃO DO PROBLEMA / SERVIÇO -->
+        <div class="form-group-field">
+          <label class="form-label">Descrição do Problema / Serviço *</label>
+          <textarea 
+            placeholder="Descreva detalhadamente o que você precisa (ex: Troca de disjuntor geral que está desarmando)..." 
+            [ngModel]="serviceDescription()" 
+            (ngModelChange)="serviceDescription.set($event)"
+            rows="4"
+            class="form-textarea"
+          ></textarea>
+        </div>
+
+        <!-- BOTÃO SOLICITAR SERVIÇO -->
+        <ion-button 
+          expand="block" 
+          (click)="submitRequest()" 
+          [disabled]="!serviceDescription().trim() || !addressService.activeAddress() || isSubmitting()" 
+          class="form-submit-btn">
+          @if (isSubmitting()) {
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>Solicitando...</span>
+          } @else {
+            <span>SOLICITAR SERVIÇO</span>
+          }
         </ion-button>
+
       </div>
     </div>
-  </ng-template>
+  }
 
 </ion-content>
