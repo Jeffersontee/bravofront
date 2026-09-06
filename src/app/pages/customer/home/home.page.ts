@@ -13,7 +13,7 @@ import {
   construct, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline,
   searchOutline, closeCircleOutline, calendarOutline, timeOutline, alertCircleOutline,
   navigateOutline, mapOutline, gridOutline, listOutline, pulseOutline, arrowForwardOutline,
-  sparklesOutline
+  sparklesOutline, pinOutline
 } from 'ionicons/icons';
 import { registerServiceIcons, SERVICE_AVAILABLE_ICONS } from 'src/app/utils/service-icons';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -127,7 +127,7 @@ export class HomePage implements OnInit {
       construct, documentTextOutline, checkmarkCircleOutline, searchOutline,
       closeCircleOutline, calendarOutline, timeOutline, alertCircleOutline,
       navigateOutline, mapOutline, gridOutline, listOutline, pulseOutline,
-      arrowForwardOutline, sparklesOutline
+      arrowForwardOutline, sparklesOutline, pinOutline
     });
   }
 

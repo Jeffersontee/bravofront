@@ -1,7 +1,13 @@
 <ion-header class="ion-no-border modal-header">
   <ion-toolbar>
     <ion-title class="modal-title">
-      {{ viewMode() === 'LIST' ? 'Endereço de Atendimento' : 'Cadastrar Novo Endereço' }}
+      @if (viewMode() === 'LIST') {
+        Endereço de Atendimento
+      } @else if (viewMode() === 'GPS_MAP') {
+        Confirmar Localização
+      } @else {
+        Cadastrar Novo Endereço
+      }
     </ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()" class="btn-close">
@@ -94,7 +100,109 @@
       }
     }
 
-    <!-- VIEW MODE: FORMULÁRIO DE CADASTRO -->
+    <!-- VIEW MODE: PRÉ-TELA DE CONFIRMAÇÃO COM MINI MAPA (GPS_MAP) -->
+    @if (viewMode() === 'GPS_MAP') {
+      <div class="gps-map-view">
+        
+        <!-- MINI MAPA INTERATIVO -->
+        <div class="map-wrapper">
+          <app-map 
+            [center]="{ lat: addressLat(), lng: addressLng() }" 
+            (locationChange)="onMapLocationChange($event)">
+          </app-map>
+        </div>
+
+        <!-- RESUMO DO ENDEREÇO COM BOTÃO DE MUDAR -->
+        <div class="location-summary-card">
+          <div class="summary-top">
+            <div class="summary-icon">
+              <ion-icon name="location-outline"></ion-icon>
+            </div>
+            <div class="summary-text">
+              <strong class="summary-title">{{ addressStreet() }} {{ addressNumber() ? ', ' + addressNumber() : '' }}</strong>
+              <p class="summary-sub">{{ gpsFormattedAddress() || addressStreet() + ' - ' + addressNeighborhood() + ', ' + addressCity() + ' - ' + addressState() }}</p>
+            </div>
+            <button type="button" class="btn-change-loc" (click)="openNewAddressForm()">
+              <span>MUDAR ENDEREÇO</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CAMPOS DE COMPLEMENTO E CONFIRMAÇÃO -->
+        <div class="form-container compact">
+          <div class="form-group">
+            <label class="input-label">CASA / APARTAMENTO / BLOCO Nº. *</label>
+            <input 
+              type="text" 
+              [value]="addressNumber()" 
+              (input)="addressNumber.set($any($event.target).value)"
+              placeholder="Ex: 276 ou Apto 12" 
+              class="custom-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="input-label">PONTO DE REFERÊNCIA</label>
+            <input 
+              type="text" 
+              [value]="addressLandmark()" 
+              (input)="addressLandmark.set($any($event.target).value)"
+              placeholder="Ex: Próximo à padaria / Esquina" 
+              class="custom-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="input-label">SALVAR COMO</label>
+            <div class="chips-title-options">
+              <button 
+                type="button" 
+                class="chip-title-btn" 
+                [class.chip-title-btn--active]="addressTitle() === 'Casa'"
+                (click)="addressTitle.set('Casa')">
+                <ion-icon name="home-outline"></ion-icon>
+                <span>Casa</span>
+              </button>
+              <button 
+                type="button" 
+                class="chip-title-btn" 
+                [class.chip-title-btn--active]="addressTitle() === 'Trabalho'"
+                (click)="addressTitle.set('Trabalho')">
+                <ion-icon name="business-outline"></ion-icon>
+                <span>Trabalho</span>
+              </button>
+              <button 
+                type="button" 
+                class="chip-title-btn" 
+                [class.chip-title-btn--active]="addressTitle() === 'Apartamento'"
+                (click)="addressTitle.set('Apartamento')">
+                <ion-icon name="pin-outline"></ion-icon>
+                <span>Apartamento</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- BOTÃO SALVAR E PROSSEGUIR -->
+          <div class="form-actions">
+            <button 
+              type="button" 
+              class="btn-save-address" 
+              (click)="saveAddress()" 
+              [disabled]="isSaving() || !addressStreet()">
+              @if (isSaving()) {
+                <ion-spinner name="crescent"></ion-spinner>
+                <span>Salvando...</span>
+              } @else {
+                <ion-icon name="checkmark-outline"></ion-icon>
+                <span>SALVAR E PROSSEGUIR</span>
+              }
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    }
+
+    <!-- VIEW MODE: FORMULÁRIO MANUAL DE CADASTRO -->
     @if (viewMode() === 'FORM') {
       <button class="btn-back-link" (click)="backToList()">
         <ion-icon name="arrow-back-outline"></ion-icon>

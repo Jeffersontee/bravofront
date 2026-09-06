@@ -1,0 +1,73 @@
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  min-height: 200px;
+  background: var(--ion-color-step-100, #f1f5f9);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--ion-color-step-200, #e2e8f0);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+
+  .map {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 250ms ease-in-out;
+
+    &.visible {
+      opacity: 1;
+    }
+  }
+
+  .map-center-pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+    z-index: 10;
+
+    .pin-marker {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .pin-dot {
+        width: 16px;
+        height: 16px;
+        background: var(--ion-color-primary, #3b82f6);
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .pin-pulse {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(var(--ion-color-primary-rgb, 59, 130, 246), 0.5);
+        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      }
+    }
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
