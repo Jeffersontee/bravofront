@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { 
   IonContent, IonButton, 
-  IonIcon, IonGrid, IonRow, IonCol, ToastController, ModalController, IonSpinner, IonSkeletonText
+  IonIcon, IonGrid, IonRow, IonCol, ToastController, ModalController, IonSpinner, IonSkeletonText,
+  IonRefresher, IonRefresherContent
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
@@ -13,7 +14,7 @@ import {
   construct, chevronForwardOutline, documentTextOutline, checkmarkCircleOutline,
   searchOutline, closeCircleOutline, calendarOutline, timeOutline, alertCircleOutline,
   navigateOutline, mapOutline, gridOutline, listOutline, pulseOutline, arrowForwardOutline,
-  sparklesOutline, pinOutline
+  sparklesOutline, pinOutline, chevronDownCircleOutline
 } from 'ionicons/icons';
 import { registerServiceIcons, SERVICE_AVAILABLE_ICONS } from 'src/app/utils/service-icons';
 import { ThemeService } from '../../../services/theme/theme.service';
@@ -46,7 +47,8 @@ export type PriorityLevel = 'URGENTE' | 'ALTA' | 'MEDIA' | 'BAIXA';
   standalone: true,
   imports: [
     CommonModule, FormsModule, IonContent, IonButton, IonIcon, 
-    IonGrid, IonRow, IonCol, IonSpinner, IonSkeletonText
+    IonGrid, IonRow, IonCol, IonSpinner, IonSkeletonText,
+    IonRefresher, IonRefresherContent
   ]
 })
 export class HomePage implements OnInit {
@@ -127,7 +129,7 @@ export class HomePage implements OnInit {
       construct, documentTextOutline, checkmarkCircleOutline, searchOutline,
       closeCircleOutline, calendarOutline, timeOutline, alertCircleOutline,
       navigateOutline, mapOutline, gridOutline, listOutline, pulseOutline,
-      arrowForwardOutline, sparklesOutline, pinOutline
+      arrowForwardOutline, sparklesOutline, pinOutline, chevronDownCircleOutline
     });
   }
 
@@ -137,6 +139,22 @@ export class HomePage implements OnInit {
     await this.addressService.loadUserAddresses();
     this.loadCatalogServices();
     this.loadCustomerOrders();
+  }
+
+  public async doRefresh(event: any) {
+    try {
+      this.themeService.loadAppearance('GLOBAL');
+      await this.profileService.getProfile(true);
+      await this.addressService.loadUserAddresses();
+      this.loadCatalogServices();
+      this.loadCustomerOrders();
+    } catch (e) {
+      console.error('Erro ao atualizar tela:', e);
+    } finally {
+      if (event?.target?.complete) {
+        event.target.complete();
+      }
+    }
   }
 
   private initDefaultSuggestedDate() {
@@ -434,6 +452,7 @@ export class HomePage implements OnInit {
           this.isSubmitting.set(false);
           this.selectedService.set(null);
           this.serviceDescription.set('');
+          this.loadCustomerOrders();
 
           const toast = await this.toastController.create({
             message: 'Serviço solicitado com sucesso! Acompanhe o status pelo painel.',

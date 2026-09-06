@@ -1,5 +1,14 @@
 <ion-content [fullscreen]="true" class="bg-neutral">
   
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Puxe para atualizar"
+      refreshingSpinner="crescent"
+      refreshingText="Atualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+  
   <!-- Modo de visualização normal: Grade de Serviços e Busca -->
   @if (!selectedService()) {
     
@@ -267,7 +276,10 @@
 
                         <div class="service-card-footer">
                           <span class="service-price-tag">{{ service.priceText }}</span>
-                          <ion-icon name="chevron-forward-outline" class="service-card-chevron"></ion-icon>
+                          <div class="service-card-solicitar-btn">
+                            <span>Solicitar</span>
+                            <ion-icon name="chevron-forward-outline" class="service-card-chevron"></ion-icon>
+                          </div>
                         </div>
                       </div>
                     </ion-col>
@@ -276,11 +288,11 @@
               </ion-grid>
             }
 
-            <!-- MODO LISTA (COMPACTO) -->
+            <!-- MODO LISTA (COMPACTO E CENTRALIZADO) -->
             @if (viewMode() === 'list') {
               <div class="services-list-container">
                 @for (service of filteredServices(); track service.id) {
-                  <div class="bravo-card service-list-row" (click)="selectService(service)">
+                  <div class="service-list-row" (click)="selectService(service)">
                     <div [style.background-color]="service.bgColor" [style.color]="service.iconColor" class="service-list-icon-wrapper">
                       <ion-icon [name]="service.iconName"></ion-icon>
                     </div>
