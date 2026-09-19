@@ -155,21 +155,35 @@
 
                   <div class="mockup-service-grid">
                     <div class="service-pill-card">
-                      <div class="service-pill-icon blue"><ion-icon name="flash-outline"></ion-icon></div>
+                      <div class="service-pill-icon" [style.background]="primaryColor()" [style.color]="'#ffffff'">
+                        <ion-icon name="flash-outline"></ion-icon>
+                      </div>
                       <span>Elétrica</span>
                     </div>
                     <div class="service-pill-card">
-                      <div class="service-pill-icon orange"><ion-icon name="hammer-outline"></ion-icon></div>
+                      <div class="service-pill-icon" [style.background]="primaryColor()" [style.color]="'#ffffff'">
+                        <ion-icon name="hammer-outline"></ion-icon>
+                      </div>
                       <span>Civil</span>
                     </div>
                     <div class="service-pill-card">
-                      <div class="service-pill-icon cyan"><ion-icon name="water-outline"></ion-icon></div>
+                      <div class="service-pill-icon" [style.background]="primaryColor()" [style.color]="'#ffffff'">
+                        <ion-icon name="water-outline"></ion-icon>
+                      </div>
                       <span>Hidráulica</span>
                     </div>
                     <div class="service-pill-card">
-                      <div class="service-pill-icon slate"><ion-icon name="construct-outline"></ion-icon></div>
+                      <div class="service-pill-icon" [style.background]="primaryColor()" [style.color]="'#ffffff'">
+                        <ion-icon name="construct-outline"></ion-icon>
+                      </div>
                       <span>Serralheria</span>
                     </div>
+                  </div>
+
+                  <!-- Botão de Ação / Solicitar Serviço na Home Mockup -->
+                  <div class="mockup-home-action-btn" [style.background]="primaryColor()">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                    <span>Solicitar Atendimento</span>
                   </div>
                 </div>
 
@@ -178,18 +192,18 @@
           </div>
         }
 
-        <!-- PREVIEW 2: MENU & PAINEL (COMPANY OWNER OU SUPER ADMIN NA ABA PAINEL) -->
+        <!-- PREVIEW 3: MENU & PAINEL (COMPANY OWNER OU SUPER ADMIN NA ABA PAINEL) -->
         @if (tenantType() === 'COMPANY' || previewTab() === 'dashboard') {
           <div class="phone-mockup desktop-mockup-frame">
             <div class="phone-notch"></div>
 
-            <div class="phone-screen dashboard-mockup-screen">
+            <div class="phone-screen dashboard-mockup-screen" [ngClass]="currentTheme()">
               <div class="dashboard-preview-container">
                 <!-- SIDEBAR ESQUERDA -->
                 <div class="dashboard-sidebar" [class.theme-dark-sidebar]="currentTheme() === 'dark'">
                   <div class="sidebar-header">Painel Administrativo</div>
                   <div class="sidebar-menu">
-                    <div class="sidebar-item active" [style.background]="currentTheme() === 'dark' ? 'rgba(var(--ion-color-primary-rgb), 0.2)' : 'rgba(var(--ion-color-primary-rgb), 0.12)'" [style.color]="primaryColor()">
+                    <div class="sidebar-item active" [style.background]="currentTheme() === 'dark' ? 'rgba(var(--ion-color-primary-rgb), 0.25)' : 'rgba(var(--ion-color-primary-rgb), 0.12)'" [style.color]="primaryColor()">
                       <ion-icon name="speedometer-outline" [style.color]="primaryColor()"></ion-icon> Dashboard
                     </div>
                     <div class="sidebar-item">
@@ -217,7 +231,7 @@
                 </div>
 
                 <!-- PAINEL DIREITA -->
-                <div class="dashboard-content">
+                <div class="dashboard-content" [class.theme-dark-content]="currentTheme() === 'dark'">
                   <div class="dash-top-bar">Dashboard</div>
                   <div class="dash-cards-grid">
                     <div class="dash-card">
@@ -354,9 +368,17 @@
               </div>
               
               <!-- Custom color picker input -->
-              <div class="color-circle custom-color-picker">
+              <div class="color-circle custom-color-picker"
+                   [class.active]="isCustomColor()"
+                   [style.background]="isCustomColor() ? primaryColor() : '#f1f5f9'">
+                <ion-icon name="checkmark-outline" *ngIf="isCustomColor()" [style.color]="'#ffffff'"></ion-icon>
                 <ion-icon name="add-outline" *ngIf="!isCustomColor()"></ion-icon>
-                <input type="color" [value]="primaryColor()" (change)="onCustomColorChange($event)">
+                <input 
+                  type="color" 
+                  [value]="primaryColor()" 
+                  (input)="onCustomColorChange($event)"
+                  (change)="onCustomColorChange($event)"
+                  title="Escolher cor personalizada">
               </div>
             </div>
             <div class="selected-color-hex">
