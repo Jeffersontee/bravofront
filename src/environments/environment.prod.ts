@@ -3,8 +3,8 @@ import { Environment } from './environment.model';
 export const environment: Environment = {
   production: true,
   deliveryRadiusKm: 120,
-  serverUrl: 'https://bravo-production-app-94ee98927401.herokuapp.com/api/',
-  imageUrl: 'https://bravo-production-app-94ee98927401.herokuapp.com/uploads/',
+  serverUrl: 'https://bravoback.discloud.app/api/',
+  imageUrl: 'https://bravoback.discloud.app/uploads/',
   googleMapsApiKey: 'AIzaSyAFe1BrhL_Wi4S28qkEz2X55ByJZOoVobo',
   firebaseAPIKey: 'AIzaSyB2izmqvdJHMQB4L9Fg9WpfHwMQDe4G_uA',
   firebaseConfig: {
