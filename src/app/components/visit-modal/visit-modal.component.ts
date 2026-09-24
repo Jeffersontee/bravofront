@@ -76,11 +76,15 @@ export class VisitModalComponent implements OnInit {
         formattedDate = loc.toISOString().slice(0, 16);
       }
       
+      const obsText = this.serviceOrder.observations || this.serviceOrder.notes || '';
+
       this.visitForm.patchValue({
         ...this.serviceOrder,
         unit_id: unitId,
         service_id: serviceId,
-        scheduled_date: formattedDate
+        scheduled_date: formattedDate,
+        notes: obsText,
+        observations: obsText
       });
 
       // Find the category of the selected service
@@ -176,6 +180,9 @@ export class VisitModalComponent implements OnInit {
     this.isLoading = true;
     const payload = this.visitForm.value;
     payload.company_id = this.company._id;
+    const text = (payload.notes || payload.observations || '').trim();
+    payload.notes = text;
+    payload.observations = text;
 
     try {
       if (this.serviceOrder && this.serviceOrder._id) {

@@ -476,26 +476,27 @@
     justify-content: center;
     gap: 8px;
     padding: 12px 22px;
-    background-color: var(--brand-color);
+    background: linear-gradient(135deg, #3b82f6 0%, var(--brand-color, #1d4ed8) 100%);
     color: #ffffff;
     border: none;
     font-weight: 700;
     font-size: 13px;
     letter-spacing: 0.02em;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb, 29, 78, 216), 0.25);
+    box-shadow: 0 4px 14px rgba(var(--ion-color-primary-rgb, 29, 78, 216), 0.35);
     
     ion-icon {
       font-size: 18px;
+      color: #ffffff;
     }
     
     &:hover {
-      background-color: var(--brand-hover);
       transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(var(--ion-color-primary-rgb, 29, 78, 216), 0.35);
+      box-shadow: 0 6px 18px rgba(var(--ion-color-primary-rgb, 29, 78, 216), 0.45);
+      filter: brightness(1.05);
     }
 
     &:active {
@@ -536,6 +537,16 @@
     grid-template-columns: repeat(6, 1fr);
     gap: 16px;
     padding: 24px 28px 12px;
+  }
+
+  &.kpi-row--company {
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 
   .kpi-card {
@@ -700,10 +711,10 @@
       ::ng-deep .date-filter-btn {
         width: 100%;
         height: 100%;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        background: var(--ion-color-step-50, #f8fafc) !important;
+        border: 1px solid var(--border-color) !important;
         border-radius: 8px;
-        color: var(--text-primary);
+        color: var(--text-primary) !important;
         box-shadow: none;
         backdrop-filter: none;
         justify-content: flex-start;
@@ -715,8 +726,8 @@
         }
         
         &:hover {
-          background: #f8fafc;
-          border-color: var(--brand-color);
+          background: var(--ion-color-step-100, #f1f5f9) !important;
+          border-color: var(--brand-color) !important;
         }
       }
     }
@@ -725,18 +736,28 @@
       width: 100%;
       height: 100%;
       padding: 0 12px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-color) !important;
       border-radius: 8px;
       font-size: 13.5px;
       font-family: var(--font-family, 'Outfit', 'Inter', sans-serif);
       font-weight: 500;
-      color: var(--text-primary);
-      background-color: #ffffff;
+      color: var(--text-primary) !important;
+      background-color: var(--ion-color-step-50, #f8fafc) !important;
       transition: border-color 0.2s, box-shadow 0.2s;
+      
+      &::placeholder {
+        color: var(--text-secondary) !important;
+        opacity: 0.8;
+      }
+
+      option {
+        background-color: var(--card-bg, #1e293b);
+        color: var(--text-primary, #ffffff);
+      }
       
       &:focus {
         outline: none;
-        border-color: var(--brand-color);
+        border-color: var(--brand-color) !important;
         box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb, 29, 78, 216), 0.15);
       }
     }
@@ -750,20 +771,20 @@
       
       .clear-btn {
         padding: 0 14px;
-        background: #f1f5f9;
+        background: var(--ion-color-step-100, #f1f5f9);
         border: 1px solid var(--border-color);
         border-radius: 8px;
         font-size: 12px;
         font-family: var(--font-family, 'Outfit', 'Inter', sans-serif);
         font-weight: 700;
         cursor: pointer;
-        color: var(--text-secondary);
+        color: var(--text-primary);
         white-space: nowrap;
         transition: all 0.2s;
         
         &:hover {
-          background: #e2e8f0;
-          color: var(--text-primary);
+          background: var(--ion-color-step-200, #e2e8f0);
+          color: var(--brand-color);
         }
       }
     }
@@ -825,7 +846,7 @@
       }
       
       &:hover { 
-        background-color: #f8fafc; 
+        background-color: var(--ion-color-step-50, #f8fafc); 
       }
 
       @media (max-width: 640px) {

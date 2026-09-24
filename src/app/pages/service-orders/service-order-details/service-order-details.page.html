@@ -104,6 +104,17 @@
               </div>
             </div>
           }
+
+          <!-- Observações e Instruções da OS -->
+          @if (os.observations || os.notes) {
+            <div class="info-item" style="grid-column: 1 / -1; background: #f8f9fa; padding: 12px 14px; border-radius: 10px; border-left: 3px solid var(--ion-color-primary);">
+              <ion-icon name="document-text-outline"></ion-icon>
+              <div>
+                <small>Instruções / Observações</small>
+                <span style="font-weight: 500; font-size: 0.9rem; color: #2c3e50; white-space: pre-wrap;">{{ os.observations || os.notes }}</span>
+              </div>
+            </div>
+          }
         </div>
       </div>
 

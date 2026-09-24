@@ -2,11 +2,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #1e293b;
+  background: var(--ion-color-step-50, #ffffff);
+  border: 1px solid var(--ion-color-light, #cbd5e1);
+  color: var(--ion-text-color, #1e293b);
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: var(--ion-font-family, inherit);
   font-size: 0.9rem;
   font-weight: 600;
@@ -15,18 +15,18 @@
 
   ion-icon {
     font-size: 1.2rem;
-    color: var(--brand-color, #f59e0b);
+    color: var(--ion-color-primary, #1d4ed8);
   }
 
   &:hover {
-    background: #f8fafc;
-    border-color: var(--brand-color, #f59e0b);
+    background: var(--ion-color-step-100, #f8fafc);
+    border-color: var(--ion-color-primary, #1d4ed8);
   }
 }
 
 .date-modal {
   --border-radius: 16px;
-  --background: #ffffff;
+  --background: var(--ion-card-background, #ffffff);
   --height: 90vh;
   --width: 95vw;
   
@@ -37,19 +37,20 @@
 }
 
 .date-modal-toolbar {
-  --background: #f8fafc;
-  --color: #1e293b;
-  border-bottom: 1px solid #e2e8f0;
+  --background: var(--ion-card-background, #f8fafc);
+  --color: var(--ion-text-color, #1e293b);
+  border-bottom: 1px solid var(--ion-color-light, #e2e8f0);
 
   ion-title {
     font-size: 1.05rem;
     font-weight: 600;
+    color: var(--ion-text-color, #1e293b);
     letter-spacing: -0.01em;
   }
 }
 
 .date-content {
-  --background: #ffffff;
+  --background: var(--ion-card-background, #ffffff);
 }
 
 .calendar-layout {
@@ -94,7 +95,7 @@
     }
     
     .column-title {
-      color: #475569;
+      color: var(--ion-text-color, #475569);
       font-size: 0.95rem;
       font-weight: 600;
     }
@@ -114,7 +115,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #cbd5e1;
+  color: var(--ion-color-step-400, #cbd5e1);
   padding-top: 180px;
   
   @media (max-width: 767px) {
@@ -128,13 +129,13 @@
 
 .date-modal-footer {
   padding: 16px 24px;
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background: var(--ion-card-background, #f8fafc);
+  border-top: 1px solid var(--ion-color-light, #e2e8f0);
 
   .brv-btn-primary {
-    --background: #f59e0b;
-    --background-hover: #d97706;
-    --color: #000;
+    --background: var(--ion-color-primary, #1d4ed8);
+    --background-hover: var(--ion-color-primary-shade, #1a44be);
+    --color: #ffffff;
     --border-radius: 8px;
     margin: 0;
     font-weight: 700;

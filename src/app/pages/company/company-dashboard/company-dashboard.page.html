@@ -164,7 +164,7 @@
     }
 
     <!-- KPI Cards Row -->
-    <div class="kpi-row">
+    <div class="kpi-row" [class.kpi-row--company]="!isSuperAdmin()">
       <div class="kpi-card">
         <div class="kpi-label">VISITAS NO ANO</div>
         <div class="kpi-value">{{ stats().total }}</div>
@@ -181,26 +181,30 @@
         <div class="kpi-label text-yellow">% CONCLUSÃO</div>
         <div class="kpi-value text-yellow">{{ stats().percent }}%</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">COMBUSTÍVEL (R$)</div>
-        <div class="kpi-value">{{ stats().fuel | number:'1.2-2' }}</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">KM RODADO</div>
-        <div class="kpi-value">{{ stats().km | number:'1.1-1' }}</div>
-      </div>
+      @if (isSuperAdmin()) {
+        <div class="kpi-card">
+          <div class="kpi-label">COMBUSTÍVEL (R$)</div>
+          <div class="kpi-value">{{ stats().fuel | number:'1.2-2' }}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">KM RODADO</div>
+          <div class="kpi-value">{{ stats().km | number:'1.1-1' }}</div>
+        </div>
+      }
     </div>
 
-    <!-- Legend -->
-    <div class="legend-row">
-      <div class="tags-container">
-        @for (service of services(); track service._id; let idx = $index) {
-          <span class="legend-item" [ngClass]="legendColors[idx % legendColors.length]">{{ service.name | uppercase }}</span>
-        } @empty {
-          <span class="legend-item bg-grey">NENHUM SERVIÇO CADASTRADO</span>
-        }
+    <!-- Legend (Exibido apenas para Super Admin) -->
+    @if (isSuperAdmin()) {
+      <div class="legend-row">
+        <div class="tags-container">
+          @for (service of services(); track service._id; let idx = $index) {
+            <span class="legend-item" [ngClass]="legendColors[idx % legendColors.length]">{{ service.name | uppercase }}</span>
+          } @empty {
+            <span class="legend-item bg-grey">NENHUM SERVIÇO CADASTRADO</span>
+          }
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Filters -->
     <div class="filters-row">

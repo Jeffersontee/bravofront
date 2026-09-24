@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  font-family: var(--font-family, 'Outfit', sans-serif);
+}
+
+.order-form-content {
+  --background: var(--ion-background-color, #f4f5f8);
+}
+
+.form-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 12px;
+
+  @media (min-width: 768px) {
+    padding: 28px 20px;
+  }
+}
+
+.page-header-title {
+  font-family: var(--font-family, 'Outfit', sans-serif);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.form-header {
+  margin-bottom: 24px;
+
+  &__title {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--ion-text-color, #1e293b);
+    margin: 0 0 6px 0;
+  }
+
+  &__subtitle {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    font-size: 0.95rem;
+    color: var(--ion-color-step-600, #64748b);
+    margin: 0;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 12px;
+
+  &__text {
+    font-family: var(--font-family, 'Outfit', sans-serif);
+    color: var(--ion-color-step-600, #64748b);
+  }
+}

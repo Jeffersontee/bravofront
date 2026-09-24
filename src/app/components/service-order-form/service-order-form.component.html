@@ -1,120 +1,243 @@
 @if (isLoading() || isLoadingData()) {
-  <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  <ion-progress-bar type="indeterminate" color="primary"></ion-progress-bar>
 }
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <ion-list lines="none">
-    
-    <ion-item-divider class="section-divider">
-      <ion-label>Cliente & Empresa</ion-label>
-    </ion-item-divider>
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="order-form-body">
+  
+  <!-- CARD 1: CLIENTE E UNIDADE -->
+  <div class="form-card">
+    <div class="form-card__header">
+      <div class="form-card__header-icon">
+        <ion-icon name="business-outline"></ion-icon>
+      </div>
+      <div>
+        <h2 class="form-card__title">Cliente & Empresa</h2>
+        <p class="form-card__subtitle">Selecione o cliente atendido e a unidade/filial de destino</p>
+      </div>
+    </div>
 
-    <ion-item>
-      <ion-icon name="business-outline" slot="start"></ion-icon>
-      <ion-select label="Empresa / Cliente *" labelPlacement="floating" formControlName="company_id">
-        @for (comp of companies(); track comp._id) {
-          <ion-select-option [value]="comp._id">{{ comp.name }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="location-outline" slot="start"></ion-icon>
-      <ion-select label="Unidade / Filial *" labelPlacement="floating" formControlName="unit_id">
-        @for (unit of units(); track unit._id) {
-          <ion-select-option [value]="unit._id">{{ unit.name }} - {{ unit.short_name || 'Geral' }}</ion-select-option>
-        } @empty {
-          <ion-select-option value="" disabled>Selecione uma empresa primeiro</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item-divider class="section-divider">
-      <ion-label>Escopo do Serviço</ion-label>
-    </ion-item-divider>
-
-    <ion-item>
-      <ion-icon name="construct-outline" slot="start"></ion-icon>
-      <ion-select label="Serviço do Catálogo *" labelPlacement="floating" formControlName="service_id">
-        @for (serv of services(); track serv._id) {
-          <ion-select-option [value]="serv._id">{{ serv.name }} (R$ {{ serv.price | number:'1.2-2' }})</ion-select-option>
-        } @empty {
-          <ion-select-option value="" disabled>Selecione uma empresa primeiro</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item-divider class="section-divider">
-      <ion-label>Execução & Agenda</ion-label>
-    </ion-item-divider>
-
-    <ion-item>
-      <ion-icon name="people-outline" slot="start"></ion-icon>
-      <ion-select label="Técnico / Responsável" labelPlacement="floating" formControlName="collaborator_id">
-        <ion-select-option value="">Não atribuído (Pendente)</ion-select-option>
-        @for (collab of collaborators(); track collab._id) {
-          <ion-select-option [value]="collab._id">
-            {{ collab.name }} - {{ collab.role === 'technician' ? 'Técnico de Campo' : (collab.role || 'Equipe') }} {{ !collab.company_id ? '(Global)' : '' }}
-          </ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="calendar-outline" slot="start"></ion-icon>
-      <ion-input type="datetime-local" label="Data de Agendamento *" labelPlacement="floating" formControlName="scheduled_date"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="document-text-outline" slot="start"></ion-icon>
-      <ion-textarea label="Observações / Instruções" labelPlacement="floating" formControlName="observations" placeholder="Instruções para o técnico ou observações do cliente..." rows="3"></ion-textarea>
-    </ion-item>
-
-      <ion-item-divider color="light">
-        <ion-label>Escolha a Prioridade</ion-label>
-      </ion-item-divider>
-
-      <div class="ion-padding" style="padding-top: 10px;">
-        <p style="font-size: 0.85rem; color: #666; margin-top: 0; margin-bottom: 12px;">Classifique a solicitação para que a Central possa planejar a prioridade de atendimento.</p>
-        <div class="priority-buttons">
-          <button type="button" class="priority-btn btn-urgent" [class.active]="selectedPriority === 'URGENTE'" (click)="setPriority('URGENTE')" [disabled]="isReadOnly()">
-            <span class="dot"></span> URGENTE
-          </button>
-          
-          <button type="button" class="priority-btn btn-high" [class.active]="selectedPriority === 'ALTA'" (click)="setPriority('ALTA')" [disabled]="isReadOnly()">
-            <span class="dot"></span> ALTA
-          </button>
-          
-          <button type="button" class="priority-btn btn-medium" [class.active]="selectedPriority === 'MEDIA'" (click)="setPriority('MEDIA')" [disabled]="isReadOnly()">
-            <span class="dot"></span> MÉDIA
-          </button>
-          
-          <button type="button" class="priority-btn btn-low" [class.active]="selectedPriority === 'BAIXA'" (click)="setPriority('BAIXA')" [disabled]="isReadOnly()">
-            <span class="dot"></span> BAIXA
-          </button>
+    <div class="form-grid">
+      <div class="form-grid__col">
+        <div class="input-wrapper" [class.has-error]="form.get('company_id')?.invalid && form.get('company_id')?.touched">
+          <ion-item lines="none" class="custom-input-item">
+            <ion-icon name="business-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-select 
+              label="Empresa / Cliente *" 
+              labelPlacement="stacked" 
+              formControlName="company_id"
+              interface="popover"
+              placeholder="Selecione a empresa atendida">
+              @for (comp of companies(); track comp._id) {
+                <ion-select-option [value]="comp._id">{{ comp.name }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (form.get('company_id')?.invalid && form.get('company_id')?.touched) {
+            <span class="field-error">A empresa é obrigatória</span>
+          }
         </div>
-        
-        <!-- Hidden GUT inputs -->
-        <input type="hidden" formControlName="gut_gravity" />
-        <input type="hidden" formControlName="gut_urgency" />
-        <input type="hidden" formControlName="gut_trend" />
       </div>
 
-    <ion-item>
-      <ion-icon name="location-outline" slot="start"></ion-icon>
-      <ion-input label="Endereço de Execução (Opcional)" labelPlacement="floating" formControlName="address_override" placeholder="Preencha apenas se for diferente do endereço da filial"></ion-input>
-    </ion-item>
-
-    <div class="ion-padding d-flex gap-2">
-      <ion-button type="button" fill="outline" color="medium" class="flex-grow-1" (click)="onCancel()" [disabled]="isLoading()">
-        Cancelar
-      </ion-button>
-      <ion-button type="submit" class="flex-grow-1" [disabled]="!form.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
-        @if (isLoading()) {
-          <ion-spinner name="crescent" slot="start"></ion-spinner>
-        }
-        {{ isLoading() ? 'Gravando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Ordem') }}
-      </ion-button>
+      <div class="form-grid__col">
+        <div class="input-wrapper" [class.has-error]="form.get('unit_id')?.invalid && form.get('unit_id')?.touched">
+          <ion-item lines="none" class="custom-input-item">
+            <ion-icon name="location-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-select 
+              label="Unidade / Filial *" 
+              labelPlacement="stacked" 
+              formControlName="unit_id"
+              interface="popover"
+              placeholder="Selecione a unidade">
+              @for (unit of units(); track unit._id) {
+                <ion-select-option [value]="unit._id">{{ unit.name }} - {{ unit.short_name || 'Geral' }}</ion-select-option>
+              } @empty {
+                <ion-select-option value="" disabled>Selecione uma empresa primeiro</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (form.get('unit_id')?.invalid && form.get('unit_id')?.touched) {
+            <span class="field-error">A unidade é obrigatória</span>
+          }
+        </div>
+      </div>
     </div>
-  </ion-list>
+  </div>
+
+  <!-- CARD 2: ESCOPO DO ATENDIMENTO -->
+  <div class="form-card">
+    <div class="form-card__header">
+      <div class="form-card__header-icon">
+        <ion-icon name="construct-outline"></ion-icon>
+      </div>
+      <div>
+        <h2 class="form-card__title">Escopo do Serviço</h2>
+        <p class="form-card__subtitle">Defina o serviço técnico a ser executado e instruções complementares</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-grid__col form-grid__col--full">
+        <div class="input-wrapper" [class.has-error]="form.get('service_id')?.invalid && form.get('service_id')?.touched">
+          <ion-item lines="none" class="custom-input-item">
+            <ion-icon name="construct-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-select 
+              label="Serviço do Catálogo *" 
+              labelPlacement="stacked" 
+              formControlName="service_id"
+              interface="popover"
+              placeholder="Selecione o serviço do catálogo">
+              @for (serv of services(); track serv._id) {
+                <ion-select-option [value]="serv._id">{{ serv.name }} (R$ {{ serv.price | number:'1.2-2' }})</ion-select-option>
+              } @empty {
+                <ion-select-option value="" disabled>Selecione uma empresa primeiro</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (form.get('service_id')?.invalid && form.get('service_id')?.touched) {
+            <span class="field-error">O serviço é obrigatório</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-grid__col form-grid__col--full">
+        <div class="textarea-box">
+          <label class="textarea-label">Observações / Instruções para a Execução</label>
+          <ion-textarea 
+            formControlName="observations" 
+            placeholder="Instruções para o técnico, pontos de atenção ou relatos do cliente..." 
+            [autoGrow]="true"
+            rows="3"
+            class="custom-textarea">
+          </ion-textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 3: EXECUÇÃO E AGENDA -->
+  <div class="form-card">
+    <div class="form-card__header">
+      <div class="form-card__header-icon">
+        <ion-icon name="calendar-outline"></ion-icon>
+      </div>
+      <div>
+        <h2 class="form-card__title">Execução & Agenda</h2>
+        <p class="form-card__subtitle">Atribuição do técnico responsável e previsão de atendimento</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-grid__col">
+        <div class="input-wrapper">
+          <ion-item lines="none" class="custom-input-item">
+            <ion-icon name="people-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-select 
+              label="Técnico / Responsável" 
+              labelPlacement="stacked" 
+              formControlName="collaborator_id"
+              interface="popover"
+              placeholder="Não atribuído (Pendente)">
+              <ion-select-option value="">Não atribuído (Pendente)</ion-select-option>
+              @for (collab of collaborators(); track collab._id) {
+                <ion-select-option [value]="collab._id">
+                  {{ collab.name }} - {{ collab.role === 'technician' ? 'Técnico de Campo' : (collab.role || 'Equipe') }} {{ !collab.company_id ? '(Global)' : '' }}
+                </ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="form-grid__col">
+        <div class="input-wrapper" [class.has-error]="form.get('scheduled_date')?.invalid && form.get('scheduled_date')?.touched">
+          <ion-item lines="none" class="custom-input-item">
+            <ion-icon name="calendar-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-input 
+              type="datetime-local" 
+              label="Data e Horário de Agendamento *" 
+              labelPlacement="stacked" 
+              formControlName="scheduled_date">
+            </ion-input>
+          </ion-item>
+          @if (form.get('scheduled_date')?.invalid && form.get('scheduled_date')?.touched) {
+            <span class="field-error">A data de agendamento é obrigatória</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 4: PRIORIDADE E LOCALIZAÇÃO -->
+  <div class="form-card">
+    <div class="form-card__header">
+      <div class="form-card__header-icon">
+        <ion-icon name="flash-outline"></ion-icon>
+      </div>
+      <div>
+        <h2 class="form-card__title">Prioridade de Atendimento</h2>
+        <p class="form-card__subtitle">Classifique a urgência para ordenação inteligente da fila operacional</p>
+      </div>
+    </div>
+
+    <div class="priority-container">
+      <div class="priority-buttons">
+        <button type="button" class="priority-btn btn-urgent" [class.active]="selectedPriority === 'URGENTE'" (click)="setPriority('URGENTE')" [disabled]="isReadOnly()">
+          <span class="dot"></span> URGENTE
+        </button>
+        
+        <button type="button" class="priority-btn btn-high" [class.active]="selectedPriority === 'ALTA'" (click)="setPriority('ALTA')" [disabled]="isReadOnly()">
+          <span class="dot"></span> ALTA
+        </button>
+        
+        <button type="button" class="priority-btn btn-medium" [class.active]="selectedPriority === 'MEDIA'" (click)="setPriority('MEDIA')" [disabled]="isReadOnly()">
+          <span class="dot"></span> MÉDIA
+        </button>
+        
+        <button type="button" class="priority-btn btn-low" [class.active]="selectedPriority === 'BAIXA'" (click)="setPriority('BAIXA')" [disabled]="isReadOnly()">
+          <span class="dot"></span> BAIXA
+        </button>
+      </div>
+
+      <!-- Hidden GUT inputs -->
+      <input type="hidden" formControlName="gut_gravity" />
+      <input type="hidden" formControlName="gut_urgency" />
+      <input type="hidden" formControlName="gut_trend" />
+    </div>
+
+    <div class="form-grid mt-3">
+      <div class="form-grid__col form-grid__col--full">
+        <div class="input-wrapper">
+          <ion-item lines="none" class="custom-input-item">
+            <ion-icon name="map-outline" slot="start" class="input-icon"></ion-icon>
+            <ion-input 
+              label="Endereço de Execução (Opcional)" 
+              labelPlacement="stacked" 
+              formControlName="address_override" 
+              placeholder="Preencha apenas se for diferente do endereço cadastrado na unidade">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇÕES DO FORMULÁRIO -->
+  <div class="form-actions">
+    <ion-button type="button" fill="outline" color="medium" class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
+      Cancelar
+    </ion-button>
+    <ion-button 
+      type="submit" 
+      color="primary" 
+      class="btn-submit" 
+      [disabled]="!form.valid || isReadOnly() || isLoading() || (isEditMode() && !hasChanges())">
+      @if (isLoading()) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+      } @else {
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+      }
+      {{ isLoading() ? 'Gravando...' : (isEditMode() ? 'Salvar Alterações' : 'Cadastrar Ordem') }}
+    </ion-button>
+  </div>
 </form>
+
