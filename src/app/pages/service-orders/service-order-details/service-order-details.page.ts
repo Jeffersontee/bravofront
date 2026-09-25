@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController, AlertController, ToastController, ModalController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack, locationOutline, timeOutline, checkmarkCircle, checkmarkCircleOutline,
@@ -38,6 +38,7 @@ import { getPriorityFromGUT } from 'src/app/utils/gut-priority.util';
 })
 export class ServiceOrderDetailsPage implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private navCtrl = inject(NavController);
   private serviceOrderService = inject(ServiceOrderService);
   private profileService = inject(ProfileService);
@@ -87,12 +88,37 @@ export class ServiceOrderDetailsPage implements OnInit {
   selectedCollaboratorId = signal<string>('');
   selectedScheduleDate = signal<string>('');
 
-  // Exposing roles for logic in HTML
-  userType = computed(() => (this.profileService.profile() as any)?.type);
-  isCollaborator = computed(() => this.userType() === Strings.COLLABORATOR_TYPE || this.userType() === 'collaborator');
-  isCompanyOwner = computed(() => this.userType() === Strings.COMPANY_OWNER_TYPE || this.userType() === 'company_owner');
-  isSuperAdmin = computed(() => this.userType() === Strings.SUPER_TYPE || this.userType() === 'super_admin');
-  isNormalUser = computed(() => this.userType() === Strings.USER_TYPE || this.userType() === 'user');
+  // Exposing roles for logic in HTML com suporte a detecção por URL e Perfil
+  userType = computed(() => {
+    const profType = (this.profileService.profile() as any)?.type;
+    if (profType) return profType;
+    const url = this.router.url;
+    if (url.includes('/super-admin/')) return Strings.SUPER_TYPE;
+    if (url.includes('/company/')) return Strings.COMPANY_OWNER_TYPE;
+    if (url.includes('/collaborator/')) return Strings.COLLABORATOR_TYPE;
+    if (url.includes('/customer/')) return Strings.USER_TYPE;
+    return '';
+  });
+
+  isSuperAdmin = computed(() => {
+    return this.userType() === Strings.SUPER_TYPE || this.userType() === 'super_admin' || this.router.url.includes('/super-admin/');
+  });
+
+  isCompanyOwner = computed(() => {
+    if (this.isSuperAdmin()) return false;
+    return this.userType() === Strings.COMPANY_OWNER_TYPE || this.userType() === 'company_owner' || this.router.url.includes('/company/');
+  });
+
+  isCollaborator = computed(() => {
+    if (this.isSuperAdmin() || this.isCompanyOwner()) return false;
+    return this.userType() === Strings.COLLABORATOR_TYPE || this.userType() === 'collaborator' || this.router.url.includes('/collaborator/');
+  });
+
+  isNormalUser = computed(() => {
+    if (this.isSuperAdmin() || this.isCompanyOwner() || this.isCollaborator()) return false;
+    return this.userType() === Strings.USER_TYPE || this.userType() === 'user' || this.router.url.includes('/customer/');
+  });
+
   customerName = computed(() => this.profileService.profile()?.name || 'Cliente');
 
   // Status computation for actions
@@ -116,7 +142,12 @@ export class ServiceOrderDetailsPage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    try {
+      await this.profileService.getProfile();
+    } catch (e) {
+      console.warn('Perfil carregado via storage/cache:', e);
+    }
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.orderId.set(id);

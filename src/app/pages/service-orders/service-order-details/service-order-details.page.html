@@ -1,4 +1,4 @@
-<ion-header [translucent]="true" class="ion-no-border">
+<ion-header class="ion-no-border">
   <ion-toolbar class="high-contrast-header">
     <ion-buttons slot="start">
       <ion-button (click)="goBack()">
@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="bg-light">
+<ion-content class="bg-light">
   @if(isLoading()) {
     <div class="ion-padding">
       <ion-skeleton-text animated style="width: 100%; height: 150px; border-radius: 16px; margin-bottom: 20px;"></ion-skeleton-text>
@@ -410,7 +410,7 @@
       <!-- BOTÕES DO SUPER ADMIN -->
       @if(isSuperAdmin()) {
         @if(os.current_status === 'SOLICITADO') {
-          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
             <ion-button expand="block" shape="round" color="primary" style="flex: 1;" (click)="proposePriceAndDate()">
               <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
               Enviar Proposta de Valor
@@ -431,10 +431,22 @@
             Recusar Chamado
           </ion-button>
         }
+        @if(os.current_status === 'AGENDADO' || os.current_status === 'EM_DESLOCAMENTO' || os.current_status === 'CHECK_IN' || os.current_status === 'EM_EXECUCAO') {
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
+            <ion-button expand="block" shape="round" color="warning" style="flex: 1;" (click)="suggestNewDateSuper()">
+              <ion-icon slot="start" name="calendar-outline"></ion-icon>
+              Alterar Data / Reagendar
+            </ion-button>
+            <ion-button expand="block" shape="round" color="danger" style="flex: 1;" (click)="cancelOrder()">
+              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+              Cancelar OS
+            </ion-button>
+          </div>
+        }
       }
  
-      <!-- BOTÕES DO LOJISTA OU CLIENTE FINAL (USER) OU SUPER ADMIN -->
-      @if(isCompanyOwner() || isNormalUser() || isSuperAdmin()) {
+      <!-- BOTÕES DO LOJISTA OU CLIENTE FINAL (USER) -->
+      @if(isCompanyOwner() || isNormalUser()) {
         @if(os.current_status === 'SOLICITADO') {
           <ion-button expand="block" shape="round" color="danger" class="action-btn" (click)="cancelOrder()">
             <ion-icon slot="start" name="close-circle-outline"></ion-icon>
@@ -442,7 +454,7 @@
           </ion-button>
         }
         @if(os.current_status === 'DATA_SUGERIDA') {
-          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
             <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="acceptScheduleProposal()">
               <ion-icon slot="start" name="checkmark-circle"></ion-icon>
               Aceitar Data Sugerida
@@ -474,7 +486,7 @@
           </div>
         }
         @if(os.current_status === 'PROPOSTO') {
-          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="action-grid" style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
             <ion-button expand="block" shape="round" color="success" style="flex: 1;" (click)="approvePriceAndDate()">
               <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
               Aprovar Proposta comercial
@@ -485,7 +497,7 @@
             </ion-button>
           </div>
         }
-        @if(os.current_status === 'CONCLUIDO' && !isCheckoutTimeOver30Min() && (isCompanyOwner() || isNormalUser())) {
+        @if(os.current_status === 'CONCLUIDO' && !isCheckoutTimeOver30Min()) {
           <ion-button expand="block" shape="round" color="danger" class="action-btn" (click)="complainAboutService()">
             <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
             Reclamar do Serviço (Ativo 30 min)
