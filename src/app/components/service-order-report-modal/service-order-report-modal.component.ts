@@ -47,7 +47,16 @@ export class ServiceOrderReportModalComponent implements OnInit {
   private isDrawing = false;
 
   userType = computed(() => (this.profileService.profile() as any)?.type);
+  userRole = computed(() => (this.profileService.profile() as any)?.role);
   isLojista = computed(() => this.userType() === Strings.COMPANY_OWNER_TYPE || this.userType() === 'user');
+
+  canViewKmAndFuel = computed(() => {
+    const type = this.userType();
+    const role = this.userRole();
+    const isSuper = type === 'super_admin' || type === Strings.SUPER_TYPE || type === Strings.SUPER_STAFF_TYPE || type === 'super_staff';
+    const isTechnician = role === 'technician' || role === 'técnico';
+    return isSuper || isTechnician;
+  });
 
   constructor() {
     addIcons({
@@ -57,7 +66,14 @@ export class ServiceOrderReportModalComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    if (!this.profileService.profile()) {
+      try {
+        await this.profileService.getProfile();
+      } catch (e) {
+        console.error('Erro ao carregar perfil:', e);
+      }
+    }
     // Se a OS precisar de assinatura do lojista, inicializamos o canvas em breve
     if (this.order.current_status === 'RELATORIO_CHECKOUT' && this.isLojista()) {
       setTimeout(() => this.initCanvas(), 300);

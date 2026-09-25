@@ -1,17 +1,24 @@
-<ion-header>
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/super-admin/operational/orders"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ isEditMode() ? 'Editar Ordem de Serviço' : 'Nova Ordem de Serviço' }}</ion-title>
+    <ion-title class="page-header-title">
+      {{ isEditMode() ? 'Editar Ordem de Serviço' : 'Nova Ordem de Serviço' }}
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="form-container" style="max-width: 600px; margin: 0 auto;">
-    <h2 style="font-family: 'Outfit', sans-serif; font-weight: 700; margin: 0 0 16px 16px;">
-      {{ isEditMode() ? 'Atualizar Odem de Serviço' : 'Formulário Global de Cadastro (OS)' }}
-    </h2>
+<ion-content class="ion-padding order-form-content">
+  <div class="form-container">
+    <div class="form-header">
+      <h1 class="form-header__title">
+        {{ isEditMode() ? 'Atualizar Ordem de Serviço' : 'Formulário Global de Cadastro (OS)' }}
+      </h1>
+      <p class="form-header__subtitle">
+        {{ isEditMode() ? 'Atualize as informações do chamado, técnico e prioridade de atendimento.' : 'Cadastre uma nova solicitação técnica vinculada à empresa, unidade e técnico de campo.' }}
+      </p>
+    </div>
     
     <app-service-order-form
       [data]="orderData()"
@@ -22,3 +29,4 @@
     ></app-service-order-form>
   </div>
 </ion-content>
+

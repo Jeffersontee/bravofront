@@ -81,6 +81,7 @@ export class CompanyDashboardPage implements OnInit {
   public isLoading = signal<boolean>(false);
   public hasConnectionError = signal<boolean>(false);
   public isDashboardView = signal<boolean>(false);
+  public isSuperAdmin = signal<boolean>(false);
 
   // Filters
   public filterUnit = signal<string>('Todas');
@@ -171,6 +172,21 @@ export class CompanyDashboardPage implements OnInit {
 
   async ngOnInit() {
     this.isDashboardView.set(this.router.url.includes('/dashboard'));
+    const isSuperRoute = this.router.url.includes('/super-admin/');
+    
+    try {
+      const user = await this.profileService.getProfile();
+      if (user && (user.type === 'super_admin' || (user as any).type === 'super_staff')) {
+        this.isSuperAdmin.set(true);
+      } else if (isSuperRoute) {
+        this.isSuperAdmin.set(true);
+      } else {
+        this.isSuperAdmin.set(false);
+      }
+    } catch (e) {
+      this.isSuperAdmin.set(isSuperRoute);
+    }
+
     let id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       try {

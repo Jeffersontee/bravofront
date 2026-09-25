@@ -14,6 +14,7 @@ import {
 @Component({
   selector: 'app-service-order-form-page',
   templateUrl: './service-order-form-page.component.html',
+  styleUrls: ['./service-order-form-page.component.scss'],
   standalone: true,
   imports: [
     CommonModule, ServiceOrderFormComponent,

@@ -171,20 +171,27 @@ export class ServiceOrdersPage implements OnInit {
 
   goToDetails(order: ServiceOrder) {
     if (order._id) {
-      const type = (this.profileService.profile() as any)?.type;
-      let baseUrl = '';
-
-      if (type === Strings.COMPANY_OWNER_TYPE) {
-        baseUrl = Strings.COMPANY_ORDER_DETAILS;
-      } else if (type === Strings.COLLABORATOR_TYPE) {
-        baseUrl = Strings.COLLABORATOR_ORDER_DETAILS;
-      } else if (type === Strings.USER_TYPE) {
-        baseUrl = Strings.CUSTOMER_ORDER_DETAILS;
+      const currentUrl = this.router.url;
+      if (currentUrl.includes('/super-admin/')) {
+        this.router.navigateByUrl(`/super-admin/operational/orders/details/${order._id}`);
+      } else if (currentUrl.includes('/company/')) {
+        this.router.navigateByUrl(`/company/orders/details/${order._id}`);
+      } else if (currentUrl.includes('/collaborator/')) {
+        this.router.navigateByUrl(`/collaborator/orders/details/${order._id}`);
+      } else if (currentUrl.includes('/customer/')) {
+        this.router.navigateByUrl(`/customer/orders/details/${order._id}`);
       } else {
-        baseUrl = Strings.SUPER_OPERATIONAL_ORDERS_DETAILS;
+        const type = (this.profileService.profile() as any)?.type;
+        if (type === Strings.COMPANY_OWNER_TYPE) {
+          this.router.navigateByUrl(`/company/orders/details/${order._id}`);
+        } else if (type === Strings.COLLABORATOR_TYPE) {
+          this.router.navigateByUrl(`/collaborator/orders/details/${order._id}`);
+        } else if (type === Strings.USER_TYPE) {
+          this.router.navigateByUrl(`/customer/orders/details/${order._id}`);
+        } else {
+          this.router.navigateByUrl(`/super-admin/operational/orders/details/${order._id}`);
+        }
       }
-
-      this.router.navigateByUrl(`/${baseUrl}/${order._id}`);
     }
   }
 

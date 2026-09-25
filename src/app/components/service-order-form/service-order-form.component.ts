@@ -7,7 +7,9 @@ import {
 import { addIcons } from 'ionicons';
 import { 
   businessOutline, locationOutline, constructOutline, peopleOutline, 
-  calendarOutline, documentTextOutline, saveOutline, closeOutline 
+  calendarOutline, documentTextOutline, saveOutline, closeOutline,
+  mapOutline, alertCircleOutline, flashOutline, informationCircleOutline,
+  checkmarkCircleOutline, timeOutline
 } from 'ionicons/icons';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -65,7 +67,9 @@ export class ServiceOrderFormComponent implements OnInit {
   constructor() {
     addIcons({ 
       businessOutline, locationOutline, constructOutline, peopleOutline, 
-      calendarOutline, documentTextOutline, saveOutline, closeOutline 
+      calendarOutline, documentTextOutline, saveOutline, closeOutline,
+      mapOutline, alertCircleOutline, flashOutline, informationCircleOutline,
+      checkmarkCircleOutline, timeOutline
     });
 
     effect(() => {
@@ -124,6 +128,7 @@ export class ServiceOrderFormComponent implements OnInit {
       collaborator_id: [''],
       scheduled_date: [new Date().toISOString().substring(0, 16), Validators.required],
       observations: [''],
+      notes: [''],
       address_override: [''],
       gut_gravity: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
       gut_urgency: [1, [Validators.required, Validators.min(1), Validators.max(5)]],
@@ -211,6 +216,8 @@ export class ServiceOrderFormComponent implements OnInit {
       dateStr = d.toISOString().substring(0, 16);
     }
 
+    const obs = (order.observations || order.notes || '').toString();
+
     if (companyId) {
       this.loadCompanyDependentData(companyId, () => {
         this.form.patchValue({
@@ -219,7 +226,8 @@ export class ServiceOrderFormComponent implements OnInit {
           service_id: serviceId,
           collaborator_id: collaboratorId,
           scheduled_date: dateStr,
-          observations: order.observations || '',
+          observations: obs,
+          notes: obs,
           address_override: order.address_override || '',
           gut_gravity: order.gut_gravity || 1,
           gut_urgency: order.gut_urgency || 1,
@@ -237,7 +245,8 @@ export class ServiceOrderFormComponent implements OnInit {
         service_id: serviceId,
         collaborator_id: collaboratorId,
         scheduled_date: dateStr,
-        observations: order.observations || '',
+        observations: obs,
+        notes: obs,
         address_override: order.address_override || '',
         gut_gravity: order.gut_gravity || 1,
         gut_urgency: order.gut_urgency || 1,
@@ -277,6 +286,9 @@ export class ServiceOrderFormComponent implements OnInit {
   onSubmit() {
     if (this.form.invalid || this.isReadOnly()) return;
     const formValue = this.form.getRawValue();
+    const obs = (formValue.observations || formValue.notes || '').toString().trim();
+    formValue.observations = obs;
+    formValue.notes = obs;
     this.save.emit(formValue);
   }
 }
